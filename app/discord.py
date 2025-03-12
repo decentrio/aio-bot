@@ -1,0 +1,199 @@
+import logging
+import discord
+import asyncio
+import json
+from discord.ext import commands, tasks
+
+
+class DiscordClient(commands.Bot):
+    def __init__(self, config):
+        self.token: int | str = config["app"]["discord"]["bot-token"]
+        self.channels: list = config["app"]["discord"]["channels"]
+        self.subscriptions: list = config["app"]["discord"]["subscriptions"]
+        self.mode: str = config["app"]["discord"]["mode"]
+
+        intents = discord.Intents.default()
+        intents.guilds = True
+        intents.messages = True
+        intents.message_content = True
+
+        super().__init__(command_prefix='/', intents=intents)
+
+        logging.basicConfig(level=logging.INFO)
+        self.logger = logging.getLogger("DiscordClient")
+
+        self.loop = None
+
+    def compose_embed(self, title="", description="", author="", fields=[], footer="", color=0x29fffb):
+        embed = discord.Embed(
+            title=title,
+            description=description,
+            color=color
+        )
+        embed.set_author(name=author)
+        for field in fields:
+            embed.add_field(
+                name=field["name"],
+                value=field["value"],
+                inline=field["inline"]
+            )
+        embed.set_footer(text=footer)
+        return embed
+
+    async def on_ready(self):
+        """
+        Gets called when the Discord client logs in
+        """
+        self.logger.info(
+            f'Logged into Discord as {self.user} (ID: {self.user.id})')
+        for guild in self.guilds:
+            print(f"Guild: {guild.name} (ID: {guild.id})")
+            print("Channels:")
+            for channel in guild.text_channels:
+                self.logger.info(
+                    f"  Text Channel: {channel.name} (ID: {channel.id})")
+            for channel in guild.voice_channels:
+                self.logger.info(
+                    f"  Voice Channel: {channel.name} (ID: {channel.id})")
+            for channel in guild.stage_channels:
+                self.logger.info(
+                    f"  Stage Channel: {channel.name} (ID: {channel.id})")
+            self.logger.info("")
+
+        self.loop = asyncio.get_running_loop()
+
+    async def on_message(self, message):
+        if message.author == self.user:
+            return
+        self.logger.info(
+            f"{message.channel.name} | {message.author} | {message.content}")
+        if message.content.startswith('/'):
+            await self.handle_command(message)
+
+    async def handle_command(self, message):
+        command = message.content[1:].split(' ')[0]
+        match command:
+            case "help":
+                msg = self.compose_embed(
+                    title=f"**AIO Bot for Injective!**",
+                    description="Available commands:\n \
+                                            - `/sub val <val-address>`: Get notification about validator/peggo operator\n \
+                                            \n \
+                                            - `/sub balance <eth/inj-address>`: Get notification about low balance\n \
+                                            \n \
+                                            - `/sub list`: List all your subscriptions\n \
+                                            \n \
+                                            - `/help`: Show this help menu\n \
+                                            \n \
+                                            - `/unsub <val-address>`: Unsubscribe from a subscription",
+                )
+                await self.reply(message.channel.id, msg)
+            case "sub":
+                commands = message.content[1:].split(' ')
+                print(commands)
+                if (len(commands) == 3):
+                    sub_type = commands[1]
+                    value = commands[2]
+                    if sub_type == "val":
+                        self.subscriptions.append({
+                            "user": message.author.id,
+                            "validator": value
+                        })
+                    elif sub_type == "balance":
+                        self.subscriptions.append({
+                            "user": message.author.id,
+                            "address": value
+                        })
+
+                    msg = self.compose_embed(
+                        description=f"Subscribed `{value}` for <@{message.author.id}>",
+                    )
+                    await self.reply(message.channel.id, msg)
+                    with open("config.json", "r") as config_file:
+                        config = json.load(config_file)
+                    config["app"]["discord"]["subscriptions"] = self.subscriptions
+                    with open("config.json", "w") as config_file:
+                        json.dump(config, config_file, indent=4)
+                elif (len(commands) == 2):
+                    if commands[1] == "help":
+                        msg = self.compose_embed(
+                            title=f"**Subscriptions Help**",
+                            description="Available commands:\n \
+                                                   `/sub val <val-address>`: Get notification about validator/peggo operator\n \
+                                                   `/sub balance <eth/inj-address>`: Get notification about low balance\n \
+                                                   `/sub list`: List all your subscriptions",
+                        )
+                        await self.reply(message.channel.id, msg)
+                    elif commands[1] == "list":
+                        user_subs = [sub["validator"] if "validator" in sub else sub["address"]
+                                     for sub in self.subscriptions if sub["user"] == message.author.id]
+                        sub_list = "\n".join(
+                            f"- {sub}" for sub in user_subs) if user_subs else "No subscriptions found."
+                        msg = self.compose_embed(
+                            title=f"**Your subscriptions:**",
+                            description=sub_list
+                        )
+                        await self.reply(message.channel.id, msg)
+                    else:
+                        msg = self.compose_embed(
+                            title=f"**Invalid command!**",
+                            description=f"Invalid command: `{commands}`",
+                        )
+                        await self.reply(message.channel.id, msg)
+            case "unsub":
+                value_to_remove = message.content[1:].split(' ')[1]
+                self.subscriptions = [sub for sub in self.subscriptions if sub.get(
+                    "validator") != value_to_remove and sub.get("address") != value_to_remove]
+                msg = self.compose_embed(
+                    description=f"Unsubscribed `{value_to_remove}` for <@{message.author.id}>",
+                )
+                await self.reply(message.channel.id, msg)
+                with open("config.json", "r") as config_file:
+                    config = json.load(config_file)
+                config["app"]["discord"]["subscriptions"] = self.subscriptions
+                with open("config.json", "w") as config_file:
+                    json.dump(config, config_file, indent=4)
+            case _:
+                self.logger.error(f"Invalid command: {command}")
+                msg = self.compose_embed(
+                    title=f"**Invalid command!**",
+                    description=f"Invalid command: `{commands}`",
+                )
+                await self.reply(message.channel.id, msg)
+
+    async def reply(self, channel_id, content, mention = "", auto_delete = 60):
+        """
+        Sends a message to a specified channel
+        """
+        await self.wait_until_ready()
+        channel = self.get_channel(channel_id)
+        if channel:
+            try:
+                asyncio.create_task(self.send_message(channel, mention, content, auto_delete))
+                self.logger.info(f"Message sent to {channel.name}")
+            except asyncio.TimeoutError:
+                self.logger.error(
+                    'Timeout: Failed to send message to channel %s', channel_id)
+            except discord.Forbidden:
+                self.logger.error(
+                    'Bot does not have permission to send messages in channel %s', channel_id)
+            except discord.HTTPException as e:
+                self.logger.error(f"HTTP error occurred: {e}")
+        else:
+            self.logger.error('Channel with ID %s not found', channel_id)
+
+    async def send_message(self, channel, mention, content, auto_delete):
+        await channel.send(
+            content=mention, 
+            embed=content, 
+            delete_after=auto_delete
+        )
+
+    def run(self):
+        """
+        Starts the Discord bot.
+        """
+        try:
+            super().run(self.token)
+        except Exception as e:
+            self.logger.error(f"Error running the bot: {e}")

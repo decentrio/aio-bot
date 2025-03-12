@@ -1,0 +1,100 @@
+{
+    "app": {
+        "slack": {
+            "enable": true,
+            "oAuth-token": "xoxb-token1234",
+            "signing-secret": "1234567890",
+            "mode": "single",
+            "port": "2042",
+            "channels": [],
+            "subscriptions": []
+        },
+        "discord": {
+            "enable": true,
+            "bot-token": "",
+            "mode": "chain",
+            "channels": [],
+            "subscriptions": []
+        },
+        "telegram": {
+            "enable": true,
+            "token": "",
+            "mode": "single",
+            "subscriptions": [],
+            "channels": []
+        }
+    },
+    "chain": "Injective",
+    "rpcs": [
+        "http://138.201.195.60:26657",
+        "https://rpc-injective.imperator.co",
+        "https://injective-rpc.publicnode.com",
+        "http://176.9.143.252:11750",
+        "http://37.27.134.78:26657"
+    ],
+    "api": "https://lcd-injective.imperator.co",
+    "features": {
+        "faucet": false,
+        "gov": {
+            "enable": true,
+            "params": {
+                "voting_period": "172800s",
+                "min_deposit": 10,
+                "threshold": "0.500000000000000000",
+                "veto": "0.334000000000000000"
+            }
+        },
+        "validators": {
+            "enable": true,
+            "params": {
+                "mode": {
+                    "chain": {
+                        "interval": 20,
+                        "threshold": [
+                            {
+                                "label": "ACTIVE",
+                                "value": 0.02
+                            },
+                            {
+                                "label": "ATTENTION",
+                                "value": 0.05
+                            },
+                            {
+                                "label": "WARNING",
+                                "value": 0.15
+                            },
+                            {
+                                "label": "CRITICAL",
+                                "value": 0.4
+                            }
+                        ]
+                    },
+                    "single": {
+                        "threshold": 2
+                    }
+                },
+                "prefix": "inj"
+            }
+        },
+        "peggo": {
+            "enable": true,
+            "params": {}
+        },
+        "ibc": {
+            "enable": false,
+            "params": {
+                "stuck_packets_threshold": 100,
+                "client_update_threshold": 14400,
+                "registry_api": "https://raw.githubusercontent.com/cosmos/chain-registry/master"
+            }
+        },
+        "consensus": false,
+        "wallet": {
+            "mode": "chain",
+            "enable": true,
+            "params": {
+                "threshold": 10000000000000000000
+            }
+        }
+    }
+}
