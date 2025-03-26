@@ -1,38 +1,84 @@
 {
     "app": {
         "slack": {
-            "enable": true,
-            "oAuth-token": "xoxb-token1234",
-            "signing-secret": "1234567890",
+            "enable": false,
+            "oAuth-token": "",
+            "signing-secret": "",
             "mode": "single",
             "port": "2042",
-            "channels": [],
+            "channels": [
+                {
+                    "id": "123456",
+                    "name": "test"
+                }
+            ],
             "subscriptions": []
         },
         "discord": {
             "enable": true,
             "bot-token": "",
             "mode": "chain",
-            "channels": [],
-            "subscriptions": []
+            "channels": {
+                "validators": {
+                    "id": 1234567,
+                    "name": "validators"
+                },
+                "ibc": {
+                    "id": 7654321,
+                    "name": "ibc"
+                },
+                "gov": {
+                    "id": 7654321,
+                    "name": "gov"
+                },
+                "faucet": {
+                    "id": 1234567,
+                    "name": "faucet"
+                },
+                "peggo": {
+                    "id": 1234567,
+                    "name": "peggo"
+                },
+                "wallet": {
+                    "id": 1234567,
+                    "name": "wallet"
+                },
+                "consensus": {
+                    "id": 1234567,
+                    "name": "consensus"
+                }
+            },
+            "subscriptions": [
+                {
+                    "user": 123456789,
+                    "validator": "injvaloper15vlkdnu2c0k0gaclgycnyjm7c5f3hsde034f5p"
+                }            
+            ]
         },
         "telegram": {
-            "enable": true,
+            "enable": false,
             "token": "",
             "mode": "single",
-            "subscriptions": [],
+            "subscriptions": [
+                {
+                    "user": 123456789,
+                    "validator": "injvaloper15vlkdnu2c0k0gaclgycnyjm7c5f3hsde034f5p"
+                }
+            ],
             "channels": []
         }
     },
     "chain": "Injective",
     "rpcs": [
+        "http://37.27.56.238:26657",
+        "https://inj-priv-rpc.kingnodes.com",
+        "https://1rpc.io/inj-rpc",
         "http://138.201.195.60:26657",
         "https://rpc-injective.imperator.co",
-        "https://injective-rpc.publicnode.com",
-        "http://176.9.143.252:11750",
-        "http://37.27.134.78:26657"
+        "https://injective-rpc.publicnode.com"
     ],
-    "api": "https://lcd-injective.imperator.co",
+    "api": "https://injective-lcd.publicnode.com",
+    "jsonrpc": "https://mainnet.rpc.inevm.com/http",
     "features": {
         "faucet": false,
         "gov": {
@@ -57,15 +103,15 @@
                             },
                             {
                                 "label": "ATTENTION",
-                                "value": 0.05
+                                "value": 0.1
                             },
                             {
                                 "label": "WARNING",
-                                "value": 0.15
+                                "value": 0.3
                             },
                             {
                                 "label": "CRITICAL",
-                                "value": 0.4
+                                "value": 0.7
                             }
                         ]
                     },
@@ -78,7 +124,9 @@
         },
         "peggo": {
             "enable": true,
-            "params": {}
+            "params": {
+                "threshold": 2
+            }
         },
         "ibc": {
             "enable": false,
@@ -90,10 +138,9 @@
         },
         "consensus": false,
         "wallet": {
-            "mode": "chain",
             "enable": true,
             "params": {
-                "threshold": 10000000000000000000
+                "threshold": 1000000000000000000000000
             }
         }
     }

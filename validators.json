@@ -13,8 +13,8 @@
         "operator_address": "injvaloper1qndvee93f30q3ra2hncasphm22k97vpr89zusa",
         "valcons_address": "injvalcons1mpt6fw5hg565m87pm7g6stxms7382caxcu5um8",
         "hex": "D857A4BA9745354D9FC1DF91A82CDB87A27563A6",
-        "missed": 403,
-        "missed_percentage": 0.00806,
+        "missed": 405,
+        "missed_percentage": 0.0081,
         "warning_level": 0
     },
     {
@@ -67,8 +67,8 @@
         "operator_address": "injvaloper1rvqzf9u2uxttmshn302anlknfgsatrh5v7fl7e",
         "valcons_address": "injvalcons1w7ql594dc4lpp8mrh50znu20n5up0c22v79wz8",
         "hex": "7781FA16ADC57E109F63BD1E29F14F9D3817E14A",
-        "missed": 689,
-        "missed_percentage": 0.01378,
+        "missed": 693,
+        "missed_percentage": 0.01386,
         "warning_level": 0
     },
     {
@@ -76,8 +76,8 @@
         "operator_address": "injvaloper1yljq5pdnx84kkg30jfmz6ddu4eyp7twyp4z40f",
         "valcons_address": "injvalcons1eh644nvhkvdxwe3t6zltcee7td064mqy2p2d2n",
         "hex": "CDF55ACD97B31A67662BD0BEBC673E5B5FAAEC04",
-        "missed": 152,
-        "missed_percentage": 0.00304,
+        "missed": 151,
+        "missed_percentage": 0.00302,
         "warning_level": 0
     },
     {
@@ -94,8 +94,8 @@
         "operator_address": "injvaloper1xwsnq88kc8wcrp34qenxf3dvhl5n02yj93u755",
         "valcons_address": "injvalcons105keds2xx2rpxda2vtqw7n3u5ztvu9n9z9duxt",
         "hex": "7D2D96C14632861337AA62C0EF4E3CA096CE1665",
-        "missed": 6962,
-        "missed_percentage": 0.13924,
+        "missed": 6963,
+        "missed_percentage": 0.13926,
         "warning_level": 1
     },
     {
@@ -112,8 +112,8 @@
         "operator_address": "injvaloper18cyc7wxru3g9de3emwy9pdh5x0vevxp3p2623y",
         "valcons_address": "injvalcons1x7elnerzjel32r6mlx985d2lx5cmtrgj62fu7y",
         "hex": "37B3F9E462967F150F5BF98A7A355F3531B58D12",
-        "missed": 878,
-        "missed_percentage": 0.01756,
+        "missed": 875,
+        "missed_percentage": 0.0175,
         "warning_level": 0
     },
     {
@@ -121,8 +121,8 @@
         "operator_address": "injvaloper1g4d6dmvnpg7w7yugy6kplndp7jpfmf3krtschp",
         "valcons_address": "injvalcons1vzrkqls72mmwu7f54whktq6vjttpsyzvfu0l8l",
         "hex": "6087607E1E56F6EE7934ABAF65834C92D618104C",
-        "missed": 864,
-        "missed_percentage": 0.01728,
+        "missed": 867,
+        "missed_percentage": 0.01734,
         "warning_level": 0
     },
     {
@@ -130,8 +130,8 @@
         "operator_address": "injvaloper1fqrdtx7pyps6eytn3356j9cs4f8zl0eevlt3rt",
         "valcons_address": "injvalcons1m002pepun6crws3dpcnu8lldlp5ja8yhcycag7",
         "hex": "DBDEA0E43C9EB037422D0E27C3FFEDF8692E9C97",
-        "missed": 118,
-        "missed_percentage": 0.00236,
+        "missed": 117,
+        "missed_percentage": 0.00234,
         "warning_level": 0
     },
     {
@@ -166,8 +166,8 @@
         "operator_address": "injvaloper125fkz3mq6qxxpkmphdl3ep92t0d3y9695mhclt",
         "valcons_address": "injvalcons1x0knjmysfhvwngwz5slmxlq57h0akm52r8ef7t",
         "hex": "33ED396C904DD8E9A1C2A43FB37C14F5DFDB6E8A",
-        "missed": 535,
-        "missed_percentage": 0.0107,
+        "missed": 537,
+        "missed_percentage": 0.01074,
         "warning_level": 0
     },
     {
@@ -184,8 +184,8 @@
         "operator_address": "injvaloper1v2wjf06nutm9phvh5hgc3twpst9q50y4f8ckd5",
         "valcons_address": "injvalcons1m3jaft2mw4xkg0rnx3cde3ayfw0mfh99a06lzy",
         "hex": "DC65D4AD5B754D643C733470DCC7A44B9FB4DCA5",
-        "missed": 335,
-        "missed_percentage": 0.0067,
+        "missed": 336,
+        "missed_percentage": 0.00672,
         "warning_level": 0
     },
     {
@@ -193,8 +193,8 @@
         "operator_address": "injvaloper1vumvzchlgfsu9fnj5xn2zpf7w888sdmjuu33qe",
         "valcons_address": "injvalcons16tk2f5p5tsgs004dtrtx70w34n8hvx8dyjzt7q",
         "hex": "D2ECA4D0345C1107BEAD58D66F3DD1ACCF7618ED",
-        "missed": 688,
-        "missed_percentage": 0.01376,
+        "missed": 687,
+        "missed_percentage": 0.01374,
         "warning_level": 0
     },
     {
@@ -202,8 +202,8 @@
         "operator_address": "injvaloper1dyntafvjynns5zyltwgyktej0y5zt84y3npkt4",
         "valcons_address": "injvalcons1uejre3lrwhlc3842t8mlewflfh34gq7mfv0m5p",
         "hex": "E6643CC7E375FF889EAA59F7FCB93F4DE35403DB",
-        "missed": 245,
-        "missed_percentage": 0.0049,
+        "missed": 243,
+        "missed_percentage": 0.00486,
         "warning_level": 0
     },
     {
@@ -220,8 +220,8 @@
         "operator_address": "injvaloper1w3psm8a9td2qz06s46cxss03mz5umxaxegvhhs",
         "valcons_address": "injvalcons1n2kq0y8l7a85q5xmhw64a06ehuf5cspc8qs437",
         "hex": "9AAC0790FFF74F4050DBBBB55EBF59BF134C4038",
-        "missed": 729,
-        "missed_percentage": 0.01458,
+        "missed": 730,
+        "missed_percentage": 0.0146,
         "warning_level": 0
     },
     {
@@ -229,8 +229,8 @@
         "operator_address": "injvaloper10pe4avat38u38yzj5hvnw235uecfff6c73s8fn",
         "valcons_address": "injvalcons123tk3uwy78hrulhe8h5wt8740fgxem5jdax0p3",
         "hex": "545768F1C4F1EE3E7EF93DE8E59FD57A506CEE92",
-        "missed": 563,
-        "missed_percentage": 0.01126,
+        "missed": 560,
+        "missed_percentage": 0.0112,
         "warning_level": 0
     },
     {
@@ -319,8 +319,8 @@
         "operator_address": "injvaloper15vlkdnu2c0k0gaclgycnyjm7c5f3hsde034f5p",
         "valcons_address": "injvalcons1a9efq9vresqrcnpc3mewda2hp2ls6km4qsyzm8",
         "hex": "E972901583CC003C4C388EF2E6F5570ABF0D5B75",
-        "missed": 717,
-        "missed_percentage": 0.01434,
+        "missed": 713,
+        "missed_percentage": 0.01426,
         "warning_level": 0
     },
     {
@@ -337,8 +337,8 @@
         "operator_address": "injvaloper14yeq3lkajldaggj28hmq8xng9xux7x5g46hezv",
         "valcons_address": "injvalcons1l64y9vxrtqk0n6lyh4fqs2usvdkghua9drdha0",
         "hex": "FEAA42B0C3582CF9EBE4BD52082B90636C8BF3A5",
-        "missed": 112,
-        "missed_percentage": 0.00224,
+        "missed": 110,
+        "missed_percentage": 0.0022,
         "warning_level": 0
     },
     {
@@ -346,8 +346,8 @@
         "operator_address": "injvaloper14w4qu60azpz5zkw5yrcvmaxqh6xg5sny7qm6rm",
         "valcons_address": "injvalcons1usgjwlwd3hhj8m2megl3lmqknld3pmmm790gw0",
         "hex": "E411277DCD8DEF23ED5BCA3F1FEC169FDB10EF7B",
-        "missed": 323,
-        "missed_percentage": 0.00646,
+        "missed": 322,
+        "missed_percentage": 0.00644,
         "warning_level": 0
     },
     {
@@ -355,8 +355,8 @@
         "operator_address": "injvaloper145cktyaw3ec7nwt3nyawvx5yy9l58ppy9fhltx",
         "valcons_address": "injvalcons1rwz6tl7uvk3rm7635vkuzzraefg4afkvzcsev0",
         "hex": "1B85A5FFDC65A23DFB51A32DC1087DCA515EA6CC",
-        "missed": 307,
-        "missed_percentage": 0.00614,
+        "missed": 309,
+        "missed_percentage": 0.00618,
         "warning_level": 0
     },
     {
@@ -364,8 +364,8 @@
         "operator_address": "injvaloper1hsxaln75wjs033t3spd8a0gawl4jvxawn6v849",
         "valcons_address": "injvalcons1m5kf3ze83efxsuxajltm5a0w4gh7h42awccxtt",
         "hex": "DD2C988B278E526870DD97D7BA75EEAA2FEBD55D",
-        "missed": 32,
-        "missed_percentage": 0.00064,
+        "missed": 33,
+        "missed_percentage": 0.00066,
         "warning_level": 0
     },
     {
@@ -400,8 +400,8 @@
         "operator_address": "injvaloper1egc6mep7z8sa0tglm63qzwq4kdgyd8ccapydkt",
         "valcons_address": "injvalcons1vfyjrr848m2l6dvc248c9rkrrweq8ym7wx5czm",
         "hex": "6249218CF53ED5FD3598554F828EC31BB203937E",
-        "missed": 11772,
-        "missed_percentage": 0.23544,
+        "missed": 11762,
+        "missed_percentage": 0.23524,
         "warning_level": 1
     },
     {
@@ -418,8 +418,8 @@
         "operator_address": "injvaloper1ee7xnhczhvu064utmdn48sh0wx7zq3pgy6frgm",
         "valcons_address": "injvalcons1q0s2z2rmy43fkdkk4g579c0secqpzstz7ujpmn",
         "hex": "03E0A1287B25629B36D6AA29E2E1F0CE00114162",
-        "missed": 537,
-        "missed_percentage": 0.01074,
+        "missed": 538,
+        "missed_percentage": 0.01076,
         "warning_level": 0
     },
     {
@@ -445,8 +445,8 @@
         "operator_address": "injvaloper1m4pj2y9qrm77m9gsa8uu7xj6xjyy7du5hg2t2d",
         "valcons_address": "injvalcons1kmxsj4ak8kmnazkqu5wdphjn4aq2c37hkz63u6",
         "hex": "B6CD0957B63DB73E8AC0E51CD0DE53AF40AC47D7",
-        "missed": 75,
-        "missed_percentage": 0.0015,
+        "missed": 80,
+        "missed_percentage": 0.0016,
         "warning_level": 0
     },
     {
@@ -490,8 +490,8 @@
         "operator_address": "injvaloper1acgud5qpn3frwzjrayqcdsdr9vkl3p6hrz34ts",
         "valcons_address": "injvalcons17wdljvtvqlj0ylhrr9glwgrc83vdp8q3q5pvas",
         "hex": "F39BF9316C07E4F27EE31951F720783C58D09C11",
-        "missed": 541,
-        "missed_percentage": 0.01082,
+        "missed": 542,
+        "missed_percentage": 0.01084,
         "warning_level": 0
     },
     {
@@ -517,8 +517,8 @@
         "operator_address": "injvaloper17mudupc8qlwpnegqwulz6ajlkhsfta6zg2wg55",
         "valcons_address": "injvalcons198mf05ty2wxrhhmed8er3csf0ln5t4euxaekep",
         "hex": "29F697D164538C3BDF7969F238E2097FE745D73C",
-        "missed": 759,
-        "missed_percentage": 0.01518,
+        "missed": 760,
+        "missed_percentage": 0.0152,
         "warning_level": 0
     },
     {
@@ -526,8 +526,8 @@
         "operator_address": "injvaloper177zqwtsnuhax28w5xpmf33wsl7l2xxf6y6xshc",
         "valcons_address": "injvalcons1kcng05vqg3w4e7zwrghgtke2eth0evv6vh7u4n",
         "hex": "B62687D180445D5CF84E1A2E85DB2ACAEEFCB19A",
-        "missed": 936,
-        "missed_percentage": 0.01872,
+        "missed": 938,
+        "missed_percentage": 0.01876,
         "warning_level": 0
     },
     {
@@ -535,8 +535,8 @@
         "operator_address": "injvaloper1lsuqpgm8kgwpq96ewyew26xnfwyn3lh3ncrkrk",
         "valcons_address": "injvalcons1893nm5rlsl3pdcx26q0qhcskughcn2el3w335z",
         "hex": "39633DD07F87E216E0CAD01E0BE216E22F89AB3F",
-        "missed": 704,
-        "missed_percentage": 0.01408,
+        "missed": 693,
+        "missed_percentage": 0.01386,
         "warning_level": 0
     }
 ]
