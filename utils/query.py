@@ -2,10 +2,11 @@ import requests
 
 def query(
     url,
-    method="GET"
+    method="GET",
+    body=None
 ):
     try:
-        data = requests.request(method, url)
+        data = requests.request(method, url, json=body)
         if data.status_code == 200:
             return data.json()
         else:

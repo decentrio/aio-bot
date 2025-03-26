@@ -23,8 +23,8 @@ class Validators:
         self.params.update(params)
         self.validators = self.getValidators(params["prefix"] + "valcons")
 
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger("Validators")
+        self.logger.setLevel(logging.DEBUG)
 
     def getValidators(self, prefix) -> list:
         validators = []
@@ -61,7 +61,9 @@ class Validators:
                         "operator_address": val["operator_address"],
                         "valcons_address": valcons_address,
                         "hex": hex_address,
-                        "missed": 0
+                        "missed": 0,
+                        "missed_percentage": 0,
+                        "warning_level": 0
                     }
             return None
         except Exception:
@@ -126,6 +128,7 @@ class Validators:
                     self.missed["missed"].append(validator["moniker"])
                 elif missed_percentage < self.params["mode"][self.mode]["threshold"][0]["value"]: # ACTIVE
                     if validator["missed_percentage"] > self.params["mode"][self.mode]["threshold"][1]["value"]: # ATTENTION
+                        self.logger.debug(f"Validator {validator['moniker']} is active after misses blocks!")
                         self.notify({
                             "type": "active",
                             "args": {
@@ -153,6 +156,7 @@ class Validators:
                         self.checkValset(valset)
 
     def checkValset(self, valset):
+        self.logger.debug(f"Checking valset: {valset}")
         for val in valset:
             validator = next(filter(lambda x: x["hex"] == val["address"], self.validators), None)
             if validator and int(val["voting_power"]) == 0:  # inactive
@@ -162,7 +166,8 @@ class Validators:
                         "args": {
                             "validator": validator["operator_address"],
                             "moniker": validator["moniker"],
-                        }
+                        },
+                        "auto_delete": None
                     })
                 else:  # jailed
                     try:
@@ -175,34 +180,27 @@ class Validators:
                                 "jailed_until": data["val_signing_info"]["jailed_until"],
                                 "last_height": self.missed["height"] - validator["missed"],
                                 "jailed_duration": self.params["jailed_duration"]
-                            }
+                            },
+                            "auto_delete": None
                         })
                     except Exception as e:
                         self.logger.error(f"Error getting jailed info: {e}")
                 self.validators.remove(validator)
-            elif int(val["voting_power"]) > 0:
-                if not validator:
-                    new_validator = self.findValbyPubkey(val["pub_key"]["value"])
-                    if new_validator is not None:
-                        self.validators.append(new_validator)
-                        self.notify({
-                            "type": "active",
-                            "args": {
-                                "validator": new_validator["operator_address"],
-                                "moniker": new_validator["moniker"],
-                            }
-                        })
-                    else:
-                        self.logger.error(f"Validator not found: {val['address']}")
-                else:
-                    self.logger.debug("here called")
+            elif not validator and int(val["voting_power"]) > 0:
+                new_validator = self.findValbyPubkey(val["pub_key"]["value"])
+                if new_validator is not None:
+                    self.validators.append(new_validator)
+                    self.logger.debug(f"Validator {new_validator['moniker']} is new to active set!")
                     self.notify({
                         "type": "active",
                         "args": {
-                            "validator": validator["operator_address"],
-                            "moniker": validator["moniker"],
-                        }
+                            "validator": new_validator["operator_address"],
+                            "moniker": new_validator["moniker"],
+                        },
+                        "auto_delete": None
                     })
+                else:
+                    self.logger.error(f"Validator not found: {val['address']}")
 
     async def start_block_polling(self): # Chain mode only
         valset_thread = threading.Thread(target=self.start_check_valset)
@@ -223,7 +221,6 @@ class Validators:
                 if discord_client.loop:
                     subscriptions = discord_client.subscriptions
                     msg = None
-                    auto_delete = message['auto_delete'] if "auto_delete" in message else 60
                     user = ""
                     for sub in subscriptions:
                         if "validator" in sub.keys() and sub["validator"] == message['args']['validator']:
@@ -256,7 +253,7 @@ class Validators:
                                     "inline": True
                                 }
                             ],
-                            footer=f"This message will be automatically deleted in {auto_delete}s" if auto_delete != 0 else "",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color=color
                         )
                     elif message['type'] == "recovering":
@@ -276,7 +273,7 @@ class Validators:
                                     "inline": True
                                 }
                             ],
-                            footer="This message will be automatically deleted in 60s",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color=color
                         )
                     elif message['type'] == "active":
@@ -284,15 +281,15 @@ class Validators:
                             title=f"**{message['args']['moniker']} is active again!**",
                             description="",
                             fields=[],
-                            footer="This message will be automatically deleted in 60s",
-                            color=0x75ffd1
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
+                            color=0x75ffd1,
                         )
                     elif message['type'] == "inactive":
                         msg = discord_client.compose_embed(
                             title=f"**{message['args']['moniker']} is inactive!**",
                             description="",
                             fields=[],
-                            footer="This message will be automatically deleted in 60s",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color=0x545454
                         )
                     elif message['type'] == "jailed":
@@ -316,17 +313,17 @@ class Validators:
                                     "inline": True
                                 }
                             ],
-                            footer="This message will be automatically deleted in 60s",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color=0xde1212
                         )
 
                     if discord_client.mode == "chain" and self.mode == "chain":
                         future = asyncio.run_coroutine_threadsafe(
                             discord_client.reply(
-                                discord_client.channels[0]["id"],
+                                discord_client.channels["validators"]["id"],
                                 msg,
                                 user,
-                                auto_delete
+                                message['auto_delete']
                             ),
                             discord_client.loop
                         )
@@ -337,9 +334,9 @@ class Validators:
                             if sub["validator"] == message['args']['validator']:
                                 future = asyncio.run_coroutine_threadsafe(
                                     discord_client.reply(
-                                        discord_client.channels[0]["id"],
+                                        discord_client.channels["validators"]["id"],
                                         msg,
-                                        auto_delete
+                                        message['auto_delete']
                                     ),
                                     discord_client.loop
                                 )
@@ -446,7 +443,7 @@ class Validator(Validators):
                 )
                 future = asyncio.run_coroutine_threadsafe(
                     discord_client.reply(
-                        discord_client.channels[0]["id"],
+                        discord_client.channels["validators"]["id"],
                         msg,
                     ),
                     discord_client.loop
@@ -456,19 +453,7 @@ class Validator(Validators):
                 self.logger.error("Discord client loop not ready.")
 
         if self.app["telegram"] is not None and self.app["telegram"].mode == "single" and not len(self.app["telegram"].subscriptions):
-            # telegram_client = self.app["telegram"]
             self.logger.error("No user available.")
-            # if telegram_client.loop:
-            #     future = asyncio.run_coroutine_threadsafe(
-            #         telegram_client.reply(
-            #             "You haven't subscribed to any validators yet. Please subscribe to receive notifications about your validator.",
-            #             telegram_client.channels[0]["id"]
-            #         ),
-            #         telegram_client.loop
-            #     )
-            #     future.result()
-            # else:
-            #     self.logger.error("Telegram client loop not ready.")
 
         if self.app["slack"] is not None and self.app["slack"].mode == "single" and not len(self.app["slack"].subscriptions):
             slack_client = self.app["slack"]
@@ -504,7 +489,8 @@ class Validator(Validators):
                         "args": {
                                 "validator": val["operator_address"],
                                 "moniker": val["moniker"],
-                        }
+                        },
+                        "auto_delete": None
                     })
                 val["missed"] = 0
             elif sig is None:  # missed

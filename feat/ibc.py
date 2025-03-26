@@ -42,8 +42,8 @@ class IBC:
         self.stuck_packets_threshold = params["stuck_packets_threshold"]
         self.ibcs = getIBCList(self.api)
 
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger("IBC")
+        self.logger.setLevel(logging.INFO)
 
     def checkClient(self, client, source_api, dest_apis, chain_1, chain_2):
         client_state = query.query(f"{source_api}/ibc/core/client/v1/client_states/{client}")
@@ -94,7 +94,7 @@ class IBC:
                                 }
                             })
 
-                        self.logger.info(f"{ibc['chain-1']}-{ibc['chain-2']} queried.")
+                        self.logger.debug(f"{ibc['chain-1']}-{ibc['chain-2']} queried.")
                         break
                     except Exception as e:
                         self.logger.error(f"Error querying {ibc['chain-1']}-{ibc['chain-2']}: {e}")
@@ -119,7 +119,7 @@ class IBC:
                                 }
                             })
 
-                        self.logger.info(f"{ibc['chain-2']}-{ibc['chain-1']} queried.")
+                        self.logger.debug(f"{ibc['chain-2']}-{ibc['chain-1']} queried.")
                         break
                     except Exception as e:
                         self.logger.error(f"Error querying {ibc['chain-2']}-{ibc['chain-1']}: {e}")
@@ -127,7 +127,7 @@ class IBC:
 
             with open("ibc.json", "w") as ibc_file:
                 json.dump(self.ibcs, ibc_file, indent=4)
-            self.logger.info("IBCs queried.")
+            self.logger.info("All IBC queried.")
             time.sleep(1200)
 
     def notify(self, message):
@@ -201,7 +201,7 @@ class IBC:
                         )
                     future = asyncio.run_coroutine_threadsafe(
                         discord_client.reply(
-                            discord_client.channels[0]["id"],
+                            discord_client.channels["ibc"]["id"],
                             msg,
                         ),
                         discord_client.loop

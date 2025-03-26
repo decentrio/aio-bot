@@ -5,19 +5,18 @@ import logging
 import asyncio
 
 class Peggo:
-    def __init__(self, app, api):
+    def __init__(self, app, params, api):
         self.operators: dict = {}
         self.app: dict = app
         self.api: str = api
-
-        logging.basicConfig(level=logging.INFO)
+        self.params: dict = params
         self.logger = logging.getLogger("Peggo")
+        self.logger.setLevel(logging.INFO)
     
-    def get_height(self):
+    def get_height(self) -> int:
         """
         Fetching the latest block height
         """
-
         try:
             data = query.query(f"{self.api}/cosmos/base/tendermint/v1beta1/blocks/latest")
             height = int(data['block']['header']['height'])
@@ -26,7 +25,7 @@ class Peggo:
             self.logger.error(f"Error fetching block height: {e}")
             return -1
 
-    def get_lon(self):
+    def get_lon(self) -> int:
         """
         Fetching Last Observed Peggo Nonce
         """
@@ -38,7 +37,7 @@ class Peggo:
             self.logger.error(f"Error fetching last observed nonce: {e}")
             return None
         
-    def get_lce(self, orchestrator):
+    def get_lce(self, orchestrator) -> int:
         try:
             data = query.query(f"{self.api}/peggy/v1/oracle/event/{orchestrator}")
             lce = int(data['last_claim_event']['ethereum_event_nonce'])
@@ -47,7 +46,7 @@ class Peggo:
             self.logger.error(f"Error fetching last claim event: {e}")
             return None
 
-    def get_pending_valsets(self, orchestrator):
+    def get_pending_valsets(self, orchestrator) -> int:
         """
         Get Pending Valsets
         """
@@ -88,7 +87,8 @@ class Peggo:
                     "moniker": self.operators[valoper_address]["moniker"],
                     "pending_valsets": self.operators[valoper_address]["pending_valsets"],
                     "last_height": self.operators[valoper_address]["last_height"]
-                }
+                },
+                "auto_delete": None
             })
         if self.operators[valoper_address]["pending_batches"] != 0:
             self.notify({
@@ -98,18 +98,20 @@ class Peggo:
                     "moniker": self.operators[valoper_address]["moniker"],
                     "pending_batches": self.operators[valoper_address]["pending_batches"],
                     "last_height": self.operators[valoper_address]["last_height"]
-                }
+                },
+                "auto_delete": None
             })
-        if self.operators[valoper_address]["last_observed_nonce"] != self.operators[valoper_address]["last_claim_eth_event_nonce"]:
+        if abs(self.operators[valoper_address]["last_observed_nonce"] - self.operators[valoper_address]["last_claim_eth_event_nonce"]) >= self.params["threshold"]:
             self.notify({
-                "type": "nonce_mismatch",
-                "args": {
-                    "validator": valoper_address,
-                    "moniker": self.operators[valoper_address]["moniker"],
-                    "last_observed_nonce": self.operators[valoper_address]["last_observed_nonce"],
-                    "last_claim_eth_event_nonce": self.operators[valoper_address]["last_claim_eth_event_nonce"],
-                    "last_height": self.operators[valoper_address]["last_height"]
-                }
+            "type": "nonce_mismatch",
+            "args": {
+                "validator": valoper_address,
+                "moniker": self.operators[valoper_address]["moniker"],
+                "last_observed_nonce": self.operators[valoper_address]["last_observed_nonce"],
+                "last_claim_eth_event_nonce": self.operators[valoper_address]["last_claim_eth_event_nonce"],
+                "last_height": self.operators[valoper_address]["last_height"]
+            },
+            "auto_delete": None
             })
 
     def notify(self, message):
@@ -141,7 +143,7 @@ class Peggo:
                                     "inline": True
                                 }
                             ],
-                            footer = "This message will be automatically deleted in 60s",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color = 0xffd100
                         )
                     elif message['type'] == "pending_batches":
@@ -160,7 +162,7 @@ class Peggo:
                                     "inline": True
                                 }
                             ],
-                            footer = "This message will be automatically deleted in 60s",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color = 0xffd100
                         )
                     elif message['type'] == "nonce_mismatch":
@@ -168,7 +170,7 @@ class Peggo:
                             title = f"**{message['args']['moniker']}'s nonce is lagging behind!**",
                             description = user,
                             fields = [
-                                                                {
+                                {
                                     "name": "Last Observed Nonce",
                                     "value": message['args']['last_observed_nonce'],
                                     "inline": True
@@ -184,13 +186,13 @@ class Peggo:
                                     "inline": False
                                 }
                             ],
-                            footer = "This message will be automatically deleted in 60s",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color = 0xffd100
                         )
                     if discord_client.mode == "chain":
                         future = asyncio.run_coroutine_threadsafe(
                             discord_client.reply(
-                                discord_client.channels[0]["id"],
+                                discord_client.channels["peggo"]["id"],
                                 msg,
                             ),
                             discord_client.loop
@@ -202,7 +204,7 @@ class Peggo:
                             if sub["validator"] == message["args"]["validator"]:
                                 future = asyncio.run_coroutine_threadsafe(
                                     discord_client.reply(
-                                        discord_client.channels[0]["id"],
+                                        discord_client.channels["peggo"]["id"],
                                         msg,
                                     ),
                                     discord_client.loop
@@ -285,7 +287,7 @@ class Peggo:
             with open('validators.json', 'r') as file:
                 validators = json.load(file)
             for validator in validators:
-                self.logger.info(f"Checking {validator['moniker']} ...")
+                self.logger.debug(f"Checking {validator['moniker']} ...")
                 valoper_address = validator['operator_address']
                 try:
                     address = query.query(f"{self.api}/peggy/v1/query_delegate_keys_by_validator?validator_address={valoper_address}")

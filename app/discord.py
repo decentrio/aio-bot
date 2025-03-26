@@ -8,7 +8,7 @@ from discord.ext import commands, tasks
 class DiscordClient(commands.Bot):
     def __init__(self, config):
         self.token: int | str = config["app"]["discord"]["bot-token"]
-        self.channels: list = config["app"]["discord"]["channels"]
+        self.channels: dict = config["app"]["discord"]["channels"]
         self.subscriptions: list = config["app"]["discord"]["subscriptions"]
         self.mode: str = config["app"]["discord"]["mode"]
 
@@ -21,6 +21,7 @@ class DiscordClient(commands.Bot):
 
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger("DiscordClient")
+        self.logger.setLevel(logging.INFO)
 
         self.loop = None
 
@@ -77,15 +78,15 @@ class DiscordClient(commands.Bot):
                 msg = self.compose_embed(
                     title=f"**AIO Bot for Injective!**",
                     description="Available commands:\n \
-                                            - `/sub val <val-address>`: Get notification about validator/peggo operator\n \
-                                            \n \
-                                            - `/sub balance <eth/inj-address>`: Get notification about low balance\n \
-                                            \n \
-                                            - `/sub list`: List all your subscriptions\n \
-                                            \n \
-                                            - `/help`: Show this help menu\n \
-                                            \n \
-                                            - `/unsub <val-address>`: Unsubscribe from a subscription",
+                            - `/sub val <valoper-address>`: Get notification about validator/peggo operator\n \
+                                \n \
+                                * `/sub balance <eth/inj-address>`: Get notification about low balance\n \
+                                \n \
+                                * `/sub list`: List all your subscriptions\n \
+                                \n \
+                            - `/help`: Show this help menu\n \
+                            \n \
+                            - `/unsub <valoper-address>`: Unsubscribe from a subscription",
                 )
                 await self.reply(message.channel.id, msg)
             case "sub":
@@ -119,9 +120,9 @@ class DiscordClient(commands.Bot):
                         msg = self.compose_embed(
                             title=f"**Subscriptions Help**",
                             description="Available commands:\n \
-                                                   `/sub val <val-address>`: Get notification about validator/peggo operator\n \
-                                                   `/sub balance <eth/inj-address>`: Get notification about low balance\n \
-                                                   `/sub list`: List all your subscriptions",
+                                        `/sub val <val-address>`: Get notification about validator/peggo operator\n \
+                                        `/sub balance <eth/inj-address>`: Get notification about low balance\n \
+                                        `/sub list`: List all your subscriptions",
                         )
                         await self.reply(message.channel.id, msg)
                     elif commands[1] == "list":

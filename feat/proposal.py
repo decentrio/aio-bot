@@ -10,8 +10,8 @@ class Proposal:
         self.tx_queue = tx_queue    
         self.chain = chain
 
-        logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger("Gov")
+        self.logger.setLevel(logging.INFO)
 
     def queryProposal(self, id):
         try:
@@ -41,7 +41,7 @@ class Proposal:
                     )
                     future = asyncio.run_coroutine_threadsafe(
                         discord_client.reply(
-                            discord_client.channels[0]["id"],
+                            discord_client.channels["gov"]["id"],
                             msg,
                         ),
                         discord_client.loop
@@ -66,26 +66,29 @@ class Proposal:
                 self.logger.error("Slack client is not initialized.")
 
             # Telegram client
-            if self.app["telegram"] is not None:
+            if self.app["telegram"] is not None and len(self.app["telegram"].subscriptions):
                 telegram_client = self.app["telegram"]
                 if telegram_client.loop:
-                    msg = f"New Proposal {message['args']['proposal_id']}\n" \
-                        f"Description: `{message['args']['summary']}`"
-                    future = asyncio.run_coroutine_threadsafe(
-                        telegram_client.reply(
-                            msg,
-                            discord_client.channels[0]["id"]
-                        ),
-                        discord_client.loop
-                    )
-                    # Optionally, wait for the coroutine to finish and handle exceptions
-                    future.result()
+                    subscriptions = telegram_client.subscriptions
+                    for sub in subscriptions:
+                        msg = f"New Proposal {message['args']['proposal_id']}\n" \
+                            f"Description: `{message['args']['summary']}`"
+                        future = asyncio.run_coroutine_threadsafe(
+                            telegram_client.reply(
+                                msg,
+                                sub["user"]
+                            ),
+                            discord_client.loop
+                        )
+                        future.result()
                 else:
                     self.logger.error("Telegram client loop not ready.")
+            else:
+                self.logger.error("Telegram client is not initialized.")
         except Exception as e:
             self.logger.error(f"Error sending message: {e}")
     
-    async def start_tx_polling(self):
+    async def start_gov_polling(self):
         while True:
             if not self.tx_queue.empty():
                 tx = self.tx_queue.get()
@@ -109,6 +112,7 @@ class Proposal:
                                 "args": {
                                     "proposal_id": proposal_id,
                                     "title": title,
+                                    "messages": messages,
                                     "proposer": proposer,
                                     "type": type,
                                     "status": "Voting Period",
@@ -121,4 +125,4 @@ class Proposal:
     def run(self):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.run_until_complete(self.start_tx_polling())
+        loop.run_until_complete(self.start_gov_polling())

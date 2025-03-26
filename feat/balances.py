@@ -2,30 +2,36 @@ import time
 import utils.query as query
 import logging
 import asyncio
-import requests
 
 class Balances:
-    def __init__(self, app, api, params):
-        self.app = app
-        self.api = api
-        self.params = params
+    def __init__(self, app, api, jsonrpc, params):
+        self.app: dict = app
+        self.api: str = api
+        self.jsonrpc: str = jsonrpc
+        self.params: dict = params
 
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger("Balances")
+        self.logger.setLevel(logging.DEBUG)
 
     def get_eth_balance(self, address):
         """
         Fetching the eth balance
         """
         try:
-            data = requests.get(f"",{
-                "jsonrpc": "2.0",
-                "method": "eth_getBalance",
-                "params": [address, "latest"],
-                "id": 1
-            }).json()
-            height = int(data['block']['header']['height'])
-            return height
+            data = query.query(
+                self.jsonrpc, 
+                "GET", 
+                {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getBalance",
+                    "params": [address, "latest"],
+                    "id": 1
+                }
+            ).json()
+            self.logger.debug(data)
+            for token in data["balance"]:
+                if token["denom"] == "inj":
+                    return int(token["amount"])
         except Exception as e:
             self.logger.error(f"Error fetching eth balance: {e}")
             self.notify({
@@ -54,34 +60,32 @@ class Balances:
                 }
             })
 
-    def check(self, address):
+    def check(self, validator, address):
         if address.startswith("inj1"):
             balance = self.get_inj_balance(address)
-            if balance <= self.params["threshold"]:
-                self.notify({
-                    "type": "low_balance",
-                    "args": {
-                        "address": address,
-                        "balance": balance,
-                    }
-                })
         elif address.startswith("0x"):
             balance = self.get_eth_balance(address)
-            if balance <= self.params["threshold"]:
-                self.notify({
-                    "type": "low_balance",
-                    "args": {
-                        "address": address,
-                        "balance": balance,
-                    }
-                })
         else:
             self.logger.error(f"Invalid address: {address}")
             self.notify({
                 "type": "invalid_address",
                 "args": {
                     "address": address
-                }
+                },
+                "auto_delete": None
+            })
+            return
+        
+        self.logger.debug(f"Validator: {validator}, Address: {address}, Balance: {balance}")
+        if balance != None and balance <= self.params["threshold"]:
+            self.notify({
+                "type": "low_balance",
+                "args": {
+                    "validator": validator,
+                    "address": address,
+                    "balance": balance,
+                },
+                "auto_delete": None
             })
 
     def notify(self, message):
@@ -94,12 +98,12 @@ class Balances:
                     msg = None
                     user = ""
                     for sub in subscriptions:
-                        if "address" in sub.keys() and sub["address"] == message['args']['address']:
+                        if sub["validator"] == message['args']['validator']:
                             user += f" <@{sub['user']}>"
                     if message['type'] == "low_balance":
                         msg = discord_client.compose_embed(
-                            title = f"Low balance: {message['args']['address']}!",
-                            description = user,
+                            title = f"Low balance!",
+                            description = "Address: " + message['args']['address'],
                             fields = [
                                 {
                                     "name": "Balance",
@@ -107,20 +111,22 @@ class Balances:
                                     "inline": True
                                 }
                             ],
-                            footer = "This message will be automatically deleted in 60s",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color = 0xffd100
                         )
                     elif message['type'] == "invalid_address":
                         msg = discord_client.compose_embed(
-                            title = f"Invalid address: {message['args']['address']}!",
-                            description = user,
-                            footer = "This message will be automatically deleted in 60s",
+                            title = f"Invalid address!",
+                            description = "Address: " + message['args']['address'],
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color = 0xffd100
                         )
                     future = asyncio.run_coroutine_threadsafe(
                         discord_client.reply(
-                            discord_client.channels[0]["id"],
+                            discord_client.channels["wallet"]["id"],
                             msg,
+                            user,
+                            message['auto_delete']
                         ),
                         discord_client.loop
                     )
@@ -183,31 +189,19 @@ class Balances:
 
     async def start_balances_polling(self):
         while True:
+            self.logger.debug("Waiting for 30 seconds before checking balances ...")
             time.sleep(30)
-            self.logger.info("Fetching addresses status ...")
-            if self.app["discord"] is not None:
-                discord_client = self.app["discord"]
-                subscriptions = discord_client.subscriptions;
-                for sub in subscriptions:
-                    if "address" in sub.keys():
-                        self.logger.info(f"Checking {sub['address']} ...")
-                        self.check(sub["address"])
+            self.logger.info("Fetching addresses balance status ...")
+            for platform in ["discord", "slack", "telegram"]:
+                if self.app[platform] is not None:
+                    client = self.app[platform]
+                    subscriptions = client.subscriptions
+                    for sub in subscriptions:
+                        self.logger.debug(f"Checking balance: {sub['validator']}")
+                        address = query.query(f"{self.api}/peggy/v1/query_delegate_keys_by_validator?validator_address={sub['validator']}")
+                        self.check(sub["validator"], address["eth_address"])
+                        self.check(sub["validator"], address["orchestrator_address"])
 
-            if self.app["slack"] is not None:
-                slack_client = self.app["slack"]
-                subscriptions = slack_client.subscriptions
-                for sub in subscriptions:
-                    if "address" in sub.keys():
-                        self.logger.info(f"Checking {sub['address']} ...")
-                        self.check(sub["address"])
-
-            if self.app["telegram"] is not None:
-                telegram_client = self.app["telegram"]
-                subscriptions = telegram_client.subscriptions
-                for sub in subscriptions:
-                    if "address" in sub.keys():
-                        self.logger.info(f"Checking {sub['address']} ...")
-                        self.check(sub["address"])
             time.sleep(1170)
 
     def run(self):

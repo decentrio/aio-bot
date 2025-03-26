@@ -11,8 +11,8 @@ class TelegramClient(telebot.async_telebot.AsyncTeleBot):
         self.channels: list = config["app"]["telegram"]["channels"]
         self.mode: str = config["app"]["telegram"]["mode"]
         
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger("TelegramClient")
+        self.logger.setLevel(logging.INFO)
         self.loop = None
 
         super().__init__(token=self.token, parse_mode="Markdown")

@@ -88,6 +88,7 @@ if __name__ == "__main__":
     if config["features"]["peggo"]["enable"]:
         peggo = Peggo(
             app,
+            config["features"]["peggo"]["params"],
             config["api"]
         )
         peggo_thread = threading.Thread(target=peggo.run)
@@ -112,12 +113,13 @@ if __name__ == "__main__":
         wallet = Balances(
             app,
             config["api"],
+            config["jsonrpc"],
             config["features"]["wallet"]["params"]
         )
         wallet_thread = threading.Thread(target=wallet.run)
         wallet_thread.daemon = True
         wallet_thread.start()
-        print("Wallet Client Started")
+        print("Wallet client started")
     
     if config["features"]["ibc"]["enable"]:
         ibc = IBC(
