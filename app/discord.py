@@ -19,7 +19,6 @@ class DiscordClient(commands.Bot):
 
         super().__init__(command_prefix='/', intents=intents)
 
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger("DiscordClient")
         self.logger.setLevel(logging.INFO)
 

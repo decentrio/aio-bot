@@ -11,7 +11,7 @@ class Peggo:
         self.api: str = api
         self.params: dict = params
         self.logger = logging.getLogger("Peggo")
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.DEBUG)
     
     def get_height(self) -> int:
         """
@@ -86,30 +86,30 @@ class Peggo:
                     "validator": valoper_address,
                     "moniker": self.operators[valoper_address]["moniker"],
                     "pending_valsets": self.operators[valoper_address]["pending_valsets"],
-                    "last_height": self.operators[valoper_address]["last_height"]
+                    "last_height": f"{self.operators[valoper_address]["last_height"]:,}",
                 },
                 "auto_delete": None
             })
-        if self.operators[valoper_address]["pending_batches"] != 0:
-            self.notify({
-                "type": "pending_batches",
-                "args": {
-                    "validator": valoper_address,
-                    "moniker": self.operators[valoper_address]["moniker"],
-                    "pending_batches": self.operators[valoper_address]["pending_batches"],
-                    "last_height": self.operators[valoper_address]["last_height"]
-                },
-                "auto_delete": None
-            })
+        # if self.operators[valoper_address]["pending_batches"] != 0:
+        #     self.notify({
+        #         "type": "pending_batches",
+        #         "args": {
+        #             "validator": valoper_address,
+        #             "moniker": self.operators[valoper_address]["moniker"],
+        #             "pending_batches": self.operators[valoper_address]["pending_batches"],
+        #             "last_height": self.operators[valoper_address]["last_height"]
+        #         },
+        #         "auto_delete": None
+        #     })
         if abs(self.operators[valoper_address]["last_observed_nonce"] - self.operators[valoper_address]["last_claim_eth_event_nonce"]) >= self.params["threshold"]:
             self.notify({
             "type": "nonce_mismatch",
             "args": {
                 "validator": valoper_address,
                 "moniker": self.operators[valoper_address]["moniker"],
-                "last_observed_nonce": self.operators[valoper_address]["last_observed_nonce"],
-                "last_claim_eth_event_nonce": self.operators[valoper_address]["last_claim_eth_event_nonce"],
-                "last_height": self.operators[valoper_address]["last_height"]
+                "last_observed_nonce": f"{self.operators[valoper_address]["last_observed_nonce"]:,}",
+                "last_claim_eth_event_nonce": f"{self.operators[valoper_address]["last_claim_eth_event_nonce"]:,}",
+                "last_height": f"{self.operators[valoper_address]["last_height"]:,}"
             },
             "auto_delete": None
             })
@@ -194,6 +194,7 @@ class Peggo:
                             discord_client.reply(
                                 discord_client.channels["peggo"]["id"],
                                 msg,
+                                auto_delete=message['auto_delete']
                             ),
                             discord_client.loop
                         )
@@ -304,8 +305,8 @@ class Peggo:
                     self.logger.error(f"Error fetching operator status: {e}")
 
             self.operators = {}
-            self.logger.info("Finished. Sleeping for 10 minutes ...")
-            time.sleep(600)
+            self.logger.info("Finished")
+            time.sleep(self.params["interval"] - 30)
 
 
     def run(self):

@@ -4,8 +4,8 @@
         "operator_address": "injvaloper1qzu3s7uzydpj0vcgrgp04j7u48pgkesy7zl7t3",
         "valcons_address": "injvalcons16rq58g3h562knnruajcd4sh2jhugkf4nd7gcad",
         "hex": "D0C143A237A69569CC7CECB0DAC2EA95F88B26B3",
-        "missed": 127,
-        "missed_percentage": 0.00254,
+        "missed": 192,
+        "missed_percentage": 0.00384,
         "warning_level": 0
     },
     {
@@ -13,8 +13,8 @@
         "operator_address": "injvaloper1qndvee93f30q3ra2hncasphm22k97vpr89zusa",
         "valcons_address": "injvalcons1mpt6fw5hg565m87pm7g6stxms7382caxcu5um8",
         "hex": "D857A4BA9745354D9FC1DF91A82CDB87A27563A6",
-        "missed": 405,
-        "missed_percentage": 0.0081,
+        "missed": 973,
+        "missed_percentage": 0.01946,
         "warning_level": 0
     },
     {
@@ -31,8 +31,8 @@
         "operator_address": "injvaloper1pff5lusdc9htm0z96l02a0yh9e6erphrllndet",
         "valcons_address": "injvalcons1nd8ye49kdgl9q7a5j3qjj8wc8q5ye6e4qhunwf",
         "hex": "9B4E4CD4B66A3E507BB49441291DD838284CEB35",
-        "missed": 116,
-        "missed_percentage": 0.00232,
+        "missed": 307,
+        "missed_percentage": 0.00614,
         "warning_level": 0
     },
     {
@@ -40,8 +40,8 @@
         "operator_address": "injvaloper1p66ez0ywzssuq26f7056mx3ydgvkfqw8lf93e8",
         "valcons_address": "injvalcons1qveaytw2xqj580x37ks5gnxgqwydexaxjxavvs",
         "hex": "0333D22DCA302543BCD1F5A1444CC80388DC9BA6",
-        "missed": 550,
-        "missed_percentage": 0.011,
+        "missed": 994,
+        "missed_percentage": 0.01988,
         "warning_level": 0
     },
     {
@@ -49,8 +49,8 @@
         "operator_address": "injvaloper1zpy3qf7us3m0pxpqkp72gzjv55t70huy33t47x",
         "valcons_address": "injvalcons1ajt4ahdfyd65c6axq3xuvpqmxht6myk0xrqard",
         "hex": "EC975EDDA923754C6BA6044DC6041B35D7AD92CF",
-        "missed": 17,
-        "missed_percentage": 0.00034,
+        "missed": 31,
+        "missed_percentage": 0.00062,
         "warning_level": 0
     },
     {
@@ -67,17 +67,17 @@
         "operator_address": "injvaloper1rvqzf9u2uxttmshn302anlknfgsatrh5v7fl7e",
         "valcons_address": "injvalcons1w7ql594dc4lpp8mrh50znu20n5up0c22v79wz8",
         "hex": "7781FA16ADC57E109F63BD1E29F14F9D3817E14A",
-        "missed": 693,
-        "missed_percentage": 0.01386,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "Ready Block",
         "operator_address": "injvaloper1yljq5pdnx84kkg30jfmz6ddu4eyp7twyp4z40f",
         "valcons_address": "injvalcons1eh644nvhkvdxwe3t6zltcee7td064mqy2p2d2n",
         "hex": "CDF55ACD97B31A67662BD0BEBC673E5B5FAAEC04",
-        "missed": 151,
-        "missed_percentage": 0.00302,
+        "missed": 576,
+        "missed_percentage": 0.01152,
         "warning_level": 0
     },
     {
@@ -85,8 +85,8 @@
         "operator_address": "injvaloper19a77dzm2lrxt2gehqca3nyzq077kq7qsgvmrp4",
         "valcons_address": "injvalcons1d3tqsnsulge3v2xgavw6d7r9jgj902t4mv9u5l",
         "hex": "6C56084E1CFA331628C8EB1DA6F865922457A975",
-        "missed": 3,
-        "missed_percentage": 6e-05,
+        "missed": 7,
+        "missed_percentage": 0.00014,
         "warning_level": 0
     },
     {
@@ -94,8 +94,8 @@
         "operator_address": "injvaloper1xwsnq88kc8wcrp34qenxf3dvhl5n02yj93u755",
         "valcons_address": "injvalcons105keds2xx2rpxda2vtqw7n3u5ztvu9n9z9duxt",
         "hex": "7D2D96C14632861337AA62C0EF4E3CA096CE1665",
-        "missed": 6963,
-        "missed_percentage": 0.13926,
+        "missed": 0,
+        "missed_percentage": 0,
         "warning_level": 1
     },
     {
@@ -103,17 +103,17 @@
         "operator_address": "injvaloper1845wspsvm3z95a2zycz3t49gn7celq48dlyscc",
         "valcons_address": "injvalcons13ck8p53f97ekyja0rux0hjczt5hvezhm6c9q0h",
         "hex": "8E2C70D2292FB3624BAF1F0CFBCB025D2ECC8AFB",
-        "missed": 250,
-        "missed_percentage": 0.005,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "Twinstake",
         "operator_address": "injvaloper18cyc7wxru3g9de3emwy9pdh5x0vevxp3p2623y",
         "valcons_address": "injvalcons1x7elnerzjel32r6mlx985d2lx5cmtrgj62fu7y",
         "hex": "37B3F9E462967F150F5BF98A7A355F3531B58D12",
-        "missed": 875,
-        "missed_percentage": 0.0175,
+        "missed": 683,
+        "missed_percentage": 0.01366,
         "warning_level": 0
     },
     {
@@ -121,17 +121,17 @@
         "operator_address": "injvaloper1g4d6dmvnpg7w7yugy6kplndp7jpfmf3krtschp",
         "valcons_address": "injvalcons1vzrkqls72mmwu7f54whktq6vjttpsyzvfu0l8l",
         "hex": "6087607E1E56F6EE7934ABAF65834C92D618104C",
-        "missed": 867,
-        "missed_percentage": 0.01734,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "Crosnest",
         "operator_address": "injvaloper1fqrdtx7pyps6eytn3356j9cs4f8zl0eevlt3rt",
         "valcons_address": "injvalcons1m002pepun6crws3dpcnu8lldlp5ja8yhcycag7",
         "hex": "DBDEA0E43C9EB037422D0E27C3FFEDF8692E9C97",
-        "missed": 117,
-        "missed_percentage": 0.00234,
+        "missed": 212,
+        "missed_percentage": 0.00424,
         "warning_level": 0
     },
     {
@@ -139,8 +139,8 @@
         "operator_address": "injvaloper1ffsdugrhfzdyxltjve8v68n6aazyc6p97uhfn0",
         "valcons_address": "injvalcons1jdeeykx9vf5s8wjygy5vld6rn23342flka3rgj",
         "hex": "93739258C5626903BA444128CFB7439AA31AA93F",
-        "missed": 22,
-        "missed_percentage": 0.00044,
+        "missed": 136,
+        "missed_percentage": 0.00272,
         "warning_level": 0
     },
     {
@@ -148,8 +148,8 @@
         "operator_address": "injvaloper1f2kdg34689x93cvw2y59z7y46dvz2fk8lhddfz",
         "valcons_address": "injvalcons1mrdfewvpvfn4a80t8z8wzlpkp4cz6kukepxuxc",
         "hex": "D8DA9CB98162675E9DEB388EE17C360D702D5B96",
-        "missed": 46,
-        "missed_percentage": 0.00092,
+        "missed": 344,
+        "missed_percentage": 0.00688,
         "warning_level": 0
     },
     {
@@ -166,8 +166,8 @@
         "operator_address": "injvaloper125fkz3mq6qxxpkmphdl3ep92t0d3y9695mhclt",
         "valcons_address": "injvalcons1x0knjmysfhvwngwz5slmxlq57h0akm52r8ef7t",
         "hex": "33ED396C904DD8E9A1C2A43FB37C14F5DFDB6E8A",
-        "missed": 537,
-        "missed_percentage": 0.01074,
+        "missed": 503,
+        "missed_percentage": 0.01006,
         "warning_level": 0
     },
     {
@@ -175,8 +175,8 @@
         "operator_address": "injvaloper126he4tz5a2w3y90ecraxz6x6wh7dxyukfx8665",
         "valcons_address": "injvalcons1xp7tn2ngg3ue252a9tjya75zjen3tvzhve6e8l",
         "hex": "307CB9AA68447995515D2AE44EFA82966715B057",
-        "missed": 25,
-        "missed_percentage": 0.0005,
+        "missed": 26,
+        "missed_percentage": 0.00052,
         "warning_level": 0
     },
     {
@@ -184,26 +184,26 @@
         "operator_address": "injvaloper1v2wjf06nutm9phvh5hgc3twpst9q50y4f8ckd5",
         "valcons_address": "injvalcons1m3jaft2mw4xkg0rnx3cde3ayfw0mfh99a06lzy",
         "hex": "DC65D4AD5B754D643C733470DCC7A44B9FB4DCA5",
-        "missed": 336,
-        "missed_percentage": 0.00672,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "Google Cloud",
         "operator_address": "injvaloper1vumvzchlgfsu9fnj5xn2zpf7w888sdmjuu33qe",
         "valcons_address": "injvalcons16tk2f5p5tsgs004dtrtx70w34n8hvx8dyjzt7q",
         "hex": "D2ECA4D0345C1107BEAD58D66F3DD1ACCF7618ED",
-        "missed": 687,
-        "missed_percentage": 0.01374,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "Trust Nodes",
         "operator_address": "injvaloper1dyntafvjynns5zyltwgyktej0y5zt84y3npkt4",
         "valcons_address": "injvalcons1uejre3lrwhlc3842t8mlewflfh34gq7mfv0m5p",
         "hex": "E6643CC7E375FF889EAA59F7FCB93F4DE35403DB",
-        "missed": 243,
-        "missed_percentage": 0.00486,
+        "missed": 639,
+        "missed_percentage": 0.01278,
         "warning_level": 0
     },
     {
@@ -211,8 +211,8 @@
         "operator_address": "injvaloper1dknnk0nzap8h07elxays2ecldxq9elu3dzqvqr",
         "valcons_address": "injvalcons1cp7u6w66h6zh8w4xzmua6r3lek8vran3cmnwcc",
         "hex": "C07DCD3B5ABE8573BAA616F9DD0E3FCD8EC1F671",
-        "missed": 13,
-        "missed_percentage": 0.00026,
+        "missed": 53,
+        "missed_percentage": 0.00106,
         "warning_level": 0
     },
     {
@@ -220,17 +220,17 @@
         "operator_address": "injvaloper1w3psm8a9td2qz06s46cxss03mz5umxaxegvhhs",
         "valcons_address": "injvalcons1n2kq0y8l7a85q5xmhw64a06ehuf5cspc8qs437",
         "hex": "9AAC0790FFF74F4050DBBBB55EBF59BF134C4038",
-        "missed": 730,
-        "missed_percentage": 0.0146,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "Black Panther | Delegate for Claimdrop",
         "operator_address": "injvaloper10pe4avat38u38yzj5hvnw235uecfff6c73s8fn",
         "valcons_address": "injvalcons123tk3uwy78hrulhe8h5wt8740fgxem5jdax0p3",
         "hex": "545768F1C4F1EE3E7EF93DE8E59FD57A506CEE92",
-        "missed": 560,
-        "missed_percentage": 0.0112,
+        "missed": 636,
+        "missed_percentage": 0.01272,
         "warning_level": 0
     },
     {
@@ -238,8 +238,8 @@
         "operator_address": "injvaloper10xhy8xurfwts9ckjkq0ga92mrjz9txyygymqzp",
         "valcons_address": "injvalcons1hwmt06edw48v99tu54s4m4dt09q4kzc66ulnmp",
         "hex": "BBB6B7EB2D754EC2957CA5615DD5AB79415B0B1A",
-        "missed": 9,
-        "missed_percentage": 0.00018,
+        "missed": 163,
+        "missed_percentage": 0.00326,
         "warning_level": 0
     },
     {
@@ -247,8 +247,8 @@
         "operator_address": "injvaloper13xg5mkd6maqxye07x9za0kaj756drw2r45yk5w",
         "valcons_address": "injvalcons1t0x2ulu4ctv99sh330jkdu2j4pdxpvnwt7a6ap",
         "hex": "5BCCAE7F95C2D852C2F18BE566F152A85A60B26E",
-        "missed": 741,
-        "missed_percentage": 0.01482,
+        "missed": 886,
+        "missed_percentage": 0.01772,
         "warning_level": 0
     },
     {
@@ -265,17 +265,8 @@
         "operator_address": "injvaloper134dct56cq5v7uerxcy2cn4m06mqf4dxrlgpp24",
         "valcons_address": "injvalcons175ctmkculqfkwzn0du09w3r56ny38p04w8fen0",
         "hex": "F530BDDB1CF813670A6F6F1E574474D4C91385F5",
-        "missed": 31,
-        "missed_percentage": 0.00062,
-        "warning_level": 0
-    },
-    {
-        "moniker": "WhisperNode \ud83e\udd10",
-        "operator_address": "injvaloper1377ptxfucjnx8l0d2xxkshfu6wxjf0tel2x7ee",
-        "valcons_address": "injvalcons15t45f6844y5fctzwzzz47twpjkp024m9dazyz6",
-        "hex": "A2EB44E8F5A9289C2C4E10855F2DC19582F55765",
-        "missed": 79,
-        "missed_percentage": 0.00158,
+        "missed": 232,
+        "missed_percentage": 0.00464,
         "warning_level": 0
     },
     {
@@ -283,8 +274,17 @@
         "operator_address": "injvaloper1nq37nq79w2j76xj8qhjzcn6vh0wlx0qk2r7zm6",
         "valcons_address": "injvalcons1nh7v9c6ygv7t7td9x058rm0hvh3gld6weyclq9",
         "hex": "9DFCC2E344433CBF2DA533E871EDF765E28FB74E",
-        "missed": 12,
-        "missed_percentage": 0.00024,
+        "missed": 545,
+        "missed_percentage": 0.0109,
+        "warning_level": 0
+    },
+    {
+        "moniker": "Republic",
+        "operator_address": "injvaloper1nxq05qdle8w5gm6fagda56euwt4rgvv4ktddcc",
+        "valcons_address": "injvalcons1rtejpld5nf6qnvtn2uhumrenqu9hmc06sv6xuq",
+        "hex": "1AF320FDB49A7409B173572FCD8F33070B7DE1FA",
+        "missed": 561,
+        "missed_percentage": 0.01122,
         "warning_level": 0
     },
     {
@@ -292,8 +292,8 @@
         "operator_address": "injvaloper1ntn4j2lsu3k60g8xj9pqshqvdj2q5tygyvczpy",
         "valcons_address": "injvalcons1wk7zq7yplyulwyk88ux76h42kq5lrxev74swkd",
         "hex": "75BC207881F939F712C73F0DED5EAAB029F19B2C",
-        "missed": 269,
-        "missed_percentage": 0.00538,
+        "missed": 349,
+        "missed_percentage": 0.00698,
         "warning_level": 0
     },
     {
@@ -301,8 +301,8 @@
         "operator_address": "injvaloper1nngrhnm65wm8pu7wkah6hfs3vpd0xw463ydd65",
         "valcons_address": "injvalcons1dtqf95xqhy04mzy64gpakddxgvc8qv2ymq5uw9",
         "hex": "6AC092D0C0B91F5D889AAA03DB35A64330703144",
-        "missed": 425,
-        "missed_percentage": 0.0085,
+        "missed": 787,
+        "missed_percentage": 0.01574,
         "warning_level": 0
     },
     {
@@ -310,8 +310,8 @@
         "operator_address": "injvaloper15y9lns6gnhcp8jlkfqmxqgtlff4racajqst5ar",
         "valcons_address": "injvalcons1qphwupu4srx0p6wr3yrzy4hkez72pdzw504ffd",
         "hex": "006EEE079580CCF0E9C389062256F6C8BCA0B44E",
-        "missed": 35,
-        "missed_percentage": 0.0007,
+        "missed": 33,
+        "missed_percentage": 0.00066,
         "warning_level": 0
     },
     {
@@ -319,8 +319,8 @@
         "operator_address": "injvaloper15vlkdnu2c0k0gaclgycnyjm7c5f3hsde034f5p",
         "valcons_address": "injvalcons1a9efq9vresqrcnpc3mewda2hp2ls6km4qsyzm8",
         "hex": "E972901583CC003C4C388EF2E6F5570ABF0D5B75",
-        "missed": 713,
-        "missed_percentage": 0.01426,
+        "missed": 922,
+        "missed_percentage": 0.01844,
         "warning_level": 0
     },
     {
@@ -328,8 +328,8 @@
         "operator_address": "injvaloper155yk4wfn0xqye80exlsr6hu4qdfsvsgwg3jckk",
         "valcons_address": "injvalcons1ycsqvhadmyw9up40yk3m07ryfqa6rsaedgfde5",
         "hex": "2620065FADD91C5E06AF25A3B7F864483BA1C3B9",
-        "missed": 821,
-        "missed_percentage": 0.01642,
+        "missed": 854,
+        "missed_percentage": 0.01708,
         "warning_level": 0
     },
     {
@@ -337,8 +337,8 @@
         "operator_address": "injvaloper14yeq3lkajldaggj28hmq8xng9xux7x5g46hezv",
         "valcons_address": "injvalcons1l64y9vxrtqk0n6lyh4fqs2usvdkghua9drdha0",
         "hex": "FEAA42B0C3582CF9EBE4BD52082B90636C8BF3A5",
-        "missed": 110,
-        "missed_percentage": 0.0022,
+        "missed": 21,
+        "missed_percentage": 0.00042,
         "warning_level": 0
     },
     {
@@ -346,8 +346,8 @@
         "operator_address": "injvaloper14w4qu60azpz5zkw5yrcvmaxqh6xg5sny7qm6rm",
         "valcons_address": "injvalcons1usgjwlwd3hhj8m2megl3lmqknld3pmmm790gw0",
         "hex": "E411277DCD8DEF23ED5BCA3F1FEC169FDB10EF7B",
-        "missed": 322,
-        "missed_percentage": 0.00644,
+        "missed": 750,
+        "missed_percentage": 0.015,
         "warning_level": 0
     },
     {
@@ -355,8 +355,8 @@
         "operator_address": "injvaloper145cktyaw3ec7nwt3nyawvx5yy9l58ppy9fhltx",
         "valcons_address": "injvalcons1rwz6tl7uvk3rm7635vkuzzraefg4afkvzcsev0",
         "hex": "1B85A5FFDC65A23DFB51A32DC1087DCA515EA6CC",
-        "missed": 309,
-        "missed_percentage": 0.00618,
+        "missed": 566,
+        "missed_percentage": 0.01132,
         "warning_level": 0
     },
     {
@@ -364,8 +364,8 @@
         "operator_address": "injvaloper1hsxaln75wjs033t3spd8a0gawl4jvxawn6v849",
         "valcons_address": "injvalcons1m5kf3ze83efxsuxajltm5a0w4gh7h42awccxtt",
         "hex": "DD2C988B278E526870DD97D7BA75EEAA2FEBD55D",
-        "missed": 33,
-        "missed_percentage": 0.00066,
+        "missed": 87,
+        "missed_percentage": 0.00174,
         "warning_level": 0
     },
     {
@@ -382,9 +382,9 @@
         "operator_address": "injvaloper1hkjsxadg0a0dj5pwdyfnf8qm0az6wcxcwhdnry",
         "valcons_address": "injvalcons1rq6w3ghau3jynx0w6k75hxd54x3zcs63r0d6zm",
         "hex": "1834E8A2FDE4644999EED5BD4B99B4A9A22C4351",
-        "missed": 42,
-        "missed_percentage": 0.00084,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "POSTHUMAN \ud83e\uddec StakeDrop",
@@ -400,8 +400,8 @@
         "operator_address": "injvaloper1egc6mep7z8sa0tglm63qzwq4kdgyd8ccapydkt",
         "valcons_address": "injvalcons1vfyjrr848m2l6dvc248c9rkrrweq8ym7wx5czm",
         "hex": "6249218CF53ED5FD3598554F828EC31BB203937E",
-        "missed": 11762,
-        "missed_percentage": 0.23524,
+        "missed": 14325,
+        "missed_percentage": 0.2865,
         "warning_level": 1
     },
     {
@@ -409,18 +409,18 @@
         "operator_address": "injvaloper1esud09zs5754g5nlkmrgxsfdj276xm64cgmd3w",
         "valcons_address": "injvalcons1gau93e4l0cm2mdsx953y5zcxk76wtsnwsmswhz",
         "hex": "477858E6BF7E36ADB6062D224A0B06B7B4E5C26E",
-        "missed": 720,
-        "missed_percentage": 0.0144,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "Stakecito",
         "operator_address": "injvaloper1ee7xnhczhvu064utmdn48sh0wx7zq3pgy6frgm",
         "valcons_address": "injvalcons1q0s2z2rmy43fkdkk4g579c0secqpzstz7ujpmn",
         "hex": "03E0A1287B25629B36D6AA29E2E1F0CE00114162",
-        "missed": 538,
-        "missed_percentage": 0.01076,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "White Whale",
@@ -436,8 +436,8 @@
         "operator_address": "injvaloper1mwerm24kce7dcl59t6n0caw7c8zxgkrjj9svwj",
         "valcons_address": "injvalcons1688g0wlgndehf92pd6xyfw04353h94w3cca4p3",
         "hex": "D1CE87BBE89B737495416E8C44B9F58D2372D5D1",
-        "missed": 41,
-        "missed_percentage": 0.00082,
+        "missed": 54,
+        "missed_percentage": 0.00108,
         "warning_level": 0
     },
     {
@@ -445,8 +445,8 @@
         "operator_address": "injvaloper1m4pj2y9qrm77m9gsa8uu7xj6xjyy7du5hg2t2d",
         "valcons_address": "injvalcons1kmxsj4ak8kmnazkqu5wdphjn4aq2c37hkz63u6",
         "hex": "B6CD0957B63DB73E8AC0E51CD0DE53AF40AC47D7",
-        "missed": 80,
-        "missed_percentage": 0.0016,
+        "missed": 119,
+        "missed_percentage": 0.00238,
         "warning_level": 0
     },
     {
@@ -454,8 +454,8 @@
         "operator_address": "injvaloper1mlsg82x0mnw88u2teg0kceautjktgcl08tqfs4",
         "valcons_address": "injvalcons1v3sggjevs8587032zpn80pamwcqvl2tsjzl7dj",
         "hex": "6460844B2C81E87F3E2A10667787BB7600CFA970",
-        "missed": 227,
-        "missed_percentage": 0.00454,
+        "missed": 348,
+        "missed_percentage": 0.00696,
         "warning_level": 0
     },
     {
@@ -463,8 +463,8 @@
         "operator_address": "injvaloper1u8npsgrcyk4csp0cpzecwkvcqw4e6thqzcrvp7",
         "valcons_address": "injvalcons1k7zuwvyd25darv38nqdljw873tfa8ca0r6nedp",
         "hex": "B785C7308D551BD1B227981BF938FE8AD3D3E3AF",
-        "missed": 433,
-        "missed_percentage": 0.00866,
+        "missed": 417,
+        "missed_percentage": 0.00834,
         "warning_level": 0
     },
     {
@@ -472,8 +472,8 @@
         "operator_address": "injvaloper1agu7gu9ay39jkaccsfnt0ykjce6daycjuzyg2a",
         "valcons_address": "injvalcons1udfutjylkcxja07z7gu0rnq3vu7fsrj95khtjf",
         "hex": "E353C5C89FB60D2EBFC2F238F1CC11673C980E45",
-        "missed": 35,
-        "missed_percentage": 0.0007,
+        "missed": 305,
+        "missed_percentage": 0.0061,
         "warning_level": 0
     },
     {
@@ -481,8 +481,8 @@
         "operator_address": "injvaloper1an6hyf4h2au53aa3tuy6yjjr4edsd2xvg5kc2p",
         "valcons_address": "injvalcons10f4fmmna3ua64qljcwsp08t5a52g0yevrkppml",
         "hex": "7A6A9DEE7D8F3BAA83F2C3A0179D74ED1487932C",
-        "missed": 490,
-        "missed_percentage": 0.0098,
+        "missed": 667,
+        "missed_percentage": 0.01334,
         "warning_level": 0
     },
     {
@@ -490,8 +490,8 @@
         "operator_address": "injvaloper1acgud5qpn3frwzjrayqcdsdr9vkl3p6hrz34ts",
         "valcons_address": "injvalcons17wdljvtvqlj0ylhrr9glwgrc83vdp8q3q5pvas",
         "hex": "F39BF9316C07E4F27EE31951F720783C58D09C11",
-        "missed": 542,
-        "missed_percentage": 0.01084,
+        "missed": 738,
+        "missed_percentage": 0.01476,
         "warning_level": 0
     },
     {
@@ -508,8 +508,8 @@
         "operator_address": "injvaloper17dt0hpykufxjrc7fh8rxwgv6z9kx8vlgg0qqrs",
         "valcons_address": "injvalcons1vm2upy2ykes5ayspazm7pycmf5zjs4qmn9ne0c",
         "hex": "66D5C09144B6614E9201E8B7E0931B4D0528541B",
-        "missed": 44,
-        "missed_percentage": 0.00088,
+        "missed": 167,
+        "missed_percentage": 0.00334,
         "warning_level": 0
     },
     {
@@ -517,26 +517,26 @@
         "operator_address": "injvaloper17mudupc8qlwpnegqwulz6ajlkhsfta6zg2wg55",
         "valcons_address": "injvalcons198mf05ty2wxrhhmed8er3csf0ln5t4euxaekep",
         "hex": "29F697D164538C3BDF7969F238E2097FE745D73C",
-        "missed": 760,
-        "missed_percentage": 0.0152,
-        "warning_level": 0
+        "missed": 999,
+        "missed_percentage": 0.01998,
+        "warning_level": 1
     },
     {
         "moniker": "NTT Digital",
         "operator_address": "injvaloper177zqwtsnuhax28w5xpmf33wsl7l2xxf6y6xshc",
         "valcons_address": "injvalcons1kcng05vqg3w4e7zwrghgtke2eth0evv6vh7u4n",
         "hex": "B62687D180445D5CF84E1A2E85DB2ACAEEFCB19A",
-        "missed": 938,
-        "missed_percentage": 0.01876,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     },
     {
         "moniker": "Binance Staking",
         "operator_address": "injvaloper1lsuqpgm8kgwpq96ewyew26xnfwyn3lh3ncrkrk",
         "valcons_address": "injvalcons1893nm5rlsl3pdcx26q0qhcskughcn2el3w335z",
         "hex": "39633DD07F87E216E0CAD01E0BE216E22F89AB3F",
-        "missed": 693,
-        "missed_percentage": 0.01386,
-        "warning_level": 0
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 1
     }
 ]

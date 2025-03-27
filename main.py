@@ -16,6 +16,7 @@ from feat.ibc import IBC
 
 block_queue = queue.Queue()
 tx_queue = queue.Queue()
+logging.basicConfig(level=logging.INFO)
 
 def getConfig():
     with open('config.json', 'r') as file:

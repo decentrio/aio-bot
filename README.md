@@ -19,7 +19,7 @@ The bot supports on 3 platforms: Slack, Discord, and Telegram.
 To setup bot for messaging platforms, refer to 
 
 ## Configuration
-This configuration file is used to set up the AIO Bot for various platforms and features. The file also contains subscriptions detail for each platform, so it should not be removed/renamed. (todo: make a proper db)
+This configuration file is used to set up the AIO Bot for various platforms and features. The file also contains subscriptions detail for each platform, so it should not be removed/renamed
 
 Below is an explanation of each section:
 ### `app`
@@ -95,3 +95,82 @@ source .aio/bin/activate
 pip3 install -r requirements.txt
 python3 main.py
 ```
+
+
+## Message format:
+### Validators
+```
+[WARNING_LEVEL] VALIDATOR has missed more than MISS_PERCENT of the allowed blocks!
+Block to jailed: consecutive missed blocks to be jailed
+Window Signing Percentage: current window signing / minimum window signing
+Signing window: signing window params
+```
+
+```
+[RECOVERING] VALIDATOR is recovering!
+Window Signing Percentage: current window signing / minimum window signing
+```
+
+```
+VALIDATOR is active again!
+```
+
+```
+VALIDATOR is inactive!
+```
+
+```
+VALIDATOR is JAILED!
+Last Signed Block: last signed block
+Jailed Until: time to be unjailed 
+Jailed Duration: jail duration param
+```
+
+### Balance:
+```
+Low balance!
+Address: address
+Balance: balance of the address
+```
+```
+Invalid address!
+Address: address
+```
+
+### IBC:
+```
+Client CLIENT is about to expire!
+From: source chain
+To: destination chain
+Last Updated: last client update time
+Time Left: time left to be expired
+```
+```
+Uncommited packets from SOURCE_CHAIN to DESTINATION_CHAIN!
+From: source chain
+To: destination chain
+Port: channel port
+Channel: channel ID
+Missed: number of missed packets
+```
+### Peggo:
+```
+VALIDATOR has pending valsets!
+Pending Valsets: length of pending valsets
+Last Height Checked: last height checked
+```
+```
+VALIDATOR's nonce is lagging behind!
+Last Observed Nonce: chain latest nonce
+Last Claimed Ethereum Event Nonce: operator nonce
+Last Height Checked: last height checked
+```
+
+### Gov:
+```
+New Proposal PROPOSAL_ID!
+Description: Summary
+Type: proposal type
+Title: proposal name
+```
+

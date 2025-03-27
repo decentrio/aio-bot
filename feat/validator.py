@@ -160,7 +160,7 @@ class Validators:
         for val in valset:
             validator = next(filter(lambda x: x["hex"] == val["address"], self.validators), None)
             if validator and int(val["voting_power"]) == 0:  # inactive
-                if validator["missed"] == 0:  # out active set
+                if validator["warning_level"] != 3:  # out active set
                     self.notify({
                         "type": "inactive",
                         "args": {
@@ -169,20 +169,31 @@ class Validators:
                         },
                         "auto_delete": None
                     })
-                else:  # jailed
+                else:  # likely to be jailed
                     try:
-                        data = query.query(f"{self.api}/cosmos/slashing/v1beta1/signing_infos/{validator['valcons_address']}")
-                        self.notify({
-                            "type": "jailed",
-                            "args": {
-                                "validator": validator["operator_address"],
-                                "moniker": validator["moniker"],
-                                "jailed_until": data["val_signing_info"]["jailed_until"],
-                                "last_height": self.missed["height"] - validator["missed"],
-                                "jailed_duration": self.params["jailed_duration"]
-                            },
-                            "auto_delete": None
-                        })
+                        check_jailed = query.query(f"{self.api}/cosmos/staking/v1beta1/validators/{validator['operator_address']}")
+                        if check_jailed["validator"]["jailed"]:
+                            data = query.query(f"{self.api}/cosmos/slashing/v1beta1/signing_infos/{validator['valcons_address']}")
+                            self.notify({
+                                "type": "jailed",
+                                "args": {
+                                    "validator": validator["operator_address"],
+                                    "moniker": validator["moniker"],
+                                    "jailed_until": data["val_signing_info"]["jailed_until"],
+                                    "last_height": f"{self.missed["height"] - validator["missed"]:,}",
+                                    "jailed_duration": self.params["jailed_duration"]
+                                },
+                                "auto_delete": None
+                            })
+                        else:
+                            self.notify({
+                                "type": "inactive",
+                                "args": {
+                                    "validator": validator["operator_address"],
+                                    "moniker": validator["moniker"],
+                                },
+                                "auto_delete": None
+                            })
                     except Exception as e:
                         self.logger.error(f"Error getting jailed info: {e}")
                 self.validators.remove(validator)

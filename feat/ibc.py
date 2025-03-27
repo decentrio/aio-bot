@@ -138,7 +138,7 @@ class IBC:
                 if discord_client.loop:
                     if message["type"] == "client":
                         msg = discord_client.compose_embed(
-                            title=f"**Client {message['args']['client']} is about to expired!**",
+                            title=f"**Client {message['args']['client']} is about to expire!**",
                             description="",
                             fields=[
                                 {
@@ -162,7 +162,7 @@ class IBC:
                                     "inline": True
                                 }
                             ],
-                            footer="This message will be automatically deleted in 60s",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color=0x75ffd1
                         )
                     elif message["type"] == "packets":
@@ -196,7 +196,7 @@ class IBC:
                                     "inline": True
                                 }
                             ],
-                            footer="This message will be automatically deleted in 60s",
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color=0x75ffd1
                         )
                     future = asyncio.run_coroutine_threadsafe(

@@ -69,14 +69,7 @@
         }
     },
     "chain": "Injective",
-    "rpcs": [
-        "http://37.27.56.238:26657",
-        "https://inj-priv-rpc.kingnodes.com",
-        "https://1rpc.io/inj-rpc",
-        "http://138.201.195.60:26657",
-        "https://rpc-injective.imperator.co",
-        "https://injective-rpc.publicnode.com"
-    ],
+    "rpcs": [],
     "api": "https://injective-lcd.publicnode.com",
     "jsonrpc": "https://mainnet.rpc.inevm.com/http",
     "features": {
@@ -140,7 +133,11 @@
         "wallet": {
             "enable": true,
             "params": {
-                "threshold": 1000000000000000000000000
+                "threshold": {
+                    "eth": 0.005,
+                    "inj": 0.1
+                },
+                "interval": 1200
             }
         }
     }
