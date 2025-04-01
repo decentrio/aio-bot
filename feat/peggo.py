@@ -25,14 +25,15 @@ class Peggo:
             self.logger.error(f"Error fetching block height: {e}")
             return -1
 
-    def get_lon(self) -> int:
+    def get_module_state(self) -> tuple[int, list]:
         """
         Fetching Last Observed Peggo Nonce
         """
         try:
             data = query.query(f"{self.api}/peggy/v1/module_state")
             lon = int(data['state']['last_observed_nonce'])
-            return lon
+            valset_confirms = data["state"]["valset_confirms"]
+            return lon, valset_confirms
         except Exception as e:
             self.logger.error(f"Error fetching last observed nonce: {e}")
             return None
@@ -46,70 +47,53 @@ class Peggo:
             self.logger.error(f"Error fetching last claim event: {e}")
             return None
 
-    def get_pending_valsets(self, orchestrator) -> int:
+    def check_batch_confirms(self):
         """
-        Get Pending Valsets
-        """
-        try:
-            data =query.query(f"{self.api}/peggy/v1/valset/last?address={orchestrator}")
-            valset = data['valsets']
-            return len(valset)
-        except Exception as e:
-            self.logger.error(f"Error fetching pending valsets: {e}")
-            return 0
-
-    def get_pending_batches(self, orchestrator):
-        """
-        Get Pending Batches
+        Checking Batch Confirms
         """
         try:
-            data = query.query(f"{self.api}/peggy/v1/batch/last?address={orchestrator}")
-
-            if "batch" in data:
-                if data["batch"] == None or len(data['batch']) == 0:
-                    return 0
-                else:
-                    return 1
-            elif "batches" in data:
-                return len(data['batches'])
-            else:
-                return 0
+            data = query.query(f"{self.api}/peggy/v1/module_state")  
+            batch_confirms = data["state"]["batch_confirms"]
+            if len(batch_confirms):
+                self.notify({
+                    "type": "pending_batches",
+                    "args": {
+                        "pending_batches": len(batch_confirms),
+                        "last_height": self.get_height()
+                    },
+                    "auto_delete": None
+                })
         except Exception as e:
-            self.logger.error(f"Error fetching pending batches: {e}")
-            return 0
+            self.logger.error(f"Error fetching confirms: {e}")
+            return None
         
-    def check(self, valoper_address):
-        if self.operators[valoper_address]["pending_valsets"] != 0:
-            self.notify({
-                "type": "pending_valsets",
-                "args": {
-                    "validator": valoper_address,
-                    "moniker": self.operators[valoper_address]["moniker"],
-                    "pending_valsets": self.operators[valoper_address]["pending_valsets"],
-                    "last_height": f"{self.operators[valoper_address]["last_height"]:,}",
-                },
-                "auto_delete": None
-            })
-        # if self.operators[valoper_address]["pending_batches"] != 0:
-        #     self.notify({
-        #         "type": "pending_batches",
-        #         "args": {
-        #             "validator": valoper_address,
-        #             "moniker": self.operators[valoper_address]["moniker"],
-        #             "pending_batches": self.operators[valoper_address]["pending_batches"],
-        #             "last_height": self.operators[valoper_address]["last_height"]
-        #         },
-        #         "auto_delete": None
-        #     })
-        if abs(self.operators[valoper_address]["last_observed_nonce"] - self.operators[valoper_address]["last_claim_eth_event_nonce"]) >= self.params["threshold"]:
+    def check(self, operator: dict):
+        if len(operator["valset_confirms"]) != 0:
+            check = False
+            for op in operator["valset_confirms"]:
+                if op["orchestrator"] == operator["orchestrator_address"]:
+                    check = True
+                    break
+            if not check:
+                self.notify({
+                    "type": "pending_valsets",
+                    "args": {
+                        "validator": operator["valoper_address"],
+                        "moniker": operator["moniker"],
+                        "last_height": f"{operator["last_height"]:,}"
+                    },
+                    "auto_delete": None
+                })
+
+        if abs(operator["last_observed_nonce"] - operator["last_claim_eth_event_nonce"]) >= self.params["threshold"]:
             self.notify({
             "type": "nonce_mismatch",
             "args": {
-                "validator": valoper_address,
-                "moniker": self.operators[valoper_address]["moniker"],
-                "last_observed_nonce": f"{self.operators[valoper_address]["last_observed_nonce"]:,}",
-                "last_claim_eth_event_nonce": f"{self.operators[valoper_address]["last_claim_eth_event_nonce"]:,}",
-                "last_height": f"{self.operators[valoper_address]["last_height"]:,}"
+                "validator": operator["valoper_address"],
+                "moniker": operator["moniker"],
+                "last_observed_nonce": f"{operator["last_observed_nonce"]:,}",
+                "last_claim_eth_event_nonce": f"{operator["last_claim_eth_event_nonce"]:,}",
+                "last_height": f"{operator["last_height"]:,}"
             },
             "auto_delete": None
             })
@@ -129,14 +113,9 @@ class Peggo:
                             
                     if message['type'] == "pending_valsets":
                         msg = discord_client.compose_embed(
-                            title = f"**{message['args']['moniker']} has pending valsets!**",
+                            title = f"**{message['args']['moniker']} hasn't signed in latest valset_confirms!**",
                             description = user,
                             fields = [
-                                {
-                                    "name": "Pending Valsets",
-                                    "value": message['args']['pending_valsets'],
-                                    "inline": True
-                                },
                                 {
                                     "name": "Last Height Checked",
                                     "value": message['args']['last_height'],
@@ -148,7 +127,7 @@ class Peggo:
                         )
                     elif message['type'] == "pending_batches":
                         msg = discord_client.compose_embed(
-                            title = f"**{message['args']['moniker']} has pending batches!**",
+                            title = f"**Pending batches found!**",
                             description = user,
                             fields = [
                                 {
@@ -287,19 +266,21 @@ class Peggo:
             self.logger.info("Fetching validators peggo status ...")
             with open('validators.json', 'r') as file:
                 validators = json.load(file)
+            
+            self.check_batch_confirms()
+
             for validator in validators:
                 self.logger.debug(f"Checking {validator['moniker']} ...")
                 valoper_address = validator['operator_address']
                 try:
                     address = query.query(f"{self.api}/peggy/v1/query_delegate_keys_by_validator?validator_address={valoper_address}")
                     self.operators[valoper_address] = address
+                    self.operators[valoper_address]["valoper_address"] = valoper_address
                     self.operators[valoper_address]["moniker"] = validator['moniker']
                     self.operators[valoper_address]["last_height"] = self.get_height()
-                    self.operators[valoper_address]["pending_valsets"] = self.get_pending_valsets(address["orchestrator_address"])
-                    self.operators[valoper_address]["pending_batches"] = self.get_pending_batches(address["orchestrator_address"])
-                    self.operators[valoper_address]["last_observed_nonce"] = self.get_lon()
+                    self.operators[valoper_address]["last_observed_nonce"], self.operators[valoper_address]["valset_confirms"]= self.get_module_state()
                     self.operators[valoper_address]["last_claim_eth_event_nonce"] = self.get_lce(address["orchestrator_address"])
-                    self.check(valoper_address)
+                    self.check(self.operators[valoper_address])
                     time.sleep(5) # Sleep for 5 seconds to prevent rate limiting
                 except Exception as e:
                     self.logger.error(f"Error fetching operator status: {e}")
