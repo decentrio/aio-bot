@@ -1,25 +1,21 @@
-# AIO Bot - All-in-one services bot for Injective/other Cosmos chains
+# All-in-one validator services bot for Injective & other Cosmos-SDK based blockchains
 
-The bot has fundamental features:
-- Notify user when a validator miss blocks/low signing performance
-- Notify user when a validator is active/inactive/jailed
-- New proposal on chain
+The bot supports the following alerts:
+- Missed blocks (signing performance)
+- Validator status (active/inactive/jailed)
+- Governance proposals
 - Peggo performance (Injective)
-- Check balance (Injective/Ethereum, useful for peggo operators)
+- Balance checks (Injective/Ethereum)
 - IBC packets tracking
-- Upgrades on chain
+- Network upgrades
 
-The bot supports on 3 platforms: Slack, Discord, and Telegram.
+The bot supports 3 platforms: Slack, Discord and Telegram.
 
 ![image](https://github.com/user-attachments/assets/509d4235-3541-451b-a81c-4e116c522a60)
 ![image](https://github.com/user-attachments/assets/ac22bbed-cdcc-4a2b-9f08-5570b8f7f617)
 
-
-## Setup
-To setup bot for messaging platforms, refer to 
-
 ## Configuration
-This configuration file is used to set up the AIO Bot for various platforms and features. The file also contains subscriptions detail for each platform, so it should not be removed/renamed
+The configuration file is used to set up the AIO Bot for various platforms. It also contains subscription details to receive alerts on each platform, ensure the file is valid and present.
 
 Below is an explanation of each section:
 ### `app`
@@ -27,10 +23,10 @@ Below is an explanation of each section:
     - `enable`: Boolean to enable/disable Slack integration.
     - `oAuth-token`: OAuth token for Slack API.
     - `signing-secret`: Signing secret for Slack.
-    - `port`: Port number for the Slack bot.
+    - `port`: Port number for Slack.
     - `channels`: List of Slack channels the bot will interact with.
         - `id`: Channel ID.
-        - `name`: Channel name, for easy management.
+        - `name`: Channel name.
     - `subscriptions`: List of user subscriptions to validators. This will store all subscriptions information so the file must not be deleted.
 
 - **discord**: Configuration for Discord integration.
@@ -50,13 +46,13 @@ Below is an explanation of each section:
 - **chain**: Chain pretty name.
 
 ### `rpcs`
-- **rpcs**: List of RPC endpoints for the blockchain network. The websocket module will connect to these rpcs and will try next ones when an URL is failed to connect.
+- **rpcs**: List of RPC endpoints for the network, set multiple endpoints for redundancy.
 
-### `api`
-- **api**: API endpoint for the blockchain network.
+### `apis`
+- **api**: List of API endpoints for the network, set multiple endpoints for redundancy.
 
 ### `features`
-- **faucet**: Boolean to enable/disable faucet feature.
+- **faucet**: Boolean to enable/disable the faucet feature.
 - **gov**: Configuration for governance features.
     - `enable`: Boolean to enable/disable governance features.
     - `params`: Parameters for governance.
@@ -75,10 +71,10 @@ Below is an explanation of each section:
         - `jailed_duration`: Duration for which a validator is jailed.
         - `prefix`: Prefix for validator addresses.
 
-- **peggo**: Configuration for Peggo performance monitoring.
+- **peggo**: Configuration for Injective Peggo performance monitoring.
     - `enable`: Boolean to enable/disable Peggo monitoring.
     - `mode`: Mode of operation (e.g., "chain").
-    - `params`: Parameters for Peggo monitoring (currently empty).
+    - `params`: Parameters for Peggo monitoring.
 
 - **ibc**: Boolean to enable/disable IBC packets tracking.
 - **consensus**: Boolean to enable/disable consensus monitoring.
@@ -100,19 +96,19 @@ python3 main.py
 ## Message format:
 ### Validators
 ```
-[WARNING_LEVEL] VALIDATOR has missed more than MISS_PERCENT of the allowed blocks!
-Block to jailed: consecutive missed blocks to be jailed
-Window Signing Percentage: current window signing / minimum window signing
-Signing window: signing window params
+[WARNING_LEVEL] VALIDATOR has missed more than MISS_PERCENT of the allowed signing window!
+Blocks to Jail: Consecutive missed blocks to be jailed
+Window Signing Percentage: Current signing window / Minimum signing window
+Signing window: Signing window params
 ```
 
 ```
 [RECOVERING] VALIDATOR is recovering!
-Window Signing Percentage: current window signing / minimum window signing
+Window Signing Percentage: Current signing window / minimum signing window
 ```
 
 ```
-VALIDATOR is active again!
+VALIDATOR is active!
 ```
 
 ```
@@ -121,56 +117,56 @@ VALIDATOR is inactive!
 
 ```
 VALIDATOR is JAILED!
-Last Signed Block: last signed block
-Jailed Until: time to be unjailed 
-Jailed Duration: jail duration param
+Last Signed Block: Last signed block
+Jailed Until: Time to be unjailed 
+Jailed Duration: Jail duration param
 ```
 
 ### Balance:
 ```
 Low balance!
-Address: address
-Balance: balance of the address
+Address: Address
+Balance: Balance of the address
 ```
 ```
 Invalid address!
-Address: address
+Address: Address
 ```
 
 ### IBC:
 ```
 Client CLIENT is about to expire!
-From: source chain
-To: destination chain
-Last Updated: last client update time
-Time Left: time left to be expired
+From: Source chain
+To: Destination chain
+Last Updated: Last client update time
+Time Left: Time left to be expired
 ```
 ```
 Uncommited packets from SOURCE_CHAIN to DESTINATION_CHAIN!
-From: source chain
-To: destination chain
-Port: channel port
-Channel: channel ID
-Missed: number of missed packets
+From: Source chain
+To: Destination chain
+Port: Channel port
+Channel: Channel ID
+Missed: Number of missed packets
 ```
 ### Peggo:
 ```
 VALIDATOR has pending valsets!
-Pending Valsets: length of pending valsets
-Last Height Checked: last height checked
+Pending Valsets: Length of pending valsets
+Last Height Checked: Last height checked
 ```
 ```
 VALIDATOR's nonce is lagging behind!
-Last Observed Nonce: chain latest nonce
-Last Claimed Ethereum Event Nonce: operator nonce
-Last Height Checked: last height checked
+Last Observed Nonce: Chain latest nonce
+Last Claimed Ethereum Event Nonce: Operator nonce
+Last Height Checked: Last height checked
 ```
 
 ### Gov:
 ```
 New Proposal PROPOSAL_ID!
 Description: Summary
-Type: proposal type
-Title: proposal name
+Type: Proposal type
+Title: Proposal name
 ```
 
