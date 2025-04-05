@@ -33,7 +33,8 @@ class Peggo:
             data = query.query(f"{self.api}/peggy/v1/module_state")
             lon = int(data['state']['last_observed_nonce'])
             valset_confirms = data["state"]["valset_confirms"]
-            return lon, valset_confirms
+            batch_confirms = data["state"]["batch_confirms"]
+            return lon, valset_confirms, batch_confirms
         except Exception as e:
             self.logger.error(f"Error fetching last observed nonce: {e}")
             return None
@@ -46,29 +47,26 @@ class Peggo:
         except Exception as e:
             self.logger.error(f"Error fetching last claim event: {e}")
             return None
-
-    def check_batch_confirms(self):
-        """
-        Checking Batch Confirms
-        """
-        try:
-            data = query.query(f"{self.api}/peggy/v1/module_state")  
-            batch_confirms = data["state"]["batch_confirms"]
-            if len(batch_confirms):
-                self.notify({
-                    "type": "pending_batches",
-                    "args": {
-                        "pending_batches": len(batch_confirms),
-                        "last_height": self.get_height()
-                    },
-                    "auto_delete": None
-                })
-        except Exception as e:
-            self.logger.error(f"Error fetching confirms: {e}")
-            return None
         
     def check(self, operator: dict):
         if len(operator["valset_confirms"]) != 0:
+            check = False
+            for op in operator["valset_confirms"]:
+                if op["orchestrator"] == operator["orchestrator_address"]:
+                    check = True
+                    break
+            if not check:
+                self.notify({
+                    "type": "pending_valsets",
+                    "args": {
+                        "validator": operator["valoper_address"],
+                        "moniker": operator["moniker"],
+                        "last_height": f"{operator["last_height"]:,}"
+                    },
+                    "auto_delete": None
+                })
+
+        if len(operator["batch_confirms"]) != 0:
             check = False
             for op in operator["valset_confirms"]:
                 if op["orchestrator"] == operator["orchestrator_address"]:
@@ -267,8 +265,6 @@ class Peggo:
             with open('validators.json', 'r') as file:
                 validators = json.load(file)
             
-            self.check_batch_confirms()
-
             for validator in validators:
                 self.logger.debug(f"Checking {validator['moniker']} ...")
                 valoper_address = validator['operator_address']
@@ -278,7 +274,7 @@ class Peggo:
                     self.operators[valoper_address]["valoper_address"] = valoper_address
                     self.operators[valoper_address]["moniker"] = validator['moniker']
                     self.operators[valoper_address]["last_height"] = self.get_height()
-                    self.operators[valoper_address]["last_observed_nonce"], self.operators[valoper_address]["valset_confirms"]= self.get_module_state()
+                    self.operators[valoper_address]["last_observed_nonce"], self.operators[valoper_address]["valset_confirms"], self.operators[valoper_address]["batch_confirms"]= self.get_module_state()
                     self.operators[valoper_address]["last_claim_eth_event_nonce"] = self.get_lce(address["orchestrator_address"])
                     self.check(self.operators[valoper_address])
                     time.sleep(5) # Sleep for 5 seconds to prevent rate limiting
