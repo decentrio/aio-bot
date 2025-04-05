@@ -52,7 +52,7 @@
                 {
                     "user": 123456789,
                     "validator": "injvaloper15vlkdnu2c0k0gaclgycnyjm7c5f3hsde034f5p"
-                }            
+                }
             ]
         },
         "telegram": {
@@ -70,7 +70,7 @@
     },
     "chain": "Injective",
     "rpcs": [],
-    "api": "https://injective-lcd.publicnode.com",
+    "api": [],
     "jsonrpc": "https://mainnet.rpc.inevm.com/http",
     "features": {
         "faucet": false,
@@ -118,7 +118,8 @@
         "peggo": {
             "enable": true,
             "params": {
-                "threshold": 2
+                "threshold": 2,
+                "interval": 1200
             }
         },
         "ibc": {

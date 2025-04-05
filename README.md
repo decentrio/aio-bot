@@ -7,7 +7,7 @@ The bot supports the following alerts:
 - Peggo performance (Injective)
 - Balance checks (Injective/Ethereum)
 - IBC packets tracking
-- Network upgrades
+- Network upgrades (planned)
 
 The bot supports 3 platforms: Slack, Discord and Telegram.
 
@@ -18,73 +18,54 @@ The bot supports 3 platforms: Slack, Discord and Telegram.
 The configuration file is used to set up the AIO Bot for various platforms. It also contains subscription details to receive alerts on each platform, ensure the file is valid and present.
 
 Below is an explanation of each section:
-### `app`
-- **slack**: Configuration for Slack integration.
-    - `enable`: Boolean to enable/disable Slack integration.
-    - `oAuth-token`: OAuth token for Slack API.
-    - `signing-secret`: Signing secret for Slack.
-    - `port`: Port number for Slack.
-    - `channels`: List of Slack channels the bot will interact with.
-        - `id`: Channel ID.
-        - `name`: Channel name.
-    - `subscriptions`: List of user subscriptions to validators. This will store all subscriptions information so the file must not be deleted.
+#### `app`
+This section configures the platforms (Slack, Discord, Telegram) where the bot will send alerts. Besides the credentials required for each platform's setup, each platform also has separated
 
-- **discord**: Configuration for Discord integration.
-    - `enable`: Boolean to enable/disable Discord integration.
-    - `bot-token`: Bot token for Discord API.
-    - `channels`: List of Discord channels the bot will interact with.
-        - `id`: Channel ID.
-        - `name`: Channel name.
-    - `subscriptions`: List of user subscriptions to validators. This will store all subscriptions information so the file must not be deleted.
+**Mutual Parameters**:
+- `enable`: Toggle to enable or disable the alerting functionality for a specific platform.
+- `mode`: Operation mode in each platform: `single` and `chain`. When the bot operates in `single` mode, it tracks a single validator only, which is helpful for single user, while in `chain` modes, the bot track chain's multiple addresses and features, which is suitable for the community. `single` mode works only in Slack/Telegram, while Discord supports both `single` and `chain` mode.
+- `channels`: List of channels with `id` and `name`. It is recommended to use different channels for specific feature, especially in `chain` mode.
+- `subscriptions`: List of user subscriptions for alerts. These users will be tagged in the messages they subscribe to.
 
-- **telegram**: Configuration for Telegram integration.
-    - `enable`: Boolean to enable/disable Telegram integration.
-    - `bot`: Bot token for Telegram API.
-    - `subscriptions`: List of user subscriptions to validators. This will store all subscriptions information so the file must not be deleted.
+#### `chain`
+Specifies the blockchain the bot is monitoring. Example: `Injective`.
 
-### `chain`
-- **chain**: Chain pretty name.
+#### `rpcs`, `api`
+Lists of RPC and API endpoints of the chain, set multiple endpoints for redundancy.
 
-### `rpcs`
-- **rpcs**: List of RPC endpoints for the network, set multiple endpoints for redundancy.
+#### `jsonrpc`
+JSON-RPC endpoint for the blockchain, for EVM querying (depend on chains)
 
-### `apis`
-- **api**: List of API endpoints for the network, set multiple endpoints for redundancy.
+#### `features`
+This section enables or disables specific bot features and configures their parameters.
 
-### `features`
-- **faucet**: Boolean to enable/disable the faucet feature.
-- **gov**: Configuration for governance features.
-    - `enable`: Boolean to enable/disable governance features.
-    - `params`: Parameters for governance.
-        - `voting_period`: Voting period duration.
-        - `min_deposit`: Minimum deposit required.
-        - `threshold`: Threshold for passing proposals.
-        - `veto`: Veto threshold.
+- `enable`: Boolean to enable/disable the feature.
+- `params`: Parameters of each feature.
 
-- **validators**: Configuration for validator monitoring.
-    - `enable`: Boolean to enable/disable validator monitoring.
-    - `mode`: Mode of operation (e.g., "chain").
-    - `params`: Parameters for validator monitoring.
-        - `threshold`: Threshold for alerts.
-        - `signing_window`: Signing window duration.
-        - `min_signed_per_window`: Minimum signed blocks per window.
-        - `jailed_duration`: Duration for which a validator is jailed.
-        - `prefix`: Prefix for validator addresses.
+> Note: `IBC` feature requires `ibc.json` file, which contains a list of IBC channels to check. The endpoints of each chain is fetched from [cosmsos/chain-registry](https://github.com/cosmos/chain-registry) repo. Format of `ibc.json` file:
+> ```json
+> [
+>    {
+>        "chain-1": "chain-1",
+>        "client-1": "client-1",
+>        "channel-1": "channel-1",
+>        "port-1": "port-1",
+>        "chain-2": "chain-2",
+>        "client-2": "client2",
+>        "channel-2": "channel-2",
+>        "port-2": "port-2"
+>    },
+>    ...
+> ]
 
-- **peggo**: Configuration for Injective Peggo performance monitoring.
-    - `enable`: Boolean to enable/disable Peggo monitoring.
-    - `mode`: Mode of operation (e.g., "chain").
-    - `params`: Parameters for Peggo monitoring.
+> Note: `validator` feature has different parameters for each mode. In `single` mode, the bot checks validator's sign in every block and notifies user after `threshold`, while in `chain` mode, the bot periodically checks signing performance of every active validator in every `interval` seconds. Each `value` in `threshold` params in `chain` mode is portion of validator current window misses over maximum window missed allowed before jail (0% ~ 100%).
 
-- **ibc**: Boolean to enable/disable IBC packets tracking.
-- **consensus**: Boolean to enable/disable consensus monitoring.
-- **wallet**: Configuration for wallet monitoring.
-    - `mode`: Mode of operation (e.g., "chain").
-    - `enable`: Boolean to enable/disable wallet monitoring.
-    - `params`: Parameters for wallet monitoring (currently empty).
+## Installation
 
+To setup the bot in different platforms, please checkout [Set up](https://github.com/decentrio/aio-bot/blob/main/app/README.md) section.
 
-## Run
+To run the bot, follow these commands:
+
 ```bash
 python3 -m venv .aio
 source .aio/bin/activate
