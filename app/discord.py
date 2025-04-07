@@ -3,6 +3,7 @@ import discord
 import asyncio
 import json
 from discord.ext import commands, tasks
+from feat.consensus import get_consensus
 
 
 class DiscordClient(commands.Bot):
@@ -11,6 +12,7 @@ class DiscordClient(commands.Bot):
         self.channels: dict = config["app"]["discord"]["channels"]
         self.subscriptions: list = config["app"]["discord"]["subscriptions"]
         self.mode: str = config["app"]["discord"]["mode"]
+        self.rpcs: list = config["rpcs"] # for /consensus command only
 
         intents = discord.Intents.default()
         intents.guilds = True
@@ -20,7 +22,7 @@ class DiscordClient(commands.Bot):
         super().__init__(command_prefix='/', intents=intents)
 
         self.logger = logging.getLogger("DiscordClient")
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.DEBUG)
 
         self.loop = None
 
@@ -153,6 +155,26 @@ class DiscordClient(commands.Bot):
                 config["app"]["discord"]["subscriptions"] = self.subscriptions
                 with open("config.json", "w") as config_file:
                     json.dump(config, config_file, indent=4)
+            case "consensus":
+                commands = message.content[1:].split(' ')
+                self.logger.debug(f"Commands: {commands}")
+                if (len(commands) <= 2):
+                    custom_rpc = commands[1] if len(commands) == 2 else self.rpcs
+                    consensus_state = get_consensus(custom_rpc)
+                    if consensus_state == {}:
+                        msg = self.compose_embed(
+                            title=f"**Error fetching consensus state!**"
+                        )
+                        await self.reply(message.channel.id, msg, auto_delete=60)
+                    else:
+                        self.logger.debug(f"Consensus state: {consensus_state}")
+                        # await self.reply(message.channel.id, msg)
+                else:
+                    msg = self.compose_embed(
+                        title=f"**Invalid command!**",
+                        description=f"Invalid command: `{commands}`",
+                    )
+                    await self.reply(message.channel.id, msg)
             case _:
                 self.logger.error(f"Invalid command: {command}")
                 msg = self.compose_embed(

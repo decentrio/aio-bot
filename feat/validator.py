@@ -8,7 +8,9 @@ import utils.pubkey as pubkey
 
 # Chain mode
 class Validators:
-    def __init__(self, app, block_queue, params, chain, api):
+    def __init__(self, app, block_queue, params, chain, apis):
+        self.logger = logging.getLogger("Validators")
+        self.logger.setLevel(logging.DEBUG)
         self.prefix = params["prefix"] + "valcons"
         self.missed = {
             "height": 0,
@@ -17,19 +19,17 @@ class Validators:
         self.mode = "chain"
         self.block_queue = block_queue
         self.app = app
-        self.api = api
+        self.apis = apis
         self.chain = chain
         self.params = self.getSlashingParams()
         self.params.update(params)
         self.validators = self.getValidators(params["prefix"] + "valcons")
 
-        self.logger = logging.getLogger("Validators")
-        self.logger.setLevel(logging.DEBUG)
 
     def getValidators(self, prefix) -> list:
         validators = []
         try:
-            data = query.query(f"{self.api}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true")
+            data = query.query(self.apis, path=f"/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true")
             for val in data["validators"]:
                 hex_address, valcons_address = pubkey.convert(
                     val["consensus_pubkey"]["key"], prefix)
@@ -51,7 +51,7 @@ class Validators:
     # Val not appear in current valset (new val)
     def findValbyPubkey(self, pub_key) -> dict:
         try:
-            data = query.query(f"{self.api}/cosmos/staking/v1beta1/validators?pagination.limit=200&pagination.count_total=true")
+            data = query.query(self.apis, path=f"/cosmos/staking/v1beta1/validators?pagination.limit=200&pagination.count_total=true")
             for val in data["validators"]:
                 if val["consensus_pubkey"]["key"] == pub_key:
                     hex_address, valcons_address = pubkey.convert(
@@ -71,7 +71,7 @@ class Validators:
 
     def getSlashingParams(self) -> dict:
         try: 
-            data = query.query(f"{self.api}/cosmos/slashing/v1beta1/params")
+            data = query.query(self.apis, path=f"/cosmos/slashing/v1beta1/params")
             result = {
                 "signed_blocks_window": int(data["params"]["signed_blocks_window"]),
                 "min_signed_per_window": float(data["params"]["min_signed_per_window"]),
@@ -84,9 +84,9 @@ class Validators:
     
     def checkSigningPerformance(self) -> dict:
         try:
-            block = query.query(f"{self.api}/cosmos/base/tendermint/v1beta1/blocks/latest")
+            block = query.query(self.apis, path=f"/cosmos/base/tendermint/v1beta1/blocks/latest")
             self.missed["height"] = int(block["block"]["header"]["height"])
-            data = query.query(f"{self.api}/cosmos/slashing/v1beta1/signing_infos?pagination.limit=200&pagination.count_total=true")
+            data = query.query(self.apis, path=f"/cosmos/slashing/v1beta1/signing_infos?pagination.limit=200&pagination.count_total=true")
             for val in data["info"]:
                 validator = next(filter(lambda x: x["valcons_address"] == val["address"], self.validators), None)
                 if validator is None:
@@ -171,9 +171,9 @@ class Validators:
                     })
                 else:  # likely to be jailed
                     try:
-                        check_jailed = query.query(f"{self.api}/cosmos/staking/v1beta1/validators/{validator['operator_address']}")
+                        check_jailed = query.query(self.apis, path=f"/cosmos/staking/v1beta1/validators/{validator['operator_address']}")
                         if check_jailed["validator"]["jailed"]:
-                            data = query.query(f"{self.api}/cosmos/slashing/v1beta1/signing_infos/{validator['valcons_address']}")
+                            data = query.query(self.apis, path=f"/cosmos/slashing/v1beta1/signing_infos/{validator['valcons_address']}")
                             self.notify({
                                 "type": "jailed",
                                 "args": {
@@ -436,8 +436,8 @@ class Validators:
 
 # Single mode
 class Validator(Validators):
-    def __init__(self, app, block_queue, params, chain, api):
-        super().__init__(app, block_queue, params, chain, api)
+    def __init__(self, app, block_queue, params, chain, apis):
+        super().__init__(app, block_queue, params, chain, apis)
         self.logger = logging.getLogger("Validator")
         self.mode = "single"
 
@@ -509,7 +509,7 @@ class Validator(Validators):
                 val["missed"] += 1
                 if val["missed"] >= self.params["mode"][self.mode]["threshold"] and val["missed"] % self.params["mode"][self.mode]["threshold"] == 0:
                     try:
-                        data = query.query(f"{self.api}/cosmos/slashing/v1beta1/signing_infos/{val['valcons_address']}") 
+                        data = query.query(self.apis, path=f"/cosmos/slashing/v1beta1/signing_infos/{val['valcons_address']}") 
                         missed_percentage = int(data["val_signing_info"]["missed_blocks_counter"]) / (self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]))
                         val["missed_percentage"] = missed_percentage
                         if missed_percentage > self.params["mode"]["chain"]["threshold"][3]["value"]: # CRITICAL

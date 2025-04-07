@@ -4,10 +4,10 @@ import logging
 import asyncio
 
 class Balances:
-    def __init__(self, app, api, jsonrpc, params):
+    def __init__(self, app, apis, jsonrpcs, params):
         self.app: dict = app
-        self.api: str = api
-        self.jsonrpc: str = jsonrpc
+        self.apis: list = apis
+        self.jsonrpcs: list = jsonrpcs
         self.params: dict = params
 
         self.logger = logging.getLogger("Balances")
@@ -19,9 +19,9 @@ class Balances:
         """
         try:
             data = query.query(
-                self.jsonrpc, 
-                "GET", 
-                {
+                self.jsonrpcs, 
+                method="GET", 
+                body={
                     "jsonrpc": "2.0",
                     "method": "eth_getBalance",
                     "params": [address, "latest"],
@@ -38,7 +38,7 @@ class Balances:
         Fetching the inj balance
         """
         try:
-            data = query.query(f"{self.api}/cosmos/bank/v1beta1/balances/{address}")
+            data = query.query(self.apis, path=f"/cosmos/bank/v1beta1/balances/{address}")
             for i in data["balances"]:
                 if i["denom"] == "inj":
                     return int(i["amount"]) / 10**18
@@ -194,7 +194,7 @@ class Balances:
                     subscriptions = client.subscriptions
                     for sub in subscriptions:
                         self.logger.debug(f"Checking balance: {sub['validator']}")
-                        address = query.query(f"{self.api}/peggy/v1/query_delegate_keys_by_validator?validator_address={sub['validator']}")
+                        address = query.query(self.apis, path=f"/peggy/v1/query_delegate_keys_by_validator?validator_address={sub['validator']}")
                         self.check(sub["validator"], address["eth_address"])
                         self.check(sub["validator"], address["orchestrator_address"])
 

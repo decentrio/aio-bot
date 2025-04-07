@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 def getConfig():
     with open('config.json', 'r') as file:
         config = json.load(file)
-    config["rpcs"] = [
+    config["websockets"] = [
         (rpc.replace("http", "ws") + "/websocket")
         for rpc in config["rpcs"]
     ]
@@ -66,7 +66,7 @@ if __name__ == "__main__":
                 block_queue,
                 config["features"]["validators"]["params"],
                 config["chain"],
-                config["api"]
+                config["apis"]
             )
             validators_thread = threading.Thread(target=validators.run)
             validators_thread.daemon = True
@@ -78,19 +78,18 @@ if __name__ == "__main__":
                 block_queue,
                 config["features"]["validators"]["params"],
                 config["chain"],
-                config["api"]
+                config["apis"]
             )
             validator_thread = threading.Thread(target=validator.run)
             validator_thread.daemon = True
             validator_thread.start()
             print("Validator single mode  started")
 
-
     if config["features"]["peggo"]["enable"]:
         peggo = Peggo(
             app,
             config["features"]["peggo"]["params"],
-            config["api"]
+            config["apis"]
         )
         peggo_thread = threading.Thread(target=peggo.run)
         peggo_thread.daemon = True
@@ -102,7 +101,7 @@ if __name__ == "__main__":
             app,
             tx_queue,
             config["features"]["gov"]["params"],
-            config["api"],
+            config["apis"],
             config["chain"]
         )
         proposal_thread = threading.Thread(target=proposal.run)
@@ -113,8 +112,8 @@ if __name__ == "__main__":
     if config["features"]["wallet"]["enable"]:
         wallet = Balances(
             app,
-            config["api"],
-            config["jsonrpc"],
+            config["apis"],
+            config["jsonrpcs"],
             config["features"]["wallet"]["params"]
         )
         wallet_thread = threading.Thread(target=wallet.run)
@@ -157,7 +156,7 @@ if __name__ == "__main__":
                 }
             }
         ]
-        ws_client = WebsocketClient(config['rpcs'], topics, block_queue, tx_queue)
+        ws_client = WebsocketClient(config['websockets'], topics, block_queue, tx_queue)
         ws_thread = threading.Thread(target=ws_client.connect)
         ws_thread.daemon = True
         ws_thread.start()

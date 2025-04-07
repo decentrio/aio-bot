@@ -5,10 +5,10 @@ import logging
 import asyncio
 
 class Peggo:
-    def __init__(self, app, params, api):
+    def __init__(self, app, params, apis):
         self.operators: dict = {}
         self.app: dict = app
-        self.api: str = api
+        self.apis: str = apis
         self.params: dict = params
         self.logger = logging.getLogger("Peggo")
         self.logger.setLevel(logging.DEBUG)
@@ -18,7 +18,7 @@ class Peggo:
         Fetching the latest block height
         """
         try:
-            data = query.query(f"{self.api}/cosmos/base/tendermint/v1beta1/blocks/latest")
+            data = query.query(self.apis, path=f"/cosmos/base/tendermint/v1beta1/blocks/latest")
             height = int(data['block']['header']['height'])
             return height
         except Exception as e:
@@ -30,7 +30,7 @@ class Peggo:
         Fetching Last Observed Peggo Nonce
         """
         try:
-            data = query.query(f"{self.api}/peggy/v1/module_state")
+            data = query.query(self.apis, path=f"/peggy/v1/module_state")
             lon = int(data['state']['last_observed_nonce'])
             valset_confirms = data["state"]["valset_confirms"]
             batch_confirms = data["state"]["batch_confirms"]
@@ -41,7 +41,7 @@ class Peggo:
         
     def get_lce(self, orchestrator) -> int:
         try:
-            data = query.query(f"{self.api}/peggy/v1/oracle/event/{orchestrator}")
+            data = query.query(self.apis, path=f"/peggy/v1/oracle/event/{orchestrator}")
             lce = int(data['last_claim_event']['ethereum_event_nonce'])
             return lce
         except Exception as e:
@@ -269,7 +269,7 @@ class Peggo:
                 self.logger.debug(f"Checking {validator['moniker']} ...")
                 valoper_address = validator['operator_address']
                 try:
-                    address = query.query(f"{self.api}/peggy/v1/query_delegate_keys_by_validator?validator_address={valoper_address}")
+                    address = query.query(self.apis, path=f"/peggy/v1/query_delegate_keys_by_validator?validator_address={valoper_address}")
                     self.operators[valoper_address] = address
                     self.operators[valoper_address]["valoper_address"] = valoper_address
                     self.operators[valoper_address]["moniker"] = validator['moniker']

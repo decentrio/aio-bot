@@ -15,7 +15,7 @@ class Proposal:
 
     def queryProposal(self, id):
         try:
-            proposal = query.query(f"{self.api}/cosmos/gov/v1/proposals/{id}")
+            proposal = query.query(self.apis, path=f"/cosmos/gov/v1/proposals/{id}")
             return proposal
         except Exception as e:
             self.logger.error(f"Error querying proposal: {e}")

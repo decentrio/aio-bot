@@ -5,21 +5,21 @@ import asyncio
 from datetime import datetime
 import time
 
-def getIBCList(api):
+def getIBCList(apis):
     with open("ibc.json", "r") as ibc_file:
         ibc_list = json.load(ibc_file)
     try:
-        injective_detail = query.query(f"{api}/injective/chain.json")
+        injective_detail = query.query(apis, path=f"/injective/chain.json")
         injective_apis = injective_detail["apis"]["rest"]
         for ibc in ibc_list:
             if "api-1" not in ibc.keys() or ibc["api-1"] is None:
-                chain_detail = query.query(f"{api}/{ibc['chain-1']}/chain.json")
-                apis = chain_detail["apis"]["rest"]
+                chain_detail = query.query(apis, path=f"/{ibc['chain-1']}/chain.json")
+                chain1_apis = chain_detail["apis"]["rest"]
                 ibc["api-1"] = [
                     api["address"]
                     if api["address"].startswith("https://") or api["address"].startswith("http://")
                     else "https://" + api["address"]
-                    for api in apis]
+                    for api in chain1_apis]
             if "api-2" not in ibc.keys() or ibc["api-2"] is None:
                 ibc["api-2"] = [
                     api["address"]
@@ -45,85 +45,80 @@ class IBC:
         self.logger = logging.getLogger("IBC")
         self.logger.setLevel(logging.INFO)
 
-    def checkClient(self, client, source_api, dest_apis, chain_1, chain_2):
-        client_state = query.query(f"{source_api}/ibc/core/client/v1/client_states/{client}")
+    def checkClient(self, client, source_apis, dest_apis, chain_1, chain_2):
+        try:
+            client_state = query.query(source_apis, path=f"/ibc/core/client/v1/client_states/{client}")
+        except Exception as e:
+            self.logger.error(f"Error fetching client state for {client} on {source_apis}: {e}")
+            return
         last_updated_height = client_state["client_state"]["latest_height"]["revision_height"]
         trusting_period = int(client_state["client_state"]["trusting_period"][:-1])
-        for dest_api in dest_apis:
-            try:
-                block_detail = query.query(f"{dest_api}/cosmos/base/tendermint/v1beta1/blocks/{last_updated_height}")
-                block_time = block_detail["block"]["header"]["time"]
-                block_time = block_time.split(".")[0] + "Z"
-                time_since_last_updated = (datetime.now() - datetime.strptime(block_time, "%Y-%m-%dT%H:%M:%SZ")).total_seconds()
-                if trusting_period - time_since_last_updated <= self.client_update_threshold:
-                    self.notify({
-                        "type": "client",
-                        "args": {
-                            "client": client,
-                            "last_updated": block_time,
-                            "chain-1": chain_1,
-                            "chain-2": chain_2,
-                            "time_left": trusting_period - time_since_last_updated if trusting_period >= time_since_last_updated else 0
-                        }
-                    })
-                break
-            except Exception as e:
-                self.logger.error(f"Error checking client {client} on {dest_api}: {e}")
-                continue
+        try:
+            block_detail = query.query(dest_apis, path=f"/cosmos/base/tendermint/v1beta1/blocks/{last_updated_height}")
+            block_time = block_detail["block"]["header"]["time"]
+            block_time = block_time.split(".")[0] + "Z"
+            time_since_last_updated = (datetime.now() - datetime.strptime(block_time, "%Y-%m-%dT%H:%M:%SZ")).total_seconds()
+            if trusting_period - time_since_last_updated <= self.client_update_threshold:
+                self.notify({
+                    "type": "client",
+                    "args": {
+                        "client": client,
+                        "last_updated": block_time,
+                        "chain-1": chain_1,
+                        "chain-2": chain_2,
+                        "time_left": trusting_period - time_since_last_updated if trusting_period >= time_since_last_updated else 0
+                    }
+                })
+        except Exception as e:
+            self.logger.error(f"Error checking client {client} on {dest_apis}: {e}")
 
 
     async def queryIBCPackets(self):
         while True:
             for ibc in self.ibcs:
-                for api in ibc["api-1"]:
-                    try:
-                        if ibc["client-1"] != "":
-                            self.checkClient(ibc["client-1"], api, ibc["api-2"], ibc["chain-1"], ibc["chain-2"])
-                        data = query.query(f"{api}/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments")
-                        packet_1 = data["commitments"]
-                        ibc["packet-1"] = len(packet_1)
-                        if len(packet_1):
-                            self.notify({
-                                "type": "packets",
-                                "args": {
-                                    "quantity": len(packet_1),
-                                    "chain-1": ibc["chain-1"],
-                                    "chain-2": ibc["chain-2"],
-                                    "port": ibc["port-1"],
-                                    "channel": ibc["channel-1"]
-                                }
-                            })
+                try:
+                    if ibc["client-1"] != "":
+                        self.checkClient(ibc["client-1"], ibc["api-1"], ibc["api-2"], ibc["chain-1"], ibc["chain-2"])
+                    data = query.query(ibc["api-1"], path=f"/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments")
+                    packet_1 = data["commitments"]
+                    ibc["packet-1"] = len(packet_1)
+                    if len(packet_1):
+                        self.notify({
+                            "type": "packets",
+                            "args": {
+                                "quantity": len(packet_1),
+                                "chain-1": ibc["chain-1"],
+                                "chain-2": ibc["chain-2"],
+                                "port": ibc["port-1"],
+                                "channel": ibc["channel-1"]
+                            }
+                        })
 
-                        self.logger.debug(f"{ibc['chain-1']}-{ibc['chain-2']} queried.")
-                        break
-                    except Exception as e:
-                        self.logger.error(f"Error querying {ibc['chain-1']}-{ibc['chain-2']}: {e}")
-                        continue
+                    self.logger.debug(f"{ibc['chain-1']}-{ibc['chain-2']} queried.")
+                except Exception as e:
+                    self.logger.error(f"Error querying {ibc['chain-1']}-{ibc['chain-2']}: {e}")
 
-                for api in ibc["api-2"]:
-                    try:
-                        if ibc["client-2"] != "":
-                            self.checkClient(ibc["client-2"], api, ibc["api-1"], ibc["chain-2"], ibc["chain-1"])
-                        data = query.query(f"{api}/ibc/core/channel/v1/channels/{ibc['channel-2']}/ports/{ibc['port-2']}/packet_commitments")
-                        packet_2 = data["commitments"]
-                        ibc["packet-2"] = len(packet_2)
-                        if len(packet_2) >= self.stuck_packets_threshold:
-                            self.notify({
-                                "type": "packets",
-                                "args": {
-                                    "quantity": len(packet_2),
-                                    "chain-1": ibc["chain-2"],
-                                    "chain-2": ibc["chain-1"],
-                                    "port": ibc["port-2"],
-                                    "channel": ibc["channel-2"]
-                                }
-                            })
+                try:
+                    if ibc["client-2"] != "":
+                        self.checkClient(ibc["client-2"], ibc["api-2"], ibc["api-1"], ibc["chain-2"], ibc["chain-1"])
+                    data = query.query(ibc["api-2"], path=f"/ibc/core/channel/v1/channels/{ibc['channel-2']}/ports/{ibc['port-2']}/packet_commitments")
+                    packet_2 = data["commitments"]
+                    ibc["packet-2"] = len(packet_2)
+                    if len(packet_2) >= self.stuck_packets_threshold:
+                        self.notify({
+                            "type": "packets",
+                            "args": {
+                                "quantity": len(packet_2),
+                                "chain-1": ibc["chain-2"],
+                                "chain-2": ibc["chain-1"],
+                                "port": ibc["port-2"],
+                                "channel": ibc["channel-2"]
+                            }
+                        })
 
-                        self.logger.debug(f"{ibc['chain-2']}-{ibc['chain-1']} queried.")
-                        break
-                    except Exception as e:
-                        self.logger.error(f"Error querying {ibc['chain-2']}-{ibc['chain-1']}: {e}")
-                        continue
+                    self.logger.debug(f"{ibc['chain-2']}-{ibc['chain-1']} queried.")
+                except Exception as e:
+                    self.logger.error(f"Error querying {ibc['chain-2']}-{ibc['chain-1']}: {e}")
 
             with open("ibc.json", "w") as ibc_file:
                 json.dump(self.ibcs, ibc_file, indent=4)
