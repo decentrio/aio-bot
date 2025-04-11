@@ -70,10 +70,12 @@
     },
     "chain": "Injective",
     "rpcs": [],
-    "api": [],
-    "jsonrpc": "https://mainnet.rpc.inevm.com/http",
+    "apis": [],
+    "jsonrpcs": [],
     "features": {
-        "faucet": false,
+        "faucet": {
+            "enable": false
+        },
         "gov": {
             "enable": true,
             "params": {
@@ -127,10 +129,12 @@
             "params": {
                 "stuck_packets_threshold": 100,
                 "client_update_threshold": 14400,
-                "registry_api": "https://raw.githubusercontent.com/cosmos/chain-registry/master"
+                "registry_api": ["https://raw.githubusercontent.com/cosmos/chain-registry/master"]
             }
         },
-        "consensus": false,
+        "consensus": {
+            "enable": true
+        },
         "wallet": {
             "enable": true,
             "params": {

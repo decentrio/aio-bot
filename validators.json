@@ -126,6 +126,15 @@
         "warning_level": 0
     },
     {
+        "moniker": "KDAC",
+        "operator_address": "injvaloper1guh04j8x8fxpax3ghf7wlf798xey8576kyfwza",
+        "valcons_address": "injvalcons167j3gs6atu4qgvey935g903f3tzzgh84lkyess",
+        "hex": "D7A514435D5F2A0433242C6882BE298AC4245CF5",
+        "missed": 0,
+        "missed_percentage": 0,
+        "warning_level": 0
+    },
+    {
         "moniker": "Crosnest",
         "operator_address": "injvaloper1fqrdtx7pyps6eytn3356j9cs4f8zl0eevlt3rt",
         "valcons_address": "injvalcons1m002pepun6crws3dpcnu8lldlp5ja8yhcycag7",
@@ -391,15 +400,6 @@
         "operator_address": "injvaloper1e84fr6cxgcflv3fc9ey6n8425au7zx6wsztrle",
         "valcons_address": "injvalcons1qjjrwp3vgz0628kf3fxavjfef0gchkkh76f804",
         "hex": "04A437062C409FA51EC98A4DD649394BD18BDAD7",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
-    },
-    {
-        "moniker": "KDAC",
-        "operator_address": "injvaloper1egc6mep7z8sa0tglm63qzwq4kdgyd8ccapydkt",
-        "valcons_address": "injvalcons1vfyjrr848m2l6dvc248c9rkrrweq8ym7wx5czm",
-        "hex": "6249218CF53ED5FD3598554F828EC31BB203937E",
         "missed": 0,
         "missed_percentage": 0,
         "warning_level": 0

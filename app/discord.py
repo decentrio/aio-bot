@@ -167,8 +167,52 @@ class DiscordClient(commands.Bot):
                         )
                         await self.reply(message.channel.id, msg, auto_delete=60)
                     else:
+                        msg_1 = self.compose_embed(
+                            title=f"**Consensus state (1/3)**",
+                            description=f"Height/Round/Step: `{consensus_state['height']}/{consensus_state['round']}/{consensus_state['step']}`\n \
+                                       Prevotes/Precommits: `{consensus_state['prevotes_percent']}%/{consensus_state['precommits_percent']}%`\n \
+                                        Proposer: `{consensus_state['validator'][consensus_state['proposer']]['moniker']}`",
+                            fields=[
+                                {
+                                    "name":consensus_state["validator"][i]['moniker'],
+                                    "value": f"{consensus_state["validator"][i]['prevotes']} {consensus_state["validator"][i]['precommits']}",
+                                    "inline": True
+                                } for i in range(24)
+                            ],
+                            footer=f"This message will be automatically deleted in 60s"
+                        )
+                        msg_2 = self.compose_embed(
+                            title=f"**Consensus state (2/3)**",
+                            description=f"Height/Round/Step: `{consensus_state['height']}/{consensus_state['round']}/{consensus_state['step']}`\n \
+                                        Prevotes/Precommits: `{consensus_state['prevotes_percent']}%/{consensus_state['precommits_percent']}%`\n \
+                                            Proposer: `{consensus_state['validator'][consensus_state['proposer']]['moniker']}`",
+                            fields=[
+                                {
+                                    "name":consensus_state["validator"][i]['moniker'],
+                                    "value": f"{consensus_state["validator"][i]['prevotes']} {consensus_state["validator"][i]['precommits']}",
+                                    "inline": True
+                                } for i in range(24, 48)
+                            ],
+                            footer=f"This message will be automatically deleted in 60s"
+                        )
+                        msg_3 = self.compose_embed(
+                            title=f"**Consensus state (3/3)**",
+                            description=f"Height/Round/Step: `{consensus_state['height']}/{consensus_state['round']}/{consensus_state['step']}`\n \
+                                        Prevotes/Precommits: `{consensus_state['prevotes_percent']}%/{consensus_state['precommits_percent']}%`\n \
+                                            Proposer: `{consensus_state['validator'][consensus_state['proposer']]['moniker']}`",
+                            fields=[
+                                {
+                                    "name":consensus_state["validator"][i]['moniker'],
+                                    "value": f"{consensus_state["validator"][i]['prevotes']} {consensus_state["validator"][i]['precommits']}",
+                                    "inline": True
+                                } for i in range(48, len(consensus_state["validator"]))
+                            ],
+                            footer=f"This message will be automatically deleted in 60s"
+                        )
                         self.logger.debug(f"Consensus state: {consensus_state}")
-                        # await self.reply(message.channel.id, msg)
+                        await self.reply(message.channel.id, msg_1, auto_delete=60)
+                        await self.reply(message.channel.id, msg_2, auto_delete=60)
+                        await self.reply(message.channel.id, msg_3, auto_delete=60)
                 else:
                     msg = self.compose_embed(
                         title=f"**Invalid command!**",
