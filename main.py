@@ -8,7 +8,7 @@ from app.discord import DiscordClient
 from app.slack import SlackClient
 from app.telegram import TelegramClient
 from utils.websocket import WebsocketClient
-from feat.validator import Validators, Validator
+from feat.validator import Validators
 from feat.proposal import Proposal
 from feat.peggo import Peggo
 from feat.balances import Balances
@@ -61,29 +61,22 @@ if __name__ == "__main__":
 
     if config["features"]["validators"]["enable"]:
         if config["app"]["discord"]["enable"] and config["app"]["discord"]["mode"] == "chain":
-            validators = Validators(
-                app,
-                block_queue,
-                config["features"]["validators"]["params"],
-                config["chain"],
-                config["apis"]
-            )
-            validators_thread = threading.Thread(target=validators.run)
-            validators_thread.daemon = True
-            validators_thread.start()
-            print("Validators chain mode started")
-        if (config["app"]["discord"]["enable"] and config["app"]["discord"]["mode"] == "single") or config["app"]["slack"]["enable"] or config["app"]["telegram"]["enable"]:
-            validator = Validator(
-                app,
-                block_queue,
-                config["features"]["validators"]["params"],
-                config["chain"],
-                config["apis"]
-            )
-            validator_thread = threading.Thread(target=validator.run)
-            validator_thread.daemon = True
-            validator_thread.start()
-            print("Validator single mode started")
+            mode = "chain"
+        elif (config["app"]["discord"]["enable"] and config["app"]["discord"]["mode"] == "single") or config["app"]["slack"]["enable"] or config["app"]["telegram"]["enable"]:
+            mode = "single"
+        
+        validators = Validators(
+            app,
+            block_queue,
+            config["features"]["validators"]["params"],
+            config["chain"],
+            config["apis"],
+            mode
+        )
+        validators_thread = threading.Thread(target=validators.run)
+        validators_thread.daemon = True
+        validators_thread.start()
+        print(f"Validators {mode} mode started")
 
     if config["features"]["peggo"]["enable"]:
         peggo = Peggo(
@@ -133,12 +126,12 @@ if __name__ == "__main__":
 
     if config["features"]["validators"]["enable"] or config["features"]["gov"]["enable"]:
         topics = [
-            {
-                "jsonrpc": "2.0",
-                "method": "subscribe",
-                "id": 0,
-                "params": {"query": "tm.event='NewBlock'"} # check valset every block to see if any validator has been missed
-            },
+            # {
+            #     "jsonrpc": "2.0",
+            #     "method": "subscribe",
+            #     "id": 0,
+            #     "params": {"query": "tm.event='NewBlock'"} # check valset every block to see if any validator has been missed
+            # },
             {
                 "jsonrpc": "2.0",
                 "method": "subscribe",

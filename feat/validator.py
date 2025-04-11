@@ -8,7 +8,7 @@ import utils.pubkey as pubkey
 
 # Chain mode
 class Validators:
-    def __init__(self, app, block_queue, params, chain, apis):
+    def __init__(self, app, block_queue, params, chain, apis, mode):
         self.logger = logging.getLogger("Validators")
         self.logger.setLevel(logging.DEBUG)
         self.prefix = params["prefix"] + "valcons"
@@ -16,7 +16,7 @@ class Validators:
             "height": 0,
             "missed": []
         }
-        self.mode = "chain"
+        self.mode = mode
         self.block_queue = block_queue
         self.app = app
         self.apis = apis
@@ -94,14 +94,14 @@ class Validators:
 
                 missed_percentage = int(val["missed_blocks_counter"]) / (self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]))
                 current_warning_level = validator["warning_level"]
-                if missed_percentage > self.params["mode"][self.mode]["threshold"][3]["value"]: # CRITICAL
+                if missed_percentage > self.params["threshold"][3]["value"]: # CRITICAL
                     validator["warning_level"] = 3
-                elif missed_percentage > self.params["mode"][self.mode]["threshold"][2]["value"]: # WARNING
+                elif missed_percentage > self.params["threshold"][2]["value"]: # WARNING
                     validator["warning_level"] = 2
                 else:
                     validator["warning_level"] = 1
-                if missed_percentage > self.params["mode"][self.mode]["threshold"][1]["value"]: # ATTENTION
-                    if int(val["missed_blocks_counter"]) < validator["missed"] and missed_percentage < self.params["mode"][self.mode]["threshold"][current_warning_level]["value"]:
+                if missed_percentage > self.params["threshold"][1]["value"]: # ATTENTION
+                    if int(val["missed_blocks_counter"]) < validator["missed"] and missed_percentage < self.params["threshold"][current_warning_level]["value"]:
                         self.notify({
                             "type": "recovering",
                             "args": {
@@ -111,7 +111,7 @@ class Validators:
                             },
                             "auto_delete": None
                         })
-                    elif int(val["missed_blocks_counter"]) > validator["missed"] and current_warning_level < 3 and missed_percentage >= self.params["mode"][self.mode]["threshold"][current_warning_level + 1]["value"]:
+                    elif int(val["missed_blocks_counter"]) > validator["missed"] and current_warning_level < 3 and missed_percentage >= self.params["threshold"][current_warning_level + 1]["value"]:
                         self.notify({
                             "type": "miss_block",
                             "args": {
@@ -119,15 +119,15 @@ class Validators:
                                 "moniker": validator["moniker"],
                                 "window_missed": int(val["missed_blocks_counter"]),
                                 "missed_percentage": missed_percentage,
-                                "warning_level": self.params["mode"][self.mode]["threshold"][validator["warning_level"]]["label"]
+                                "warning_level": self.params["threshold"][validator["warning_level"]]["label"]
                             },
                             "auto_delete": None
                         })
                     validator["missed"] = int(val["missed_blocks_counter"])
                     validator["missed_percentage"] = missed_percentage
                     self.missed["missed"].append(validator["moniker"])
-                elif missed_percentage < self.params["mode"][self.mode]["threshold"][0]["value"]: # ACTIVE
-                    if validator["missed_percentage"] > self.params["mode"][self.mode]["threshold"][1]["value"]: # ATTENTION
+                elif missed_percentage < self.params["threshold"][0]["value"]: # ACTIVE
+                    if validator["missed_percentage"] > self.params["threshold"][1]["value"]: # ATTENTION
                         self.logger.debug(f"Validator {validator['moniker']} is active after misses blocks!")
                         self.notify({
                             "type": "active",
@@ -219,7 +219,7 @@ class Validators:
         valset_thread.start()
 
         while True:
-            time.sleep(self.params["mode"][self.mode]["interval"])
+            time.sleep(self.params["interval"])
             self.checkSigningPerformance()
             with open("validators.json", "w") as f:
                 json.dump(self.validators, f, indent=4)
@@ -238,9 +238,9 @@ class Validators:
                             user += f" <@{sub['user']}>"
 
                     if message['type'] == "miss_block":
-                        if message['args']['missed_percentage'] <= self.params["mode"]["chain"]["threshold"][2]["value"]: # WARNING
+                        if message['args']['missed_percentage'] <= self.params["threshold"][2]["value"]: # WARNING
                             color = 0xfff942
-                        elif message['args']['missed_percentage'] <= self.params["mode"]["chain"]["threshold"][3]["value"]: # CRITICAL
+                        elif message['args']['missed_percentage'] <= self.params["threshold"][3]["value"]: # CRITICAL
                             color = 0xff941a
                         else:
                             color = 0xff4d4d
@@ -268,9 +268,9 @@ class Validators:
                             color=color
                         )
                     elif message['type'] == "recovering":
-                        if message['args']['missed_percentage'] <= self.params["mode"][self.mode]["threshold"][2]["value"]: # WARNING
+                        if message['args']['missed_percentage'] <= self.params["threshold"][2]["value"]: # WARNING
                             color = 0xfff942
-                        elif message['args']['missed_percentage'] <= self.params["mode"][self.mode]["threshold"][3]["value"]: # CRITICAL
+                        elif message['args']['missed_percentage'] <= self.params["threshold"][3]["value"]: # CRITICAL
                             color = 0xff941a
                         else:
                             color = 0xff4d4d
@@ -435,105 +435,105 @@ class Validators:
         loop.run_until_complete(self.start_block_polling())
 
 # Single mode
-class Validator(Validators):
-    def __init__(self, app, block_queue, params, chain, apis):
-        super().__init__(app, block_queue, params, chain, apis)
-        self.logger = logging.getLogger("Validator")
-        self.logger.setLevel(logging.DEBUG)
-        self.mode = "single"
+# class Validator(Validators):
+#     def __init__(self, app, block_queue, params, chain, apis):
+#         super().__init__(app, block_queue, params, chain, apis)
+#         self.logger = logging.getLogger("Validator")
+#         self.logger.setLevel(logging.DEBUG)
+#         self.mode = "single"
 
-    async def start_block_polling(self):
-        if self.app["discord"] is not None and self.app["discord"].mode == "single" and not len(self.app["discord"].subscriptions):
-            discord_client = self.app["discord"]
-            if discord_client.loop:
-                msg = discord_client.compose_embed(
-                    title="**No subscription found!**",
-                    description="You haven't subscribed to any validators yet. Please subscribe to receive notifications about your validator.",
-                    fields=[],
-                    footer="This message will be automatically deleted in 60s",
-                    color=0x29fffb
-                )
-                future = asyncio.run_coroutine_threadsafe(
-                    discord_client.reply(
-                        discord_client.channels["validators"]["id"],
-                        msg,
-                    ),
-                    discord_client.loop
-                )
-                future.result()
-            else:
-                self.logger.error("Discord client loop not ready.")
+#     async def start_block_polling(self):
+#         if self.app["discord"] is not None and self.app["discord"].mode == "single" and not len(self.app["discord"].subscriptions):
+#             discord_client = self.app["discord"]
+#             if discord_client.loop:
+#                 msg = discord_client.compose_embed(
+#                     title="**No subscription found!**",
+#                     description="You haven't subscribed to any validators yet. Please subscribe to receive notifications about your validator.",
+#                     fields=[],
+#                     footer="This message will be automatically deleted in 60s",
+#                     color=0x29fffb
+#                 )
+#                 future = asyncio.run_coroutine_threadsafe(
+#                     discord_client.reply(
+#                         discord_client.channels["validators"]["id"],
+#                         msg,
+#                     ),
+#                     discord_client.loop
+#                 )
+#                 future.result()
+#             else:
+#                 self.logger.error("Discord client loop not ready.")
 
-        if self.app["telegram"] is not None and self.app["telegram"].mode == "single" and not len(self.app["telegram"].subscriptions):
-            self.logger.error("No user available.")
+#         if self.app["telegram"] is not None and self.app["telegram"].mode == "single" and not len(self.app["telegram"].subscriptions):
+#             self.logger.error("No user available.")
 
-        if self.app["slack"] is not None and self.app["slack"].mode == "single" and not len(self.app["slack"].subscriptions):
-            slack_client = self.app["slack"]
-            msg = f"You haven't subscribed to any validators yet. Please subscribe to receive notifications about your validator."
-            slack_client.reply(
-                msg,
-                slack_client.channels[0]["id"],
-            )
+#         if self.app["slack"] is not None and self.app["slack"].mode == "single" and not len(self.app["slack"].subscriptions):
+#             slack_client = self.app["slack"]
+#             msg = f"You haven't subscribed to any validators yet. Please subscribe to receive notifications about your validator."
+#             slack_client.reply(
+#                 msg,
+#                 slack_client.channels[0]["id"],
+#             )
 
-        while True:
-            if not self.block_queue.empty():
-                data = self.block_queue.get()
-                if data and "result" in data:
-                    msg_type = data["result"]["query"]
-                    if msg_type == "tm.event='NewBlock'":
-                        height = int(data["result"]["data"]["value"]["block"]["header"]["height"])
-                        signatures = data["result"]["data"]["value"]["block"]["last_commit"]["signatures"]
-                        await self.checkUptime(height, signatures)
-                    elif msg_type == "tm.event='ValidatorSetUpdates'":
-                        valset = data["result"]["data"]["value"]["validator_updates"]
-                        self.checkValset(valset)
-                # with open("validators.json", "w") as f:
-                #     json.dump(self.validators, f, indent=4)
+#         while True:
+#             if not self.block_queue.empty():
+#                 data = self.block_queue.get()
+#                 if data and "result" in data:
+#                     msg_type = data["result"]["query"]
+#                     if msg_type == "tm.event='NewBlock'":
+#                         height = int(data["result"]["data"]["value"]["block"]["header"]["height"])
+#                         signatures = data["result"]["data"]["value"]["block"]["last_commit"]["signatures"]
+#                         await self.checkUptime(height, signatures)
+#                     elif msg_type == "tm.event='ValidatorSetUpdates'":
+#                         valset = data["result"]["data"]["value"]["validator_updates"]
+#                         self.checkValset(valset)
+#                 # with open("validators.json", "w") as f:
+#                 #     json.dump(self.validators, f, indent=4)
 
-    async def checkUptime(self, height, signatures):
-        self.missed["height"] = height
-        for val in self.validators:
-            sig = next(filter(lambda x: x["validator_address"] == val["hex"], signatures), None)
-            if sig is not None:  # signed
-                if val["missed"] >= self.params["mode"][self.mode]["threshold"]:
-                    self.notify({
-                        "type": "active",
-                        "args": {
-                                "validator": val["operator_address"],
-                                "moniker": val["moniker"],
-                        },
-                        "auto_delete": None
-                    })
-                val["missed"] = 0
-            elif sig is None:  # missed
-                self.missed["missed"].append(val['moniker'])
-                val["missed"] += 1
-                if val["missed"] >= self.params["mode"][self.mode]["threshold"] and val["missed"] % self.params["mode"][self.mode]["threshold"] == 0:
-                    try:
-                        data = query.query(self.apis, path=f"/cosmos/slashing/v1beta1/signing_infos/{val['valcons_address']}") 
-                        missed_percentage = int(data["val_signing_info"]["missed_blocks_counter"]) / (self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]))
-                        val["missed_percentage"] = missed_percentage
-                        if missed_percentage > self.params["mode"]["chain"]["threshold"][3]["value"]: # CRITICAL
-                            val["warning_level"] = "CRITICAL"
-                        elif missed_percentage > self.params["mode"]["chain"]["threshold"][2]["value"]: # WARNING
-                            val["warning_level"] = "WARNING"
-                        else:
-                            val["warning_level"] = "ATTENTION"
-                        self.notify({
-                            "type": "miss_block",
-                            "args": {
-                                "validator": val["operator_address"],
-                                "moniker": val["moniker"],
-                                "missed": val["missed"],
-                                "window_missed": int(data["val_signing_info"]["missed_blocks_counter"]),
-                                "missed_percentage": missed_percentage,
-                                "warning_level": val["warning_level"],
-                                "last_height": height - val["missed"]
-                            }, 
-                            "auto_delete": None
-                        })
-                    except Exception as e:
-                        self.logger.error(f"Error getting missed block: {e}")
+#     async def checkUptime(self, height, signatures):
+#         self.missed["height"] = height
+#         for val in self.validators:
+#             sig = next(filter(lambda x: x["validator_address"] == val["hex"], signatures), None)
+#             if sig is not None:  # signed
+#                 if val["missed"] >= self.params["mode"][self.mode]["threshold"]:
+#                     self.notify({
+#                         "type": "active",
+#                         "args": {
+#                                 "validator": val["operator_address"],
+#                                 "moniker": val["moniker"],
+#                         },
+#                         "auto_delete": None
+#                     })
+#                 val["missed"] = 0
+#             elif sig is None:  # missed
+#                 self.missed["missed"].append(val['moniker'])
+#                 val["missed"] += 1
+#                 if val["missed"] >= self.params["mode"][self.mode]["threshold"] and val["missed"] % self.params["mode"][self.mode]["threshold"] == 0:
+#                     try:
+#                         data = query.query(self.apis, path=f"/cosmos/slashing/v1beta1/signing_infos/{val['valcons_address']}") 
+#                         missed_percentage = int(data["val_signing_info"]["missed_blocks_counter"]) / (self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]))
+#                         val["missed_percentage"] = missed_percentage
+#                         if missed_percentage > self.params["mode"]["chain"]["threshold"][3]["value"]: # CRITICAL
+#                             val["warning_level"] = "CRITICAL"
+#                         elif missed_percentage > self.params["mode"]["chain"]["threshold"][2]["value"]: # WARNING
+#                             val["warning_level"] = "WARNING"
+#                         else:
+#                             val["warning_level"] = "ATTENTION"
+#                         self.notify({
+#                             "type": "miss_block",
+#                             "args": {
+#                                 "validator": val["operator_address"],
+#                                 "moniker": val["moniker"],
+#                                 "missed": val["missed"],
+#                                 "window_missed": int(data["val_signing_info"]["missed_blocks_counter"]),
+#                                 "missed_percentage": missed_percentage,
+#                                 "warning_level": val["warning_level"],
+#                                 "last_height": height - val["missed"]
+#                             }, 
+#                             "auto_delete": None
+#                         })
+#                     except Exception as e:
+#                         self.logger.error(f"Error getting missed block: {e}")
 
-        self.logger.debug(self.missed)
-        self.missed["missed"] = []
+#         self.logger.debug(self.missed)
+#         self.missed["missed"] = []

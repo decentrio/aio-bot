@@ -34,15 +34,17 @@ class Proposal:
                             {
                                 "name": "Type",
                                 "value": message['args']['type'],
+                                "inline": True
                             }
+                            
                         ],
-                        footer = "This message will be automatically deleted in 60s",
                         color = 0x75ffd1
                     )
                     future = asyncio.run_coroutine_threadsafe(
                         discord_client.reply(
                             discord_client.channels["gov"]["id"],
                             msg,
+                            auto_delete = None
                         ),
                         discord_client.loop
                     )
@@ -120,7 +122,6 @@ class Proposal:
                                     "voting_end_time": voting_end_time,
                                 }
                             })
-
 
     def run(self):
         loop = asyncio.new_event_loop()

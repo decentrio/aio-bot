@@ -67,7 +67,8 @@ class IBC:
                         "chain-1": chain_1,
                         "chain-2": chain_2,
                         "time_left": trusting_period - time_since_last_updated if trusting_period >= time_since_last_updated else 0
-                    }
+                    },
+                    "auto_delete": None
                 })
         except Exception as e:
             self.logger.error(f"Error checking client {client} on {dest_apis}: {e}")
@@ -91,7 +92,8 @@ class IBC:
                                 "chain-2": ibc["chain-2"],
                                 "port": ibc["port-1"],
                                 "channel": ibc["channel-1"]
-                            }
+                            },
+                            "auto_delete": None
                         })
 
                     self.logger.debug(f"{ibc['chain-1']}-{ibc['chain-2']} queried.")
@@ -113,7 +115,8 @@ class IBC:
                                 "chain-2": ibc["chain-1"],
                                 "port": ibc["port-2"],
                                 "channel": ibc["channel-2"]
-                            }
+                            },
+                            "auto_delete": None
                         })
 
                     self.logger.debug(f"{ibc['chain-2']}-{ibc['chain-1']} queried.")
