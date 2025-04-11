@@ -347,7 +347,7 @@ class Validators:
                                     discord_client.reply(
                                         discord_client.channels["validators"]["id"],
                                         msg,
-                                        message['auto_delete']
+                                        auto_delete=message['auto_delete']
                                     ),
                                     discord_client.loop
                                 )
@@ -439,6 +439,7 @@ class Validator(Validators):
     def __init__(self, app, block_queue, params, chain, apis):
         super().__init__(app, block_queue, params, chain, apis)
         self.logger = logging.getLogger("Validator")
+        self.logger.setLevel(logging.DEBUG)
         self.mode = "single"
 
     async def start_block_polling(self):
@@ -528,7 +529,8 @@ class Validator(Validators):
                                 "missed_percentage": missed_percentage,
                                 "warning_level": val["warning_level"],
                                 "last_height": height - val["missed"]
-                            }
+                            }, 
+                            "auto_delete": None
                         })
                     except Exception as e:
                         self.logger.error(f"Error getting missed block: {e}")

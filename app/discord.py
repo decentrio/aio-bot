@@ -5,7 +5,6 @@ import json
 from discord.ext import commands, tasks
 from feat.consensus import get_consensus
 
-
 class DiscordClient(commands.Bot):
     def __init__(self, config):
         self.token: int | str = config["app"]["discord"]["bot-token"]

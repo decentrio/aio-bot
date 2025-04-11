@@ -83,7 +83,7 @@ if __name__ == "__main__":
             validator_thread = threading.Thread(target=validator.run)
             validator_thread.daemon = True
             validator_thread.start()
-            print("Validator single mode  started")
+            print("Validator single mode started")
 
     if config["features"]["peggo"]["enable"]:
         peggo = Peggo(

@@ -9,7 +9,7 @@ def query(
 ):
     for url in baseurls:
         try:
-            logging.info(f"Fetching data from {url + path}")
+            # logging.info(f"Fetching data from {url + path}")
             data = requests.request(method, url + path, json=body)
             if data.status_code == 200:
                 return data.json()

@@ -112,7 +112,6 @@ class Peggo:
                     if message['type'] == "pending_valsets":
                         msg = discord_client.compose_embed(
                             title = f"**{message['args']['moniker']} hasn't signed in latest valset_confirms!**",
-                            description = user,
                             fields = [
                                 {
                                     "name": "Last Height Checked",
@@ -126,7 +125,6 @@ class Peggo:
                     elif message['type'] == "pending_batches":
                         msg = discord_client.compose_embed(
                             title = f"**Pending batches found!**",
-                            description = user,
                             fields = [
                                 {
                                     "name": "Pending Batches",
@@ -145,7 +143,6 @@ class Peggo:
                     elif message['type'] == "nonce_mismatch":
                         msg = discord_client.compose_embed(
                             title = f"**{message['args']['moniker']}'s nonce is lagging behind!**",
-                            description = user,
                             fields = [
                                 {
                                     "name": "Last Observed Nonce",
@@ -171,6 +168,7 @@ class Peggo:
                             discord_client.reply(
                                 discord_client.channels["peggo"]["id"],
                                 msg,
+                                user,
                                 auto_delete=message['auto_delete']
                             ),
                             discord_client.loop
@@ -184,6 +182,7 @@ class Peggo:
                                     discord_client.reply(
                                         discord_client.channels["peggo"]["id"],
                                         msg,
+                                        auto_delete=message['auto_delete']
                                     ),
                                     discord_client.loop
                                 )
