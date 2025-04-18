@@ -5,45 +5,86 @@ import asyncio
 from datetime import datetime
 import time
 
-def getIBCList(apis):
-    with open("ibc.json", "r") as ibc_file:
-        ibc_list = json.load(ibc_file)
-    try:
-        injective_detail = query.query(apis, path=f"/injective/chain.json")
-        injective_apis = injective_detail["apis"]["rest"]
-        for ibc in ibc_list:
-            if "api-1" not in ibc.keys() or ibc["api-1"] is None:
-                chain_detail = query.query(apis, path=f"/{ibc['chain-1']}/chain.json")
-                chain1_apis = chain_detail["apis"]["rest"]
-                ibc["api-1"] = [
-                    api["address"]
-                    if api["address"].startswith("https://") or api["address"].startswith("http://")
-                    else "https://" + api["address"]
-                    for api in chain1_apis]
-            if "api-2" not in ibc.keys() or ibc["api-2"] is None:
-                ibc["api-2"] = [
-                    api["address"]
-                    if api["address"].startswith("https://") or api["address"].startswith("http://")
-                    else "https://" + api["address"]
-                    for api in injective_apis]
-        with open("ibc.json", "w") as ibc_file:
-            json.dump(ibc_list, ibc_file, indent=4)
-        return ibc_list
-    except Exception as e:
-        logging.error(f"Error getting IBC list: {e}")
-        return []
-
 class IBC:
     def __init__(self, app, params):
-        self.app = app
-        self.params = params
-        self.api = params["registry_api"]
-        self.client_update_threshold = params["client_update_threshold"]
-        self.stuck_packets_threshold = params["stuck_packets_threshold"]
-        self.ibcs = getIBCList(self.api)
-
         self.logger = logging.getLogger("IBC")
         self.logger.setLevel(logging.INFO)
+        self.app = app
+        self.params = params
+        self.client_update_threshold = params["client_update_threshold"]
+        self.stuck_packets_threshold = params["stuck_packets_threshold"]
+        self.ibcs = self.getIBCList()
+
+    def getIBCList(self) -> list:
+        ibcs = []
+
+        injective_detail = query.query(self.params["registry_api"], path="/injective/chain.json")
+        apis = injective_detail["apis"]["rest"]
+        chain_1_apis = [
+            api["address"]
+            if api["address"].startswith("https://") or api["address"].startswith("http://")
+            else "https://" + api["address"]
+            for api in apis
+        ]
+
+        try:
+            notion_data = query.query(
+                self.params["notion_api"], 
+                method="POST",
+                header= {
+                    "Authorization": f"Bearer {self.params['notion_api_key']}",
+                    "Notion-Version": "2022-06-28",
+                    "Content-Type": "application/json"
+                }
+            )["results"]
+        except Exception as e:
+            self.logger.error(f"Error fetching data from Notion API: {e}")
+            return []
+
+        for property in notion_data:
+            chain_2_name = property["properties"]["Chain"]["title"][0]["plain_text"]
+            chain_2_id = property["properties"]["Chain-ID"]["rich_text"][0]["plain_text"]
+            chain_2_channel = property["properties"]["Foreign\nChannel"]["rich_text"][0]["plain_text"]
+            chain_2_port = property["properties"]["Foreign \nPort"]["rich_text"][0]["plain_text"]
+            chain_1_channel = property["properties"]["Injective\nChannel"]["rich_text"][0]["plain_text"]
+            chain_1_port = property["properties"]["Injective\nPort"]["rich_text"][0]["plain_text"]
+
+            try:
+                chain_2_detail = query.query(self.params["registry_api"], path=f"/{chain_2_name}/chain.json")
+                apis = chain_2_detail["apis"]["rest"]
+                chain_2_apis = [
+                    api["address"]
+                    if api["address"].startswith("https://") or api["address"].startswith("http://")
+                    else "https://" + api["address"]
+                    for api in apis
+                ]
+
+                chain_1_client = query.query(chain_1_apis, path=f"/ibc/core/channel/v1/channels/{chain_1_channel}/ports/{chain_1_port}/client_state")
+                chain_2_client = query.query(chain_2_apis, path=f"/ibc/core/channel/v1/channels/{chain_2_channel}/ports/{chain_2_port}/client_state")
+                self.logger.debug(f"Fetched injective-{chain_2_name} IBC detail.")
+
+                ibcs.append({
+                    "chain-1": "injective",
+                    "id-1": "injective-1",
+                    "client-1": chain_1_client["identified_client_state"]["client_id"],
+                    "channel-1": chain_1_channel,
+                    "port-1": chain_1_port,
+                    "api-1": chain_1_apis,
+                    "chain-2": chain_2_name,
+                    "id-2": chain_2_id,
+                    "client-2": chain_2_client["identified_client_state"]["client_id"],
+                    "channel-2": chain_2_channel,
+                    "port-2": chain_2_port,
+                    "api-2": chain_2_apis
+                })
+            except Exception as e:
+                self.logger.error(f"Error fetching {chain_2_name} detail: {e}")
+                continue
+
+        self.logger.info("Fetched IBC list")
+        with open("ibc.json", "w") as ibc_file:
+            json.dump(ibcs, ibc_file, indent=4)
+        return ibcs
 
     def checkClient(self, client, source_apis, dest_apis, chain_1, chain_2):
         try:
@@ -201,6 +242,7 @@ class IBC:
                         discord_client.reply(
                             discord_client.channels["ibc"]["id"],
                             msg,
+                            auto_delete=message["auto_delete"]
                         ),
                         discord_client.loop
                     )
