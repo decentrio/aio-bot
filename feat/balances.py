@@ -1,3 +1,4 @@
+import json
 import time
 import utils.query as query
 import logging
@@ -51,11 +52,13 @@ class Balances:
         if address.startswith("inj1"):
             balance = self.get_inj_balance(address)
             if balance != None and balance <= self.params["threshold"]["inj"]:
+                val_info = query.query(self.apis, path=f"/cosmos/staking/v1beta1/validators/{validator}")
                 self.notify({
                     "type": "low_balance",
                     "args": {
                         "validator": validator,
                         "address": address,
+                        "moniker": val_info["validator"]["description"]["moniker"],
                         "balance": f"{balance:,.2f} INJ",
                     },
                     "auto_delete": None
@@ -63,11 +66,13 @@ class Balances:
         elif address.startswith("0x"):
             balance = self.get_eth_balance(address)
             if balance != None and balance <= self.params["threshold"]["eth"]:
+                val_info = query.query(self.apis, path=f"/cosmos/staking/v1beta1/validators/{validator}")
                 self.notify({
                     "type": "low_balance",
                     "args": {
                         "validator": validator,
                         "address": address,
+                        "moniker": val_info["validator"]["description"]["moniker"],
                         "balance": f"{balance:,.2f} ETH",
                     },
                     "auto_delete": None
@@ -98,8 +103,8 @@ class Balances:
                             user += f" <@{sub['user']}>"
                     if message['type'] == "low_balance":
                         msg = discord_client.compose_embed(
-                            title = f"Low balance!",
-                            description = "Address: " + message['args']['address'],
+                            title = f"{message['args']['moniker']} has low balance!",
+                            description = "Peggo Address: " + message['args']['address'],
                             fields = [
                                 {
                                     "name": "Balance",
@@ -113,7 +118,7 @@ class Balances:
                     elif message['type'] == "invalid_address":
                         msg = discord_client.compose_embed(
                             title = f"Invalid address!",
-                            description = "Address: " + message['args']['address'],
+                            description = "Peggo Address: " + message['args']['address'],
                             footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color = 0xffd100
                         )

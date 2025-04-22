@@ -55,9 +55,7 @@
             "https://api.celestia.mainnet.dteam.tech:443",
             "https://celestia-api.stakeandrelax.net",
             "https://api.celestia.node75.org"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -99,9 +97,7 @@
             "https://terra2.tdrsys.com",
             "https://terra-api.cosmosrescue.dev:8443",
             "https://terra-api.chainroot.io"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -137,9 +133,7 @@
             "https://terraclassic-mainnet-lcd.autostake.com:443",
             "https://terraclassic-lcd-server-01.stakely.io",
             "https://api-lunc-lcd.binodes.com"
-        ],
-        "packet-1": 0,
-        "packet-2": 3
+        ]
     },
     {
         "chain-1": "injective",
@@ -184,9 +178,7 @@
             "https://lcd.neutron.bronbro.io:443",
             "https://api.neutron.quokkastake.io",
             "https://neutron-api.ibs.team"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -220,9 +212,7 @@
             "https://noble-api.polkachu.com",
             "https://rest.lavenderfive.com:443/noble",
             "https://noble-rest.owallet.io"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -257,9 +247,7 @@
             "https://api-migaloo.cosmos-spaces.cloud",
             "https://migaloo-api.kleomedes.network:443",
             "https://migaloo-rest.publicnode.com"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -307,9 +295,7 @@
             "https://lcd.stride.bronbro.io:443",
             "https://public.stakewolle.com/cosmos/stride/rest",
             "https://stride-api.ibs.team"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -344,9 +330,7 @@
             "https://api.canto.silentvalidator.com/",
             "https://canto-mainnet-lcd.autostake.com:443",
             "https://rest-canto.kewrnode.com"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -390,9 +374,7 @@
             "https://andromeda-api.noders.services",
             "https://api-andromeda.blockval.io",
             "https://andromeda.api.liveraven.net"
-        ],
-        "packet-1": 100,
-        "packet-2": 49
+        ]
     },
     {
         "chain-1": "injective",
@@ -451,9 +433,7 @@
             "https://osmosis-api.chainroot.io",
             "https://osmosis.api.quasarstaking.ai:443",
             "https://osmosis-mainnet-cosmos.reliableninjas.com"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -517,9 +497,7 @@
             "https://cosmoshub.api.quasarstaking.ai",
             "https://cosmos-api.ibs.team",
             "https://api.cosmoshub-4-archive.citizenweb3.com:443"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -559,9 +537,7 @@
             "https://oraichain-rest.publicnode.com",
             "https://orai-rest.owallet.io",
             "https://oraichain-mainnet-api.itrocket.net"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -613,9 +589,7 @@
             "https://public.stakewolle.com/cosmos/persistence/rest",
             "https://xprt-rest.antrixy.org/",
             "https://persistence-api.stake-town.com"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -652,9 +626,7 @@
             "https://rest.lavenderfive.com:443/sommelier",
             "https://sommelier-mainnet-lcd.autostake.com:443",
             "https://somm-api.kleomedes.network"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -692,9 +664,7 @@
             "https://lcd.mainnet.secretsaturn.net",
             "https://rest-secret.01node.com",
             "https://public.stakewolle.com/cosmos/secretnetwork/rest"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -742,9 +712,7 @@
             "https://api.fetchhub-4.fetch.aviaone.com/",
             "https://fetchai-api.bluestake.net",
             "https://fetch-api.panthea.eu:443"
-        ],
-        "packet-1": 4,
-        "packet-2": 4
+        ]
     },
     {
         "chain-1": "injective",
@@ -792,9 +760,7 @@
             "https://lcd.stride.bronbro.io:443",
             "https://public.stakewolle.com/cosmos/stride/rest",
             "https://stride-api.ibs.team"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -836,9 +802,7 @@
             "https://terra2.tdrsys.com",
             "https://terra-api.cosmosrescue.dev:8443",
             "https://terra-api.chainroot.io"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -886,9 +850,7 @@
             "https://lcd.stride.bronbro.io:443",
             "https://public.stakewolle.com/cosmos/stride/rest",
             "https://stride-api.ibs.team"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -921,9 +883,7 @@
         "api-2": [
             "http://wormchain-mainnet-1-full-rest.tm.p2p.org/",
             "https://wormchain-lcd.quickapi.com/"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -984,9 +944,7 @@
             "https://dymension-api.noders.services",
             "https://api.mainnet.dymension.aviaone.com",
             "https://api.archive.dymension.mainnet.dteam.tech:443"
-        ],
-        "packet-1": 0,
-        "packet-2": 2
+        ]
     },
     {
         "chain-1": "injective",
@@ -1017,33 +975,19 @@
         "channel-2": "channel-59",
         "port-2": "transfer",
         "api-2": [
-            "https://lcd-juno.itastakers.com",
             "https://rest.lavenderfive.com:443/juno",
             "https://juno.api.m.stavr.tech",
-            "https://api-juno.pupmos.network",
-            "https://api-juno-ia.cosmosia.notional.ventures/",
             "https://juno-api.polkachu.com",
-            "https://api-juno.cosmos-spaces.cloud",
             "https://juno-api.kleomedes.network",
-            "https://api.juno.bh.rocks",
-            "https://juno-rest.kingnodes.com",
             "https://juno-api.stakeandrelax.net",
-            "https://rest-juno.architectnodes.com",
             "https://api-juno-01.stakeflow.io",
-            "https://lcd-juno.validavia.me",
-            "https://juno-api.w3coins.io",
             "https://juno-rest.publicnode.com",
             "https://juno-api.stake-town.com",
-            "https://juno-api.stakeandrelax.net",
             "https://api.juno.validatus.com",
-            "https://lcd.juno.bronbro.io:443",
             "https://juno-api.cogwheel.zone",
             "https://juno.declab.pro:443",
-            "https://juno.api.nodeshub.online:443",
             "https://juno-api.chainroot.io"
-        ],
-        "packet-1": 2,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1092,9 +1036,7 @@
             "https://axelar-rest.staketab.org",
             "https://axelar-api.w3coins.io",
             "https://axelar-rest.publicnode.com"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1141,9 +1083,7 @@
             "https://api-kujira.mms.team",
             "https://kujira-rest.publicnode.com",
             "https://kujira-rest.interstellar-lounge.org"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1182,9 +1122,7 @@
             "https://api-kava-01.stakeflow.io",
             "https://kava-rest.publicnode.com",
             "https://api.kava.nodestake.org"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1224,9 +1162,7 @@
             "https://rest.lavenderfive.com:443/saga",
             "https://saga-api.stakeandrelax.net",
             "https://saga-api.chainroot.io"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1274,9 +1210,7 @@
             "https://lcd.stride.bronbro.io:443",
             "https://public.stakewolle.com/cosmos/stride/rest",
             "https://stride-api.ibs.team"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1324,9 +1258,7 @@
             "https://lcd.stride.bronbro.io:443",
             "https://public.stakewolle.com/cosmos/stride/rest",
             "https://stride-api.ibs.team"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1363,9 +1295,7 @@
             "https://mantra-rest.publicnode.com",
             "https://mantra-mainnet-api.itrocket.net",
             "https://mantra.api.m.stavr.tech"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1409,9 +1339,7 @@
             "https://dydx-lcd.enigma-validator.com",
             "https://dydx-api.noders.services",
             "https://dydx-rest.interstellar-lounge.org"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1461,9 +1389,7 @@
             "https://evmos-mainnet.api.stakevillage.net",
             "https://api.evmos.validatus.com",
             "https://lcd.evmos.bronbro.io:443"
-        ],
-        "packet-1": 3,
-        "packet-2": 2
+        ]
     },
     {
         "chain-1": "injective",
@@ -1501,9 +1427,7 @@
             "https://xion-mainnet-lcd.autostake.com",
             "https://api.xion.nodestake.org",
             "https://xion-rest.kingnodes.com"
-        ],
-        "packet-1": 0,
-        "packet-2": 0
+        ]
     },
     {
         "chain-1": "injective",
@@ -1547,8 +1471,6 @@
             "https://lcd.band.bronbro.io/",
             "https://api.band.roomit.xyz/",
             "https://band-api.noders.services"
-        ],
-        "packet-1": 100,
-        "packet-2": 100
+        ]
     }
 ]
