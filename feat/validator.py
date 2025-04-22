@@ -395,7 +395,7 @@ class Validators:
                     subscriptions = telegram_client.subscriptions
                     msg = None
                     for sub in subscriptions:
-                        if 'validator' in sub.keys() and sub["validator"] == message['args']['validator']:
+                        if sub["validator"] == message['args']['validator']:
                             if message['type'] == "miss_block":
                                 msg = f"*{message['args']['moniker']} missed {message['args']['missed']} blocks!*\n" \
                                     f"Last Signed Block: `{message['args']['last_height']}`\n" \

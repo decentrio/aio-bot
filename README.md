@@ -19,9 +19,9 @@ The configuration file is used to set up the AIO Bot for various platforms. It a
 
 Below is an explanation of each section:
 #### `app`
-This section configures the platforms (Slack, Discord, Telegram) where the bot will send alerts. Besides the credentials required for each platform's setup, each platform also has separated
+This section configures the platforms (Slack, Discord, Telegram) where the bot will send alerts. Besides the credentials required for each platform's setup, each platform also has separated configurations of mode and channels to send messages to.
 
-**Mutual Parameters**:
+**Parameters**:
 - `enable`: Toggle to enable or disable the alerting functionality for a specific platform.
 - `mode`: Operation mode in each platform: `single` and `chain`. When the bot operates in `single` mode, it tracks a single validator only, which is helpful for single user, while in `chain` modes, the bot track chain's multiple addresses and features, which is suitable for the community. `single` mode works only in Slack/Telegram, while Discord supports both `single` and `chain` mode.
 - `channels`: List of channels with `id` and `name`. It is recommended to use different channels for specific feature, especially in `chain` mode.

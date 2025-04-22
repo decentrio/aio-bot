@@ -277,7 +277,7 @@ class IBC:
                 self.logger.error("Slack client is not initialized.")
 
             # Telegram client
-            if self.app["telegram"] is not None:
+            if self.app["telegram"] is not None and len(self.app["telegram"].subscriptions):
                 telegram_client = self.app["telegram"]
                 if telegram_client.loop:
                     if message["type"] == "client":
@@ -293,6 +293,7 @@ class IBC:
                             f"Port: {message['args']['port']}\n" \
                             f"Channel: {message['args']['channel']}\n" \
                             f"Missed: {message['args']['quantity']}\n"
+                        
                     future = asyncio.run_coroutine_threadsafe(
                         telegram_client.reply(
                             msg,

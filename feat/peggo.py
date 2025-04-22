@@ -60,6 +60,7 @@ class Peggo:
                     "type": "pending_valsets",
                     "args": {
                         "validator": operator["valoper_address"],
+                        "orchestrator": operator["orchestrator_address"],
                         "moniker": operator["moniker"],
                         "last_height": f"{operator["last_height"]:,}"
                     },
@@ -77,6 +78,7 @@ class Peggo:
                     "type": "pending_valsets",
                     "args": {
                         "validator": operator["valoper_address"],
+                        "orchestrator": operator["orchestrator_address"],
                         "moniker": operator["moniker"],
                         "last_height": f"{operator["last_height"]:,}"
                     },
@@ -88,6 +90,7 @@ class Peggo:
             "type": "nonce_mismatch",
             "args": {
                 "validator": operator["valoper_address"],
+                "orchestrator": operator["orchestrator_address"],
                 "moniker": operator["moniker"],
                 "last_observed_nonce": f"{operator["last_observed_nonce"]:,}",
                 "last_claim_eth_event_nonce": f"{operator["last_claim_eth_event_nonce"]:,}",
@@ -117,6 +120,11 @@ class Peggo:
                                     "name": "Last Height Checked",
                                     "value": message['args']['last_height'],
                                     "inline": True
+                                },
+                                {
+                                    "name": "Orchestrator Address",
+                                    "value": message['args']['orchestrator'],
+                                    "inline": True
                                 }
                             ],
                             footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
@@ -126,6 +134,11 @@ class Peggo:
                         msg = discord_client.compose_embed(
                             title = f"**Pending batches found!**",
                             fields = [
+                                {
+                                    "name": "Orchestrator Address",
+                                    "value": message['args']['orchestrator'],
+                                    "inline": True
+                                },
                                 {
                                     "name": "Pending Batches",
                                     "value": message['args']['pending_batches'],
@@ -144,6 +157,11 @@ class Peggo:
                         msg = discord_client.compose_embed(
                             title = f"**{message['args']['moniker']}'s nonce is lagging behind!**",
                             fields = [
+                                {
+                                    "name": "Orchestrator Address",
+                                    "value": message['args']['orchestrator'],
+                                    "inline": True
+                                },
                                 {
                                     "name": "Last Observed Nonce",
                                     "value": message['args']['last_observed_nonce'],

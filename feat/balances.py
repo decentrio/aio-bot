@@ -160,7 +160,7 @@ class Balances:
                 self.logger.error("Slack client is not initialized")
 
             # Telegram
-            if self.app["telegram"] is not None:
+            if self.app["telegram"] is not None and len(self.app["telegram"].subscriptions):
                 telegram_client = self.app["telegram"]
                 if telegram_client.loop:
                     subscriptions = telegram_client.subscriptions
@@ -176,7 +176,7 @@ class Balances:
                             future = asyncio.run_coroutine_threadsafe(
                                 telegram_client.send_message(
                                     msg,
-                                    telegram_client.channels[0]["id"]
+                                    sub["user"]
                                 ),
                                 telegram_client.loop
                             )
