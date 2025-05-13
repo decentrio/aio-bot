@@ -13,7 +13,7 @@ class IBC:
         self.params = params
         self.client_update_threshold = params["client_update_threshold"]
         self.stuck_packets_threshold = params["stuck_packets_threshold"]
-        self.ibcs = self.getIBCList()
+        self.ibcs = []
 
     def getIBCList(self) -> list:
         ibcs = []
@@ -117,6 +117,7 @@ class IBC:
 
     async def queryIBCPackets(self):
         while True:
+            self.ibcs = self.getIBCList()
             for ibc in self.ibcs:
                 try:
                     if ibc["client-1"] != "":
@@ -167,7 +168,7 @@ class IBC:
             with open("ibc.json", "w") as ibc_file:
                 json.dump(self.ibcs, ibc_file, indent=4)
             self.logger.info("All IBC queried.")
-            time.sleep(1200)
+            time.sleep(self.params["interval"])
 
     def notify(self, message):
         try:

@@ -4,8 +4,8 @@
         "operator_address": "injvaloper1qzu3s7uzydpj0vcgrgp04j7u48pgkesy7zl7t3",
         "valcons_address": "injvalcons16rq58g3h562knnruajcd4sh2jhugkf4nd7gcad",
         "hex": "D0C143A237A69569CC7CECB0DAC2EA95F88B26B3",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 595,
+        "missed_percentage": 0.0119,
         "warning_level": 0
     },
     {
@@ -15,24 +15,24 @@
         "hex": "D857A4BA9745354D9FC1DF91A82CDB87A27563A6",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Kahuna",
         "operator_address": "injvaloper1qkwpk4pf6txgazfs8lnjzj75pc47z9g26lww7r",
         "valcons_address": "injvalcons1y3mdxmqvncd4pfnt3nyw38t4rp8nwnwlfc7fry",
         "hex": "2476D36C0C9E1B50A66B8CC8E89D75184F374DDF",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 8191,
+        "missed_percentage": 0.16382,
+        "warning_level": 1
     },
     {
         "moniker": "gumi",
         "operator_address": "injvaloper1pff5lusdc9htm0z96l02a0yh9e6erphrllndet",
         "valcons_address": "injvalcons1nd8ye49kdgl9q7a5j3qjj8wc8q5ye6e4qhunwf",
         "hex": "9B4E4CD4B66A3E507BB49441291DD838284CEB35",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 791,
+        "missed_percentage": 0.01582,
         "warning_level": 0
     },
     {
@@ -42,15 +42,15 @@
         "hex": "0333D22DCA302543BCD1F5A1444CC80388DC9BA6",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "B-Harvest",
         "operator_address": "injvaloper1zpy3qf7us3m0pxpqkp72gzjv55t70huy33t47x",
         "valcons_address": "injvalcons1ajt4ahdfyd65c6axq3xuvpqmxht6myk0xrqard",
         "hex": "EC975EDDA923754C6BA6044DC6041B35D7AD92CF",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 233,
+        "missed_percentage": 0.00466,
         "warning_level": 0
     },
     {
@@ -60,15 +60,15 @@
         "hex": "37CE71AD8CD4DC01D8798E103A70978591708169",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Cosmostation",
         "operator_address": "injvaloper1rvqzf9u2uxttmshn302anlknfgsatrh5v7fl7e",
         "valcons_address": "injvalcons1w7ql594dc4lpp8mrh50znu20n5up0c22v79wz8",
         "hex": "7781FA16ADC57E109F63BD1E29F14F9D3817E14A",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 425,
+        "missed_percentage": 0.0085,
         "warning_level": 0
     },
     {
@@ -78,15 +78,15 @@
         "hex": "CDF55ACD97B31A67662BD0BEBC673E5B5FAAEC04",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "SCV-Security",
         "operator_address": "injvaloper19a77dzm2lrxt2gehqca3nyzq077kq7qsgvmrp4",
         "valcons_address": "injvalcons1d3tqsnsulge3v2xgavw6d7r9jgj902t4mv9u5l",
         "hex": "6C56084E1CFA331628C8EB1DA6F865922457A975",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 35,
+        "missed_percentage": 0.0007,
         "warning_level": 0
     },
     {
@@ -96,7 +96,7 @@
         "hex": "7D2D96C14632861337AA62C0EF4E3CA096CE1665",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Keplr",
@@ -105,15 +105,15 @@
         "hex": "8E2C70D2292FB3624BAF1F0CFBCB025D2ECC8AFB",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Twinstake",
         "operator_address": "injvaloper18cyc7wxru3g9de3emwy9pdh5x0vevxp3p2623y",
         "valcons_address": "injvalcons1x7elnerzjel32r6mlx985d2lx5cmtrgj62fu7y",
         "hex": "37B3F9E462967F150F5BF98A7A355F3531B58D12",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 220,
+        "missed_percentage": 0.0044,
         "warning_level": 0
     },
     {
@@ -123,24 +123,24 @@
         "hex": "6087607E1E56F6EE7934ABAF65834C92D618104C",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "KDAC",
         "operator_address": "injvaloper1guh04j8x8fxpax3ghf7wlf798xey8576kyfwza",
         "valcons_address": "injvalcons167j3gs6atu4qgvey935g903f3tzzgh84lkyess",
         "hex": "D7A514435D5F2A0433242C6882BE298AC4245CF5",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 6482,
+        "missed_percentage": 0.12964,
+        "warning_level": 1
     },
     {
         "moniker": "Crosnest",
         "operator_address": "injvaloper1fqrdtx7pyps6eytn3356j9cs4f8zl0eevlt3rt",
         "valcons_address": "injvalcons1m002pepun6crws3dpcnu8lldlp5ja8yhcycag7",
         "hex": "DBDEA0E43C9EB037422D0E27C3FFEDF8692E9C97",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 258,
+        "missed_percentage": 0.00516,
         "warning_level": 0
     },
     {
@@ -148,8 +148,8 @@
         "operator_address": "injvaloper1ffsdugrhfzdyxltjve8v68n6aazyc6p97uhfn0",
         "valcons_address": "injvalcons1jdeeykx9vf5s8wjygy5vld6rn23342flka3rgj",
         "hex": "93739258C5626903BA444128CFB7439AA31AA93F",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 110,
+        "missed_percentage": 0.0022,
         "warning_level": 0
     },
     {
@@ -157,8 +157,8 @@
         "operator_address": "injvaloper1f2kdg34689x93cvw2y59z7y46dvz2fk8lhddfz",
         "valcons_address": "injvalcons1mrdfewvpvfn4a80t8z8wzlpkp4cz6kukepxuxc",
         "hex": "D8DA9CB98162675E9DEB388EE17C360D702D5B96",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 322,
+        "missed_percentage": 0.00644,
         "warning_level": 0
     },
     {
@@ -166,9 +166,9 @@
         "operator_address": "injvaloper12s9d7l53ef2c8avrn7pgd6dfeeg2yzel58ztfx",
         "valcons_address": "injvalcons1ylv842shhp402hr7dmz0kcmexll088aj6rdcyg",
         "hex": "27D87AAA17B86AF55C7E6EC4FB637937FEF39FB2",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 13030,
+        "missed_percentage": 0.2606,
+        "warning_level": 1
     },
     {
         "moniker": " polkachu.com",
@@ -177,15 +177,15 @@
         "hex": "33ED396C904DD8E9A1C2A43FB37C14F5DFDB6E8A",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Four Pillars",
         "operator_address": "injvaloper126he4tz5a2w3y90ecraxz6x6wh7dxyukfx8665",
         "valcons_address": "injvalcons1xp7tn2ngg3ue252a9tjya75zjen3tvzhve6e8l",
         "hex": "307CB9AA68447995515D2AE44EFA82966715B057",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 256,
+        "missed_percentage": 0.00512,
         "warning_level": 0
     },
     {
@@ -195,24 +195,24 @@
         "hex": "DC65D4AD5B754D643C733470DCC7A44B9FB4DCA5",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Google Cloud",
         "operator_address": "injvaloper1vumvzchlgfsu9fnj5xn2zpf7w888sdmjuu33qe",
         "valcons_address": "injvalcons16tk2f5p5tsgs004dtrtx70w34n8hvx8dyjzt7q",
         "hex": "D2ECA4D0345C1107BEAD58D66F3DD1ACCF7618ED",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 5712,
+        "missed_percentage": 0.11424,
+        "warning_level": 1
     },
     {
         "moniker": "Trust Nodes",
         "operator_address": "injvaloper1dyntafvjynns5zyltwgyktej0y5zt84y3npkt4",
         "valcons_address": "injvalcons1uejre3lrwhlc3842t8mlewflfh34gq7mfv0m5p",
         "hex": "E6643CC7E375FF889EAA59F7FCB93F4DE35403DB",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 175,
+        "missed_percentage": 0.0035,
         "warning_level": 0
     },
     {
@@ -220,8 +220,8 @@
         "operator_address": "injvaloper1dknnk0nzap8h07elxays2ecldxq9elu3dzqvqr",
         "valcons_address": "injvalcons1cp7u6w66h6zh8w4xzmua6r3lek8vran3cmnwcc",
         "hex": "C07DCD3B5ABE8573BAA616F9DD0E3FCD8EC1F671",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 247,
+        "missed_percentage": 0.00494,
         "warning_level": 0
     },
     {
@@ -231,7 +231,7 @@
         "hex": "9AAC0790FFF74F4050DBBBB55EBF59BF134C4038",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Black Panther | Delegate for Claimdrop",
@@ -240,15 +240,15 @@
         "hex": "545768F1C4F1EE3E7EF93DE8E59FD57A506CEE92",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Informal Systems",
         "operator_address": "injvaloper10xhy8xurfwts9ckjkq0ga92mrjz9txyygymqzp",
         "valcons_address": "injvalcons1hwmt06edw48v99tu54s4m4dt09q4kzc66ulnmp",
         "hex": "BBB6B7EB2D754EC2957CA5615DD5AB79415B0B1A",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 123,
+        "missed_percentage": 0.00246,
         "warning_level": 0
     },
     {
@@ -258,7 +258,7 @@
         "hex": "5BCCAE7F95C2D852C2F18BE566F152A85A60B26E",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Zellic",
@@ -267,15 +267,15 @@
         "hex": "5A22FB1E69D783401ED3CE77DD3C3D44EDB2E093",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Everstake",
         "operator_address": "injvaloper134dct56cq5v7uerxcy2cn4m06mqf4dxrlgpp24",
         "valcons_address": "injvalcons175ctmkculqfkwzn0du09w3r56ny38p04w8fen0",
         "hex": "F530BDDB1CF813670A6F6F1E574474D4C91385F5",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 141,
+        "missed_percentage": 0.00282,
         "warning_level": 0
     },
     {
@@ -283,8 +283,8 @@
         "operator_address": "injvaloper1nq37nq79w2j76xj8qhjzcn6vh0wlx0qk2r7zm6",
         "valcons_address": "injvalcons1nh7v9c6ygv7t7td9x058rm0hvh3gld6weyclq9",
         "hex": "9DFCC2E344433CBF2DA533E871EDF765E28FB74E",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 173,
+        "missed_percentage": 0.00346,
         "warning_level": 0
     },
     {
@@ -294,15 +294,15 @@
         "hex": "1AF320FDB49A7409B173572FCD8F33070B7DE1FA",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Ledger by Chorus One",
         "operator_address": "injvaloper1ntn4j2lsu3k60g8xj9pqshqvdj2q5tygyvczpy",
         "valcons_address": "injvalcons1wk7zq7yplyulwyk88ux76h42kq5lrxev74swkd",
         "hex": "75BC207881F939F712C73F0DED5EAAB029F19B2C",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 446,
+        "missed_percentage": 0.00892,
         "warning_level": 0
     },
     {
@@ -310,8 +310,8 @@
         "operator_address": "injvaloper1nngrhnm65wm8pu7wkah6hfs3vpd0xw463ydd65",
         "valcons_address": "injvalcons1dtqf95xqhy04mzy64gpakddxgvc8qv2ymq5uw9",
         "hex": "6AC092D0C0B91F5D889AAA03DB35A64330703144",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 508,
+        "missed_percentage": 0.01016,
         "warning_level": 0
     },
     {
@@ -319,8 +319,8 @@
         "operator_address": "injvaloper15y9lns6gnhcp8jlkfqmxqgtlff4racajqst5ar",
         "valcons_address": "injvalcons1qphwupu4srx0p6wr3yrzy4hkez72pdzw504ffd",
         "hex": "006EEE079580CCF0E9C389062256F6C8BCA0B44E",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 201,
+        "missed_percentage": 0.00402,
         "warning_level": 0
     },
     {
@@ -330,7 +330,7 @@
         "hex": "E972901583CC003C4C388EF2E6F5570ABF0D5B75",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": " Lavender.Five Nodes \ud83d\udc1d",
@@ -339,15 +339,15 @@
         "hex": "2620065FADD91C5E06AF25A3B7F864483BA1C3B9",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Chorus One",
         "operator_address": "injvaloper14yeq3lkajldaggj28hmq8xng9xux7x5g46hezv",
         "valcons_address": "injvalcons1l64y9vxrtqk0n6lyh4fqs2usvdkghua9drdha0",
         "hex": "FEAA42B0C3582CF9EBE4BD52082B90636C8BF3A5",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 133,
+        "missed_percentage": 0.00266,
         "warning_level": 0
     },
     {
@@ -355,9 +355,9 @@
         "operator_address": "injvaloper14w4qu60azpz5zkw5yrcvmaxqh6xg5sny7qm6rm",
         "valcons_address": "injvalcons1usgjwlwd3hhj8m2megl3lmqknld3pmmm790gw0",
         "hex": "E411277DCD8DEF23ED5BCA3F1FEC169FDB10EF7B",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 15170,
+        "missed_percentage": 0.3034,
+        "warning_level": 2
     },
     {
         "moniker": "A41",
@@ -366,15 +366,15 @@
         "hex": "1B85A5FFDC65A23DFB51A32DC1087DCA515EA6CC",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Citadel.one",
         "operator_address": "injvaloper1hsxaln75wjs033t3spd8a0gawl4jvxawn6v849",
         "valcons_address": "injvalcons1m5kf3ze83efxsuxajltm5a0w4gh7h42awccxtt",
         "hex": "DD2C988B278E526870DD97D7BA75EEAA2FEBD55D",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 398,
+        "missed_percentage": 0.00796,
         "warning_level": 0
     },
     {
@@ -384,7 +384,7 @@
         "hex": "77D3FF15AD886E93068C09F5E5C643537511A3A5",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "PartnerStaking | Timeworx.io Airdrop",
@@ -393,16 +393,16 @@
         "hex": "1834E8A2FDE4644999EED5BD4B99B4A9A22C4351",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "POSTHUMAN \ud83e\uddec StakeDrop",
         "operator_address": "injvaloper1e84fr6cxgcflv3fc9ey6n8425au7zx6wsztrle",
         "valcons_address": "injvalcons1qjjrwp3vgz0628kf3fxavjfef0gchkkh76f804",
         "hex": "04A437062C409FA51EC98A4DD649394BD18BDAD7",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 5980,
+        "missed_percentage": 0.1196,
+        "warning_level": 1
     },
     {
         "moniker": "Imperator.co",
@@ -411,7 +411,7 @@
         "hex": "477858E6BF7E36ADB6062D224A0B06B7B4E5C26E",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Stakecito",
@@ -420,24 +420,24 @@
         "hex": "03E0A1287B25629B36D6AA29E2E1F0CE00114162",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
-        "moniker": "White Whale",
+        "moniker": "BackBone Labs | Delegate for $SOUL Claim Drop",
         "operator_address": "injvaloper16gdnrnl224ylje5z9vd0vn0msym7p58f00qauj",
         "valcons_address": "injvalcons1zl4hkzrnenvrafm6vtp5l7z2jyx9708q48gl4l",
         "hex": "17EB7B0873CCD83EA77A62C34FF84A910C5F3CE0",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 11726,
+        "missed_percentage": 0.23452,
+        "warning_level": 1
     },
     {
         "moniker": "Stakely.io",
         "operator_address": "injvaloper1mwerm24kce7dcl59t6n0caw7c8zxgkrjj9svwj",
         "valcons_address": "injvalcons1688g0wlgndehf92pd6xyfw04353h94w3cca4p3",
         "hex": "D1CE87BBE89B737495416E8C44B9F58D2372D5D1",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 246,
+        "missed_percentage": 0.00492,
         "warning_level": 0
     },
     {
@@ -447,7 +447,7 @@
         "hex": "B6CD0957B63DB73E8AC0E51CD0DE53AF40AC47D7",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Decentrio",
@@ -456,7 +456,7 @@
         "hex": "6460844B2C81E87F3E2A10667787BB7600CFA970",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Hex Trust",
@@ -465,15 +465,15 @@
         "hex": "B785C7308D551BD1B227981BF938FE8AD3D3E3AF",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Golden Ratio Staking",
         "operator_address": "injvaloper1agu7gu9ay39jkaccsfnt0ykjce6daycjuzyg2a",
         "valcons_address": "injvalcons1udfutjylkcxja07z7gu0rnq3vu7fsrj95khtjf",
         "hex": "E353C5C89FB60D2EBFC2F238F1CC11673C980E45",
-        "missed": 0,
-        "missed_percentage": 0,
+        "missed": 271,
+        "missed_percentage": 0.00542,
         "warning_level": 0
     },
     {
@@ -483,7 +483,7 @@
         "hex": "7A6A9DEE7D8F3BAA83F2C3A0179D74ED1487932C",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": " AutoStake \ud83d\udee1\ufe0f Slash Protected",
@@ -492,25 +492,25 @@
         "hex": "F39BF9316C07E4F27EE31951F720783C58D09C11",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Hoss Army by 01node",
         "operator_address": "injvaloper17y9pmvrwcmytrvsurduj7ts0s8unzr55a6ffa3",
         "valcons_address": "injvalcons1dflwep4n9kmekqvtuu66ef3m5hj06u56kr2q8c",
         "hex": "6A7EEC86B32DB79B018BE735ACA63BA5E4FD729A",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 5576,
+        "missed_percentage": 0.11152,
+        "warning_level": 1
     },
     {
         "moniker": "Dojo | Delegate for Airdrop",
         "operator_address": "injvaloper17dt0hpykufxjrc7fh8rxwgv6z9kx8vlgg0qqrs",
         "valcons_address": "injvalcons1vm2upy2ykes5ayspazm7pycmf5zjs4qmn9ne0c",
         "hex": "66D5C09144B6614E9201E8B7E0931B4D0528541B",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 11385,
+        "missed_percentage": 0.2277,
+        "warning_level": 1
     },
     {
         "moniker": "Dynamo DeFi",
@@ -519,7 +519,7 @@
         "hex": "29F697D164538C3BDF7969F238E2097FE745D73C",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "NTT Digital",
@@ -528,15 +528,15 @@
         "hex": "B62687D180445D5CF84E1A2E85DB2ACAEEFCB19A",
         "missed": 0,
         "missed_percentage": 0,
-        "warning_level": 0
+        "warning_level": 1
     },
     {
         "moniker": "Binance Staking",
         "operator_address": "injvaloper1lsuqpgm8kgwpq96ewyew26xnfwyn3lh3ncrkrk",
         "valcons_address": "injvalcons1893nm5rlsl3pdcx26q0qhcskughcn2el3w335z",
         "hex": "39633DD07F87E216E0CAD01E0BE216E22F89AB3F",
-        "missed": 0,
-        "missed_percentage": 0,
-        "warning_level": 0
+        "missed": 5263,
+        "missed_percentage": 0.10526,
+        "warning_level": 1
     }
 ]

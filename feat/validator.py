@@ -255,7 +255,7 @@ class Validators:
                                 },
                                 {
                                     "name": "Window Signing Percentage",
-                                    "value": f"{((self.params["signed_blocks_window"] - message['args']['window_missed']) / self.params["signed_blocks_window"] * 100):.2f}% / {self.params['min_signed_per_window'] * 100:.2f}%",
+                                    "value": f"{((self.params["signed_blocks_window"] - message['args']['window_missed']) / self.params["signed_blocks_window"] * 100):.2f}% of the allowance",
                                     "inline": True
                                 },
                                 {
