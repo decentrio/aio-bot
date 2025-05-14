@@ -94,12 +94,16 @@ class Validators:
 
                 missed_percentage = int(val["missed_blocks_counter"]) / (self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]))
                 current_warning_level = validator["warning_level"]
+                
                 if missed_percentage > self.params["threshold"][3]["value"]: # CRITICAL
                     validator["warning_level"] = 3
                 elif missed_percentage > self.params["threshold"][2]["value"]: # WARNING
                     validator["warning_level"] = 2
-                else:
+                elif missed_percentage > self.params["threshold"][1]["value"]: # ATTENTION
                     validator["warning_level"] = 1
+                else:
+                    validator["warning_level"] = 0
+
                 if missed_percentage > self.params["threshold"][1]["value"]: # ATTENTION
                     if int(val["missed_blocks_counter"]) < validator["missed"] and missed_percentage < self.params["threshold"][current_warning_level]["value"]:
                         self.notify({

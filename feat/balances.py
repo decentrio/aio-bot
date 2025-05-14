@@ -89,10 +89,10 @@ class Balances:
             })
             return
         
-    def notify(self, message):
+    def notify(self, platform, message):
         # try:
             # Discord
-            if self.app["discord"] is not None:
+            if platform == "discord" and self.app["discord"] is not None:
                 discord_client = self.app["discord"]
                 if discord_client.loop:
                     subscriptions = discord_client.subscriptions
@@ -140,7 +140,7 @@ class Balances:
                 self.logger.error("Discord client is not initialized.")
 
             # Slack 
-            if self.app["slack"] is not None:
+            if platform == "slack" and self.app["slack"] is not None:
                 slack_client = self.app["slack"]
                 subscriptions = slack_client.subscriptions
                 msg = None
@@ -160,7 +160,7 @@ class Balances:
                 self.logger.error("Slack client is not initialized")
 
             # Telegram
-            if self.app["telegram"] is not None and len(self.app["telegram"].subscriptions):
+            if platform =="telegram" and self.app["telegram"] is not None and len(self.app["telegram"].subscriptions):
                 telegram_client = self.app["telegram"]
                 if telegram_client.loop:
                     subscriptions = telegram_client.subscriptions
@@ -199,9 +199,21 @@ class Balances:
                     subscriptions = client.subscriptions
                     for sub in subscriptions:
                         self.logger.debug(f"Checking balance: {sub['validator']}")
-                        address = query.query(self.apis, path=f"/peggy/v1/query_delegate_keys_by_validator?validator_address={sub['validator']}")
-                        self.check(sub["validator"], address["eth_address"])
-                        self.check(sub["validator"], address["orchestrator_address"])
+                        if sub["validator"].startswith("inj"):
+                            address = query.query(self.apis, path=f"/peggy/v1/query_delegate_keys_by_validator?validator_address={sub['validator']}")
+                            self.check(sub["validator"], address["eth_address"])
+                            self.check(sub["validator"], address["orchestrator_address"])
+                        else:
+                            self.notify(
+                                platform,
+                                {
+                                "type": "invalid_address",
+                                "args": {
+                                    "validator": sub["validator"],
+                                    "address": sub["validator"]
+                                },
+                                "auto_delete": None
+                            })
 
             time.sleep(self.params["interval"] - 30)
 

@@ -128,17 +128,8 @@ class SlackServer(Flask):
         try:
             self.register_routes()
             self.logger.info("Starting Slack server...")
-            super().run(host='0.0.0.0', port=self.port)
+            from waitress import serve
+            serve(self, host='0.0.0.0', port=self.port)
         except Exception as e:
             self.logger.error(f"Error starting Slack server: {e}")
             raise
-
-
-def getConfig():
-    with open('config.json', 'r') as file:
-        config = json.load(file)
-    config["websockets"] = [
-        (rpc.replace("http", "ws") + "/websocket")
-        for rpc in config["rpcs"]
-    ]
-    return config
