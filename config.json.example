@@ -10,37 +10,37 @@
                 "validator": {
                     "id": "C087MDDL6BW", // optional
                     "name": "test", // optional
-                    "webhook_url": "https://hooks.slack.com/services/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"
+                    "webhook_url": ""
                 },
                 "ibc": {
                     "id": "C087MDDL6BW", // optional
                     "name": "test", // optional
-                    "webhook_url": "https://hooks.slack.com/services/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"
+                    "webhook_url": ""
                 },
                 "gov": {
                     "id": "C087MDDL6BW", // optional
                     "name": "test", // optional
-                    "webhook_url": "https://hooks.slack.com/services/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"
+                    "webhook_url": ""
                 },
                 "faucet": {
                     "id": "C087MDDL6BW", // optional
                     "name": "test", // optional
-                    "webhook_url": "https://hooks.slack.com/services/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"
+                    "webhook_url": ""
                 },
                 "peggo": {
                     "id": "C087MDDL6BW", // optional
                     "name": "test", // optional
-                    "webhook_url": "https://hooks.slack.com/services/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"
+                    "webhook_url": ""
                 },
                 "wallet": {
                     "id": "C087MDDL6BW", // optional
                     "name": "test", // optional
-                    "webhook_url": "https://hooks.slack.com/services/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"
+                    "webhook_url": ""
                 },
                 "consensus": {
                     "id": "C087MDDL6BW", // optional
                     "name": "test", // optional
-                    "webhook_url": "https://hooks.slack.com/services/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"
+                    "webhook_url": ""
                 }
             },
             "subscriptions": []
