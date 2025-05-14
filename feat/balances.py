@@ -154,7 +154,7 @@ class Balances:
 
                         slack_client.reply(
                             msg,
-                            slack_client.channels[0]["id"],
+                            slack_client.channels["wallet"]["webhook_url"],
                         )
             else:
                 self.logger.error("Slack client is not initialized")

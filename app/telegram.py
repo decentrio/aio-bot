@@ -33,12 +33,11 @@ class TelegramClient(telebot.async_telebot.AsyncTeleBot):
         if command_name == "/help":
             await self.send_message(
                 message.chat.id,
-                "This is a simple Telegram bot that listens for Bitcoin transactions and new blocks on the blockchain. You can subscribe to receive notifications for new blocks and transactions. Use the following commands to interact with the bot:\n\n"
-                "* /subscribe block - Subscribe to receive notifications for new blocks\n"
-                "* /subscribe tx - Subscribe to receive notifications for new transactions\n"
-                "* /unsubscribe block - Unsubscribe from block notifications\n"
-                "* /unsubscribe tx - Unsubscribe from transaction notifications\n"
-                f"* /help - Display this help message"
+                "**AIO Bot for Injective!**\n\n"
+                "- `/sub val <valoper-address>`: Valoper address subscription will notify you of validator uptime, peggo performance and low balance on your validator operator and peggo orchestrator addresses\n"
+                "- `/sub list`: List all your subscriptions\n"
+                "- `/unsub <valoper-address>`: Unsubscribe from a subscription\n"
+                "- `/help`: Show this help menu"
             )
         elif command_name == "/sub":
             if (len(commands) == 2):
@@ -92,7 +91,7 @@ class TelegramClient(telebot.async_telebot.AsyncTeleBot):
                     )
         elif command_name == "/unsub":
             value_to_remove = commands[0]
-            self.subscriptions = [sub for sub in self.subscriptions if sub.get("validator") != value_to_remove and sub.get("address") != value_to_remove]
+            self.subscriptions = [sub for sub in self.subscriptions if sub.get("validator") != value_to_remove and sub.get("address") != value_to_remove and sub.get("user") != message.chat.id]
             await self.send_message(
                 message.chat.id,
                 f"Unsubscribed: `{value_to_remove}`"

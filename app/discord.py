@@ -78,15 +78,13 @@ class DiscordClient(commands.Bot):
                 msg = self.compose_embed(
                     title=f"**AIO Bot for Injective!**",
                     description="Available commands:\n \
-                            - `/sub val <valoper-address>`: Get notification about validator/peggo operator\n \
+                            - `/sub val <valoper-address>`: Valoper address subscription will notify you of validator uptime, peggo performance and low balance on your validator operator and peggo orchestrator addresses\n \
                                 \n \
-                                * `/sub balance <eth/inj-address>`: Get notification about low balance\n \
+                            - `/sub list`: List all your subscriptions\n \
                                 \n \
-                                * `/sub list`: List all your subscriptions\n \
+                            - `/unsub <valoper-address>`: Unsubscribe from a subscription\n \
                                 \n \
-                            - `/help`: Show this help menu\n \
-                            \n \
-                            - `/unsub <valoper-address>`: Unsubscribe from a subscription",
+                            - `/help`: Show this help menu"
                 )
                 await self.reply(message.channel.id, msg)
             case "sub":
@@ -100,11 +98,6 @@ class DiscordClient(commands.Bot):
                             "user": message.author.id,
                             "validator": value
                         })
-                    elif sub_type == "balance":
-                        self.subscriptions.append({
-                            "user": message.author.id,
-                            "address": value
-                        })
 
                     msg = self.compose_embed(
                         description=f"Subscribed `{value}` for <@{message.author.id}>",
@@ -116,16 +109,7 @@ class DiscordClient(commands.Bot):
                     with open("config.json", "w") as config_file:
                         json.dump(config, config_file, indent=4)
                 elif (len(commands) == 2):
-                    if commands[1] == "help":
-                        msg = self.compose_embed(
-                            title=f"**Subscriptions Help**",
-                            description="Available commands:\n \
-                                        `/sub val <val-address>`: Get notification about validator/peggo operator\n \
-                                        `/sub balance <eth/inj-address>`: Get notification about low balance\n \
-                                        `/sub list`: List all your subscriptions",
-                        )
-                        await self.reply(message.channel.id, msg)
-                    elif commands[1] == "list":
+                    if commands[1] == "list":
                         user_subs = [sub["validator"] if "validator" in sub else sub["address"]
                                      for sub in self.subscriptions if sub["user"] == message.author.id]
                         sub_list = "\n".join(

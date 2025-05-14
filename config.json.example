@@ -5,13 +5,44 @@
             "oAuth-token": "",
             "signing-secret": "",
             "mode": "single",
-            "port": "2042",
-            "channels": [
-                {
-                    "id": "123456",
-                    "name": "test"
+            "port": "2099",
+            "channels": {
+                "validator": {
+                    "id": "C087MDDL6BW",
+                    "name": "test",
+                    "webhook_url": "https://hooks.slack.com/services/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"
+                },
+                "ibc": {
+                    "id": "C087MDDL6BW",
+                    "name": "test",
+                    "webhook_url": "https://hooks.slack.com/services/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"
+                },
+                "gov": {
+                    "id": "C087MDDL6BW",
+                    "name": "test",
+                    "webhook_url": "https://hooks.slack.com/services/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"
+                },
+                "faucet": {
+                    "id": "C087MDDL6BW",
+                    "name": "test",
+                    "webhook_url": "https://hooks.slack.com/services/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"
+                },
+                "peggo": {
+                    "id": "C087MDDL6BW",
+                    "name": "test",
+                    "webhook_url": "https://hooks.slack.com/services/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"
+                },
+                "wallet": {
+                    "id": "C087MDDL6BW",
+                    "name": "test",
+                    "webhook_url": "https://hooks.slack.com/services/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"
+                },
+                "consensus": {
+                    "id": "C087MDDL6BW",
+                    "name": "test",
+                    "webhook_url": "https://hooks.slack.com/services/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"
                 }
-            ],
+            },
             "subscriptions": []
         },
         "discord": {
@@ -88,48 +119,46 @@
         "validators": {
             "enable": true,
             "params": {
-                "mode": {
-                    "chain": {
-                        "interval": 20,
-                        "threshold": [
-                            {
-                                "label": "ACTIVE",
-                                "value": 0.02
-                            },
-                            {
-                                "label": "ATTENTION",
-                                "value": 0.1
-                            },
-                            {
-                                "label": "WARNING",
-                                "value": 0.3
-                            },
-                            {
-                                "label": "CRITICAL",
-                                "value": 0.7
-                            }
-                        ]
+                "interval": 20,
+                "threshold": [
+                    {
+                        "label": "ACTIVE",
+                        "value": 0.02
                     },
-                    "single": {
-                        "threshold": 2
+                    {
+                        "label": "ATTENTION",
+                        "value": 0.1
+                    },
+                    {
+                        "label": "WARNING",
+                        "value": 0.3
+                    },
+                    {
+                        "label": "CRITICAL",
+                        "value": 0.7
                     }
-                },
+                ],
                 "prefix": "inj"
             }
         },
         "peggo": {
             "enable": true,
             "params": {
-                "threshold": 2,
+                "threshold": 10,
                 "interval": 1200
             }
         },
         "ibc": {
-            "enable": false,
+            "enable": true,
             "params": {
+                "interval": 7200,
                 "stuck_packets_threshold": 100,
                 "client_update_threshold": 14400,
-                "registry_api": ["https://raw.githubusercontent.com/cosmos/chain-registry/master"]
+                "registry_api": [
+                    "https://raw.githubusercontent.com/cosmos/chain-registry/master"
+                ],
+                "notion_api_key": "",
+                "notion_api": []
             }
         },
         "consensus": {

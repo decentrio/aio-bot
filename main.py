@@ -5,7 +5,8 @@ import threading
 import time
 import queue
 from app.discord import DiscordClient
-from app.slack import SlackClient
+# from app.slack import SlackClient
+from app.slack import SlackServer
 from app.telegram import TelegramClient
 from utils.websocket import WebsocketClient
 from feat.validator import Validators
@@ -43,9 +44,17 @@ if __name__ == "__main__":
             discord_thread.start()
             print("Discord client started")
 
+    # if config["app"]["slack"]["enable"]:
+    #     if app["slack"] is None:  # Avoid initializing it more than once
+    #         app["slack"] = SlackClient(config)
+    #         slack_thread = threading.Thread(target=app['slack'].start)
+    #         slack_thread.daemon = True
+    #         slack_thread.start()
+    #         print("Slack client started")
+
     if config["app"]["slack"]["enable"]:
         if app["slack"] is None:  # Avoid initializing it more than once
-            app["slack"] = SlackClient(config)
+            app["slack"] = SlackServer(config)
             slack_thread = threading.Thread(target=app['slack'].start)
             slack_thread.daemon = True
             slack_thread.start()

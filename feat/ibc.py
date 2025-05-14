@@ -272,7 +272,7 @@ class IBC:
                         f"Missed: {message['args']['quantity']}\n"
                 slack_client.reply(
                     msg,
-                    slack_client.channels[0]["id"],
+                    slack_client.channels["ibc"]["webhook_url"],
                 )
             else:
                 self.logger.error("Slack client is not initialized.")

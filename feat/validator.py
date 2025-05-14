@@ -213,7 +213,7 @@ class Validators:
                 else:
                     self.logger.error(f"Validator not found: {val['address']}")
 
-    async def start_block_polling(self): # Chain mode only
+    async def start_block_polling(self): 
         valset_thread = threading.Thread(target=self.start_check_valset)
         valset_thread.daemon = True
         valset_thread.start()
@@ -255,7 +255,7 @@ class Validators:
                                 },
                                 {
                                     "name": "Window Signing Percentage",
-                                    "value": f"{((self.params["signed_blocks_window"] - message['args']['window_missed']) / self.params["signed_blocks_window"] * 100):.2f}% of the allowance",
+                                    "value": f"{(self.params["signed_blocks_window"] - message['args']['window_missed'])} / {self.params["signed_blocks_window"]} ({((self.params["signed_blocks_window"] - message['args']['window_missed']) / self.params["signed_blocks_window"] * 100):.2f}%)",
                                     "inline": True
                                 },
                                 {
@@ -366,12 +366,14 @@ class Validators:
                 for sub in subscriptions:
                     if sub["validator"] == message['args']['validator']:
                         if message['type'] == "miss_block":
-                            msg = f"*{message['args']['moniker']} missed {message['args']['missed']} blocks!*\n" \
-                                f"Last Signed Block: `{message['args']['last_height']}`\n" \
-                                f"Blocks to JAILED: {int(self.params['signed_blocks_window'] * (1 - self.params['min_signed_per_window']) - message['args']['window_missed'])}\n" \
-                                f"Window Signing Percentage: {(self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100}%\n" \
+                            msg = f"*[{message['args']['warning_level']}] {message['args']['moniker']} has missed more than {message['args']['missed_percentage'] * 100:.2f}% of the allowed missed blocks!*\n" \
+                                f"Blocks to JAILED: {int(self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]) - message['args']['window_missed'])}\n" \
+                                f"Window Signing Percentage: {(self.params['signed_blocks_window'] - message['args']['window_missed'])} / {self.params['signed_blocks_window']} ({((self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100):.2f}%)\n" \
                                 f"Signing window: {self.params['signed_blocks_window']}\n" \
                                 f"Min signed per window: {self.params['min_signed_per_window'] * 100}%"
+                        elif message['type'] == "recovering":
+                            msg = f"*[RECOVERING] {message['args']['moniker']} is recovering!*\n" \
+                                f"Window Signing Percentage: {(1 - message['args']['missed_percentage']) * 100}%"
                         elif message['type'] == "active":
                             msg = f"*{message['args']['moniker']} is active again!*"
                         elif message['type'] == "inactive":
@@ -383,7 +385,7 @@ class Validators:
                                 f"Jailed Duration: {message['args']['jailed_duration']}"
                         slack_client.reply(
                             msg,
-                            slack_client.channels[0]["id"],
+                            slack_client.channels["validator"]["webhook_url"],
                         )
             else:
                 self.logger.error("Slack client is not initialized.")
@@ -398,9 +400,8 @@ class Validators:
                         if sub["validator"] == message['args']['validator']:
                             if message['type'] == "miss_block":
                                 msg = f"*{message['args']['moniker']} missed {message['args']['missed']} blocks!*\n" \
-                                    f"Last Signed Block: `{message['args']['last_height']}`\n" \
                                     f"Blocks to JAILED: {int(self.params['signed_blocks_window'] * (1 - self.params['min_signed_per_window']) - message['args']['window_missed'])}\n" \
-                                    f"Window Signing Percentage: {(self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100}%\n" \
+                                    f"Window Signing Percentage: {(self.params['signed_blocks_window'] - message['args']['window_missed'])} / {self.params['signed_blocks_window']} ({((self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100):.2f}%)\n" \
                                     f"Signing window: {self.params['signed_blocks_window']}\n" \
                                     f"Min signed per window: {self.params['min_signed_per_window'] * 100}%"
                             elif message['type'] == "active":

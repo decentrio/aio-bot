@@ -233,7 +233,7 @@ class Peggo:
                                 f"Last Height Checked: {message['args']['last_height']}"
                         slack_client.reply(
                                 msg,
-                                slack_client.channels[0]["id"],
+                                slack_client.channels["peggo"]["webhook_url"],
                         )
             else:
                 self.logger.error("Slack client is not initialized.")
