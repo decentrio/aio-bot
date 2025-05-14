@@ -2,44 +2,44 @@
     "app": {
         "slack": {
             "enable": false,
-            "oAuth-token": "",
-            "signing-secret": "",
+            "oAuth-token": "", // deprecated
+            "signing-secret": "", // deprecated
             "mode": "single",
             "port": "2099",
             "channels": {
                 "validator": {
-                    "id": "C087MDDL6BW",
-                    "name": "test",
+                    "id": "C087MDDL6BW", // optional
+                    "name": "test", // optional
                     "webhook_url": "https://hooks.slack.com/services/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"
                 },
                 "ibc": {
-                    "id": "C087MDDL6BW",
-                    "name": "test",
+                    "id": "C087MDDL6BW", // optional
+                    "name": "test", // optional
                     "webhook_url": "https://hooks.slack.com/services/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"
                 },
                 "gov": {
-                    "id": "C087MDDL6BW",
-                    "name": "test",
+                    "id": "C087MDDL6BW", // optional
+                    "name": "test", // optional
                     "webhook_url": "https://hooks.slack.com/services/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"
                 },
                 "faucet": {
-                    "id": "C087MDDL6BW",
-                    "name": "test",
+                    "id": "C087MDDL6BW", // optional
+                    "name": "test", // optional
                     "webhook_url": "https://hooks.slack.com/services/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"
                 },
                 "peggo": {
-                    "id": "C087MDDL6BW",
-                    "name": "test",
+                    "id": "C087MDDL6BW", // optional
+                    "name": "test", // optional
                     "webhook_url": "https://hooks.slack.com/services/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"
                 },
                 "wallet": {
-                    "id": "C087MDDL6BW",
-                    "name": "test",
+                    "id": "C087MDDL6BW", // optional
+                    "name": "test", // optional
                     "webhook_url": "https://hooks.slack.com/services/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"
                 },
                 "consensus": {
-                    "id": "C087MDDL6BW",
-                    "name": "test",
+                    "id": "C087MDDL6BW", // optional
+                    "name": "test", // optional
                     "webhook_url": "https://hooks.slack.com/services/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"
                 }
             },
