@@ -19,8 +19,8 @@ class SlackServer(Flask):
             value = args[1]
             if sub_type == "val":
                 self.subscriptions.append({
-                        "user": user_id,
-                        "validator": value
+                    "user": user_id,
+                    "validator": value
                 })
                 with open("config.json", "r") as config_file:
                     config = json.load(config_file)
@@ -41,7 +41,15 @@ class SlackServer(Flask):
 
     def handle_unsub(self, args, user_id):
         value_to_remove = args
-        self.subscriptions = [sub for sub in self.subscriptions if sub.get("validator") != value_to_remove and sub.get("address") != value_to_remove and sub.get("user") != user_id]
+        self.subscriptions = [
+            sub for sub in self.subscriptions
+            if not (
+                sub.get("user") == user_id and (
+                    sub.get("validator") == value_to_remove or
+                    sub.get("address") == value_to_remove
+                )
+            )
+        ]
 
         with open("config.json", "r") as config_file:
             config = json.load(config_file)

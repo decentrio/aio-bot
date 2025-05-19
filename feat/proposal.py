@@ -73,16 +73,17 @@ class Proposal:
                 if telegram_client.loop:
                     subscriptions = telegram_client.subscriptions
                     for sub in subscriptions:
-                        msg = f"New Proposal {message['args']['proposal_id']}\n" \
-                            f"Description: `{message['args']['summary']}`"
-                        future = asyncio.run_coroutine_threadsafe(
-                            telegram_client.reply(
-                                msg,
-                                sub["user"]
-                            ),
-                            discord_client.loop
-                        )
-                        future.result()
+                        if "sub" in sub and sub["sub"] == "gov":
+                            msg = f"New Proposal {message['args']['proposal_id']}\n" \
+                                f"Description: `{message['args']['summary']}`"
+                            future = asyncio.run_coroutine_threadsafe(
+                                telegram_client.reply(
+                                    msg,
+                                    sub["user"]
+                                ),
+                                telegram_client.loop
+                            )
+                            future.result()
                 else:
                     self.logger.error("Telegram client loop not ready.")
             else:

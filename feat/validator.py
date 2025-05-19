@@ -10,7 +10,7 @@ import utils.pubkey as pubkey
 class Validators:
     def __init__(self, app, block_queue, params, chain, apis, mode):
         self.logger = logging.getLogger("Validators")
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.INFO)
         self.prefix = params["prefix"] + "valcons"
         self.missed = {
             "height": 0,
@@ -342,7 +342,6 @@ class Validators:
                             ),
                             discord_client.loop
                         )
-                        # Optionally, wait for the coroutine to finish and handle exceptions
                         future.result()
                     elif discord_client.mode == "single":
                         for sub in subscriptions:
@@ -355,7 +354,6 @@ class Validators:
                                     ),
                                     discord_client.loop
                                 )
-                                # Optionally, wait for the coroutine to finish and handle exceptions
                                 future.result()
                 else:
                     self.logger.error("Discord client loop not ready.")
@@ -370,23 +368,28 @@ class Validators:
                 for sub in subscriptions:
                     if sub["validator"] == message['args']['validator']:
                         if message['type'] == "miss_block":
-                            msg = f"*[{message['args']['warning_level']}] {message['args']['moniker']} has missed more than {message['args']['missed_percentage'] * 100:.2f}% of the allowed missed blocks!*\n" \
-                                f"Blocks to JAILED: {int(self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]) - message['args']['window_missed'])}\n" \
-                                f"Window Signing Percentage: {(self.params['signed_blocks_window'] - message['args']['window_missed'])} / {self.params['signed_blocks_window']} ({((self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100):.2f}%)\n" \
-                                f"Signing window: {self.params['signed_blocks_window']}\n" \
-                                f"Min signed per window: {self.params['min_signed_per_window'] * 100}%"
+                            msg = f"""
+                                *[{message['args']['warning_level']}] {message['args']['moniker']} has missed more than {message['args']['missed_percentage'] * 100:.2f}% of the allowed missed blocks!*\n
+                                Blocks to JAILED: `{int(self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]) - message['args']['window_missed'])}`\n
+                                Window Signing Percentage: `{(self.params['signed_blocks_window'] - message['args']['window_missed'])} / {self.params['signed_blocks_window']} ({((self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100):.2f}%)`\n
+                                Signing window: `{self.params['signed_blocks_window']}`\n
+                                Min signed per window: `{self.params['min_signed_per_window'] * 100}%`
+                            """
                         elif message['type'] == "recovering":
-                            msg = f"*[RECOVERING] {message['args']['moniker']} is recovering!*\n" \
-                                f"Window Signing Percentage: {(1 - message['args']['missed_percentage']) * 100}%"
+                            msg = f"""
+                                *[RECOVERING] {message['args']['moniker']} is recovering!*\n
+                                Window Signing Percentage: `{(1 - message['args']['missed_percentage']) * 100}%`
+                            """
                         elif message['type'] == "active":
                             msg = f"*{message['args']['moniker']} is active again!*"
                         elif message['type'] == "inactive":
                             msg = f"*{message['args']['moniker']} is inactive!**"
                         elif message['type'] == "jailed":
                             msg = f"*{message['args']['moniker']} is JAILED!*\n" \
-                                f"Last Signed Block: {message['args']['last_height']}\n" \
-                                f"Jailed Until: {message['args']['jailed_until']}\n" \
-                                f"Jailed Duration: {message['args']['jailed_duration']}"
+                                f"Last Signed Block: `{message['args']['last_height']}`\n" \
+                                f"Jailed Until: `{message['args']['jailed_until']}`\n" \
+                                f"Jailed Duration: `{message['args']['jailed_duration']}`"
+                            
                         slack_client.reply(
                             msg,
                             slack_client.channels["validator"]["webhook_url"],
@@ -401,23 +404,32 @@ class Validators:
                     subscriptions = telegram_client.subscriptions
                     msg = None
                     for sub in subscriptions:
-                        if sub["validator"] == message['args']['validator']:
+                        if "validator" in sub and sub["validator"] == message['args']['validator']:
                             if message['type'] == "miss_block":
-                                msg = f"*{message['args']['moniker']} missed {message['args']['missed']} blocks!*\n" \
-                                    f"Blocks to JAILED: {int(self.params['signed_blocks_window'] * (1 - self.params['min_signed_per_window']) - message['args']['window_missed'])}\n" \
-                                    f"Window Signing Percentage: {(self.params['signed_blocks_window'] - message['args']['window_missed'])} / {self.params['signed_blocks_window']} ({((self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100):.2f}%)\n" \
-                                    f"Signing window: {self.params['signed_blocks_window']}\n" \
-                                    f"Min signed per window: {self.params['min_signed_per_window'] * 100}%"
+                                msg = f"""
+*[{message['args']['warning_level']}] {message['args']['moniker']} has missed more than {message['args']['missed_percentage'] * 100:.2f}% of the allowed missed blocks!*
+Blocks to JAILED: `{int(self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]) - message['args']['window_missed'])}`
+Window Signing Percentage: `{(self.params['signed_blocks_window'] - message['args']['window_missed'])} / {self.params['signed_blocks_window']} ({((self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100):.2f}%)`
+Signing window: `{self.params['signed_blocks_window']}`
+Min signed per window: `{self.params['min_signed_per_window'] * 100}%`
+                                """
+                            elif message['type'] == "recovering":
+                                msg = f"""
+*[RECOVERING] {message['args']['moniker']} is recovering!*
+Window Signing Percentage: `{(1 - message['args']['missed_percentage']) * 100}%`
+                                """
                             elif message['type'] == "active":
                                 msg = f"*{message['args']['moniker']} is active again!*"
                             elif message['type'] == "inactive":
                                 msg = f"*{message['args']['moniker']} is inactive!**"
                             elif message['type'] == "jailed":
-                                msg = f"*{message['args']['moniker']} is JAILED!*\n" \
-                                    f"Last Signed Block: {message['args']['last_height']}\n" \
-                                    f"Jailed Until: {message['args']['jailed_until']}\n" \
-                                    f"Jailed Duration: {message['args']['jailed_duration']}"
-                            
+                                msg = f"""
+*{message['args']['moniker']} is JAILED!*
+Last Signed Block: `{message['args']['last_height']}`
+Jailed Until: `{message['args']['jailed_until']}`
+Jailed Duration: `{message['args']['jailed_duration']}`
+                                """
+
                             future = asyncio.run_coroutine_threadsafe(
                                 telegram_client.reply(
                                     msg,
@@ -438,107 +450,3 @@ class Validators:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(self.start_block_polling())
-
-# Single mode
-# class Validator(Validators):
-#     def __init__(self, app, block_queue, params, chain, apis):
-#         super().__init__(app, block_queue, params, chain, apis)
-#         self.logger = logging.getLogger("Validator")
-#         self.logger.setLevel(logging.DEBUG)
-#         self.mode = "single"
-
-#     async def start_block_polling(self):
-#         if self.app["discord"] is not None and self.app["discord"].mode == "single" and not len(self.app["discord"].subscriptions):
-#             discord_client = self.app["discord"]
-#             if discord_client.loop:
-#                 msg = discord_client.compose_embed(
-#                     title="**No subscription found!**",
-#                     description="You haven't subscribed to any validators yet. Please subscribe to receive notifications about your validator.",
-#                     fields=[],
-#                     footer="This message will be automatically deleted in 60s",
-#                     color=0x29fffb
-#                 )
-#                 future = asyncio.run_coroutine_threadsafe(
-#                     discord_client.reply(
-#                         discord_client.channels["validators"]["id"],
-#                         msg,
-#                     ),
-#                     discord_client.loop
-#                 )
-#                 future.result()
-#             else:
-#                 self.logger.error("Discord client loop not ready.")
-
-#         if self.app["telegram"] is not None and self.app["telegram"].mode == "single" and not len(self.app["telegram"].subscriptions):
-#             self.logger.error("No user available.")
-
-#         if self.app["slack"] is not None and self.app["slack"].mode == "single" and not len(self.app["slack"].subscriptions):
-#             slack_client = self.app["slack"]
-#             msg = f"You haven't subscribed to any validators yet. Please subscribe to receive notifications about your validator."
-#             slack_client.reply(
-#                 msg,
-#                 slack_client.channels[0]["id"],
-#             )
-
-#         while True:
-#             if not self.block_queue.empty():
-#                 data = self.block_queue.get()
-#                 if data and "result" in data:
-#                     msg_type = data["result"]["query"]
-#                     if msg_type == "tm.event='NewBlock'":
-#                         height = int(data["result"]["data"]["value"]["block"]["header"]["height"])
-#                         signatures = data["result"]["data"]["value"]["block"]["last_commit"]["signatures"]
-#                         await self.checkUptime(height, signatures)
-#                     elif msg_type == "tm.event='ValidatorSetUpdates'":
-#                         valset = data["result"]["data"]["value"]["validator_updates"]
-#                         self.checkValset(valset)
-#                 # with open("validators.json", "w") as f:
-#                 #     json.dump(self.validators, f, indent=4)
-
-#     async def checkUptime(self, height, signatures):
-#         self.missed["height"] = height
-#         for val in self.validators:
-#             sig = next(filter(lambda x: x["validator_address"] == val["hex"], signatures), None)
-#             if sig is not None:  # signed
-#                 if val["missed"] >= self.params["mode"][self.mode]["threshold"]:
-#                     self.notify({
-#                         "type": "active",
-#                         "args": {
-#                                 "validator": val["operator_address"],
-#                                 "moniker": val["moniker"],
-#                         },
-#                         "auto_delete": None
-#                     })
-#                 val["missed"] = 0
-#             elif sig is None:  # missed
-#                 self.missed["missed"].append(val['moniker'])
-#                 val["missed"] += 1
-#                 if val["missed"] >= self.params["mode"][self.mode]["threshold"] and val["missed"] % self.params["mode"][self.mode]["threshold"] == 0:
-#                     try:
-#                         data = query.query(self.apis, path=f"/cosmos/slashing/v1beta1/signing_infos/{val['valcons_address']}") 
-#                         missed_percentage = int(data["val_signing_info"]["missed_blocks_counter"]) / (self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]))
-#                         val["missed_percentage"] = missed_percentage
-#                         if missed_percentage > self.params["mode"]["chain"]["threshold"][3]["value"]: # CRITICAL
-#                             val["warning_level"] = "CRITICAL"
-#                         elif missed_percentage > self.params["mode"]["chain"]["threshold"][2]["value"]: # WARNING
-#                             val["warning_level"] = "WARNING"
-#                         else:
-#                             val["warning_level"] = "ATTENTION"
-#                         self.notify({
-#                             "type": "miss_block",
-#                             "args": {
-#                                 "validator": val["operator_address"],
-#                                 "moniker": val["moniker"],
-#                                 "missed": val["missed"],
-#                                 "window_missed": int(data["val_signing_info"]["missed_blocks_counter"]),
-#                                 "missed_percentage": missed_percentage,
-#                                 "warning_level": val["warning_level"],
-#                                 "last_height": height - val["missed"]
-#                             }, 
-#                             "auto_delete": None
-#                         })
-#                     except Exception as e:
-#                         self.logger.error(f"Error getting missed block: {e}")
-
-#         self.logger.debug(self.missed)
-#         self.missed["missed"] = []

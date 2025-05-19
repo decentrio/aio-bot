@@ -8,7 +8,7 @@ import time
 class IBC:
     def __init__(self, app, params):
         self.logger = logging.getLogger("IBC")
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.DEBUG)
         self.app = app
         self.params = params
         self.client_update_threshold = params["client_update_threshold"]
@@ -26,6 +26,8 @@ class IBC:
             else "https://" + api["address"]
             for api in apis
         ]
+
+        # chain_1_apis = ["https://rest.cosmos.directory/injective"]
 
         try:
             notion_data = query.query(
@@ -58,6 +60,8 @@ class IBC:
                     else "https://" + api["address"]
                     for api in apis
                 ]
+
+                # chain_2_apis = ["https://rest.cosmos.directory/" + chain_2_name]
 
                 chain_1_client = query.query(chain_1_apis, path=f"/ibc/core/channel/v1/channels/{chain_1_channel}/ports/{chain_1_port}/client_state")
                 chain_2_client = query.query(chain_2_apis, path=f"/ibc/core/channel/v1/channels/{chain_2_channel}/ports/{chain_2_port}/client_state")
@@ -125,18 +129,39 @@ class IBC:
                     data = query.query(ibc["api-1"], path=f"/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments")
                     packet_1 = data["commitments"]
                     ibc["packet-1"] = len(packet_1)
-                    if len(packet_1):
-                        self.notify({
-                            "type": "packets",
-                            "args": {
-                                "quantity": len(packet_1),
-                                "chain-1": ibc["chain-1"],
-                                "chain-2": ibc["chain-2"],
-                                "port": ibc["port-1"],
-                                "channel": ibc["channel-1"]
-                            },
-                            "auto_delete": None
-                        })
+                    if len(packet_1) >= self.stuck_packets_threshold:
+                        if len(packet_1) == 1:
+                            sequence = data["commitments"][0]["sequence"]
+                            tx_detail = query.query([f"https://rpc.cosmos.directory/{ibc['chain-1']}"], path=f"/tx_search?query=%22send_packet.packet_sequence%3D{sequence}%22")
+                            tx_block = int(tx_detail["result"]["txs"][0]["height"]) if tx_detail["result"] else None
+                            current_block = int(query.query(ibc["api-1"], path="/cosmos/base/tendermint/v1beta1/blocks/latest")["block"]["header"]["height"])
+
+                            self.notify({
+                                "type": "packet",
+                                "args": {
+                                    "chain-1": ibc["chain-1"],
+                                    "chain-2": ibc["chain-2"],
+                                    "port": ibc["port-1"],
+                                    "channel": ibc["channel-1"],
+                                    "sequence": sequence,
+                                    "pending_blocks": current_block - tx_block if tx_block else None,
+                                    "url": f"https://rest.cosmos.directory/{ibc['chain-1']}/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments/{sequence}"
+                                },
+                                "auto_delete": None
+                            })
+                        else:
+                            self.notify({
+                                "type": "packets",
+                                "args": {
+                                    "quantity": len(packet_1),
+                                    "chain-1": ibc["chain-1"],
+                                    "chain-2": ibc["chain-2"],
+                                    "port": ibc["port-1"],
+                                    "channel": ibc["channel-1"],
+                                    "url": f"https://rest.cosmos.directory/{ibc['chain-1']}/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments"
+                                },
+                                "auto_delete": None
+                            })
 
                     self.logger.debug(f"{ibc['chain-1']}-{ibc['chain-2']} queried.")
                 except Exception as e:
@@ -149,17 +174,38 @@ class IBC:
                     packet_2 = data["commitments"]
                     ibc["packet-2"] = len(packet_2)
                     if len(packet_2) >= self.stuck_packets_threshold:
-                        self.notify({
-                            "type": "packets",
-                            "args": {
-                                "quantity": len(packet_2),
-                                "chain-1": ibc["chain-2"],
-                                "chain-2": ibc["chain-1"],
-                                "port": ibc["port-2"],
-                                "channel": ibc["channel-2"]
-                            },
-                            "auto_delete": None
-                        })
+                        if len(packet_2) == 1:
+                            sequence = data["commitments"][0]["sequence"]
+                            tx_detail = query.query([f"https://rpc.cosmos.directory/{ibc['chain-2']}"], path=f"/tx_search?query=%22send_packet.packet_sequence%3D{sequence}%22")
+                            tx_block = int(tx_detail["result"]["txs"][0]["height"]) if tx_detail["result"] else None
+                            current_block = int(query.query(ibc["api-2"], path="/cosmos/base/tendermint/v1beta1/blocks/latest")["block"]["header"]["height"])
+
+                            self.notify({
+                                "type": "packet",
+                                "args": {
+                                    "chain-1": ibc["chain-2"],
+                                    "chain-2": ibc["chain-1"],
+                                    "port": ibc["port-2"],
+                                    "channel": ibc["channel-2"],
+                                    "sequence": sequence,
+                                    "pending_blocks": current_block - tx_block if tx_block else None,
+                                    "url": f"https://rest.cosmos.directory/{ibc['chain-2']}/ibc/core/channel/v1/channels/{ibc['channel-2']}/ports/{ibc['port-2']}/packet_commitments/{sequence}"
+                                },
+                                "auto_delete": None
+                            })
+                        else:
+                            self.notify({
+                                "type": "packets",
+                                "args": {
+                                    "quantity": len(packet_2),
+                                    "chain-1": ibc["chain-2"],
+                                    "chain-2": ibc["chain-1"],
+                                    "port": ibc["port-2"],
+                                    "channel": ibc["channel-2"],
+                                    "url": f"https://rest.cosmos.directory/{ibc['chain-2']}/ibc/core/channel/v1/channels/{ibc['channel-2']}/ports/{ibc['port-2']}/packet_commitments"
+                                },
+                                "auto_delete": None
+                            })
 
                     self.logger.debug(f"{ibc['chain-2']}-{ibc['chain-1']} queried.")
                 except Exception as e:
@@ -178,7 +224,7 @@ class IBC:
                 if discord_client.loop:
                     if message["type"] == "client":
                         msg = discord_client.compose_embed(
-                            title=f"**Client {message['args']['client']} is about to expire!**",
+                            title=f"**Client {message['args']['client']} is about to expire!**" if message['args']['time_left'] > 0 else f"**Client {message['args']['client']} was expired!**",
                             description="",
                             fields=[
                                 {
@@ -186,7 +232,7 @@ class IBC:
                                     "value": message['args']['chain-1'],
                                     "inline": True
                                 },
-                                                                {
+                                {
                                     "name": "To",
                                     "value": message['args']['chain-2'],
                                     "inline": True
@@ -208,7 +254,7 @@ class IBC:
                     elif message["type"] == "packets":
                         msg = discord_client.compose_embed(
                             title=f"**Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}**",
-                            description="",
+                            description=message['args']['url'],
                             fields=[
                                 {
                                     "name": "From",
@@ -239,6 +285,35 @@ class IBC:
                             footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
                             color=0x75ffd1
                         )
+                    elif message["type"] == "packet":
+                        msg = discord_client.compose_embed(
+                            title=f"**Pending packet `{message['args']['sequence']}` from {message['args']['chain-1']} to {message['args']['chain-2']}**",
+                            description=message['args']['url'],
+                            fields=[
+                                {
+                                    "name": "Port",
+                                    "value": message['args']['port'],
+                                    "inline": True
+                                },
+                                {
+                                    "name": "Channel",
+                                    "value": message['args']['channel'],
+                                    "inline": True
+                                },
+                                {
+                                    "name": "Sequence",
+                                    "value": message['args']['sequence'],
+                                    "inline": True
+                                },
+                                {
+                                    "name": "Pending Blocks",
+                                    "value": message['args']['pending_blocks'],
+                                    "inline": True
+                                } if "pending_blocks" in message['args'] else {}
+                            ],
+                            footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
+                            color=0x75ffd1
+                        )
                     future = asyncio.run_coroutine_threadsafe(
                         discord_client.reply(
                             discord_client.channels["ibc"]["id"],
@@ -258,18 +333,30 @@ class IBC:
             if self.app["slack"] is not None:
                 slack_client = self.app["slack"]
                 if message["type"] == "client":
-                    msg = f"*Client {message['args']['client']} is about to expired!*\n" \
-                        f"From: {message['args']['chain-1']}\n" \
-                        f"To: {message['args']['chain-2']}\n" \
-                        f"Last Updated: {message['args']['last_updated']}\n" \
-                        f"Time Left: {message['args']['time_left']}\n"
+                    msg = f"*Client {message['args']['client']} is about to expire!* \n" if message['args']['time_left'] > 0 else f"**Client {message['args']['client']} was expired!**" + \
+                    f"""
+                    From: {message['args']['chain-1']}\n
+                    To: {message['args']['chain-2']}\n
+                    Last Updated: {message['args']['last_updated']}\n
+                    Time Left: {message['args']['time_left']}\n"
+                    """
                 elif message["type"] == "packets":
                     msg = f"*Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}*\n" \
+                        f"{message['args']['url']}\n" \
                         f"From: {message['args']['chain-1']}\n" \
                         f"To: {message['args']['chain-2']}\n" \
                         f"Port: {message['args']['port']}\n" \
                         f"Channel: {message['args']['channel']}\n" \
                         f"Missed: {message['args']['quantity']}\n"
+                elif message["type"] == "packet":
+                    msg = f"*Pending packet `{message['args']['sequence']}` from {message['args']['chain-1']} to {message['args']['chain-2']}*\n" \
+                            f"{message['args']['url']}\n" \
+                            f"From: {message['args']['chain-1']}\n" \
+                            f"To: {message['args']['chain-2']}\n" \
+                            f"Port: {message['args']['port']}\n" \
+                            f"Channel: {message['args']['channel']}\n" \
+                            f"Sequence: {message['args']['sequence']}\n" \
+                            f"Pending Blocks: {message['args']['pending_blocks']}\n" if "pending_blocks" in message['args'] else ""
                 slack_client.reply(
                     msg,
                     slack_client.channels["ibc"]["webhook_url"],
@@ -281,30 +368,41 @@ class IBC:
             if self.app["telegram"] is not None and len(self.app["telegram"].subscriptions):
                 telegram_client = self.app["telegram"]
                 if telegram_client.loop:
-                    if message["type"] == "client":
-                        msg = f"*Client {message['args']['client']} is about to expired!*\n" \
-                        f"From: {message['args']['chain-1']}\n" \
-                        f"To: {message['args']['chain-2']}\n" \
-                        f"Last Updated: {message['args']['last_updated']}\n" \
-                        f"Time Left: {message['args']['time_left']} \n"
-                    elif message["type"] == "packets":
-                        msg = f"*Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}*\n" \
-                            f"From: {message['args']['chain-1']}\n" \
-                            f"To: {message['args']['chain-2']}\n" \
-                            f"Port: {message['args']['port']}\n" \
-                            f"Channel: {message['args']['channel']}\n" \
-                            f"Missed: {message['args']['quantity']}\n"
-                        
-                    future = asyncio.run_coroutine_threadsafe(
-                        telegram_client.reply(
-                            msg,
-                            telegram_client.channels[0]["id"]
-                        ),
-                        telegram_client.loop
-                    )
-
-                    # Optionally, wait for the coroutine to finish and handle exceptions
-                    future.result()
+                    subscriptions = telegram_client.subscriptions
+                    for sub in subscriptions:
+                        if "sub" in sub and sub["sub"] == "ibc":
+                            if message["type"] == "client":
+                                msg = f"**Client {message['args']['client']} is about to expire!** \n" if message['args']['time_left'] > 0 else f"**Client {message['args']['client']} was expired!** \n" + \
+                                f"From: {message['args']['chain-1']}\n" + \
+                                f"To: {message['args']['chain-2']}\n" + \
+                                f"Last Updated: {message['args']['last_updated']}\n" + \
+                                f"Time Left: {message['args']['time_left']}"
+                            elif message["type"] == "packets":
+                                msg = f"*Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}*\n" \
+                                    f"{message['args']['url']}\n" \
+                                    f"From: {message['args']['chain-1']}\n" \
+                                    f"To: {message['args']['chain-2']}\n" \
+                                    f"Port: {message['args']['port']}\n" \
+                                    f"Channel: {message['args']['channel']}\n" \
+                                    f"Missed: {message['args']['quantity']}\n"
+                            elif message["type"] == "packet":
+                                msg = f"*Pending packet `{message['args']['sequence']}` from {message['args']['chain-1']} to {message['args']['chain-2']}*\n" \
+                                    f"{message['args']['url']}\n" \
+                                    f"From: {message['args']['chain-1']}\n" \
+                                    f"To: {message['args']['chain-2']}\n" \
+                                    f"Port: {message['args']['port']}\n" \
+                                    f"Channel: {message['args']['channel']}\n" \
+                                    f"Sequence: {message['args']['sequence']}\n" \
+                                    f"Pending Blocks: {message['args']['pending_blocks']}\n" if "pending_blocks" in message['args'] else ""
+                                
+                            future = asyncio.run_coroutine_threadsafe(
+                                telegram_client.reply(
+                                    msg,
+                                    sub["user"]
+                                ),
+                                telegram_client.loop
+                            )
+                            future.result()
                 else:
                     self.logger.error("Telegram client loop not ready.")
             else:

@@ -76,15 +76,15 @@ class DiscordClient(commands.Bot):
         match command:
             case "help":
                 msg = self.compose_embed(
-                    title=f"**AIO Bot for Injective!**",
-                    description="Available commands:\n \
-                            - `/sub val <valoper-address>`: Valoper address subscription will notify you of validator uptime, peggo performance and low balance on your validator operator and peggo orchestrator addresses\n \
-                                \n \
-                            - `/sub list`: List all your subscriptions\n \
-                                \n \
-                            - `/unsub <valoper-address>`: Unsubscribe from a subscription\n \
-                                \n \
-                            - `/help`: Show this help menu"
+                    title="**AIO Bot for Injective!**",
+                    description="""
+                        Available commands: \n
+                        - `/sub val <valoper-address>`: Valoper address subscription will notify you of validator uptime, peggo performance and low balance on your validator operator and peggo orchestrator addresses \n
+                        - `/sub list`: List all your subscriptions \n
+                        - `/unsub <valoper-address>`: Unsubscribe from a subscription \n
+                        - `/consensus`: Show current block's consensus state (useful in upgrade events) \n
+                        - `/help`: Show this help menu
+                    """
                 )
                 await self.reply(message.channel.id, msg)
             case "sub":
@@ -127,8 +127,15 @@ class DiscordClient(commands.Bot):
                         await self.reply(message.channel.id, msg)
             case "unsub":
                 value_to_remove = message.content[1:].split(' ')[1]
-                self.subscriptions = [sub for sub in self.subscriptions if sub.get(
-                    "validator") != value_to_remove and sub.get("address") != value_to_remove]
+                self.subscriptions = [
+                    sub for sub in self.subscriptions
+                    if not (
+                        sub.get("user") == message.author.id and (
+                            sub.get("validator") == value_to_remove or
+                            sub.get("address") == value_to_remove 
+                        )
+                    )
+                ]
                 msg = self.compose_embed(
                     description=f"Unsubscribed `{value_to_remove}` for <@{message.author.id}>",
                 )

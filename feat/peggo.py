@@ -11,7 +11,7 @@ class Peggo:
         self.apis: str = apis
         self.params: dict = params
         self.logger = logging.getLogger("Peggo")
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.INFO)
     
     def get_height(self) -> int:
         """
@@ -220,17 +220,17 @@ class Peggo:
                     if sub["validator"] == message["args"]["validator"]:
                         if message['type'] == "pending_valsets":
                             msg = f"*{message['args']['moniker']} has pending valsets!*\n" \
-                                f"Pending Valsets: {message['args']['pending_valsets']}\n" \
-                                f"Last Height Checked: {message['args']['last_height']}"
+                                f"Pending Valsets: `{message['args']['pending_valsets']}`\n" \
+                                f"Last Height Checked: `{message['args']['last_height']}`"
                         elif message['type'] == "pending_batches":
                             msg = f"*{message['args']['moniker']} has pending batches!*\n" \
-                                f"Pending Batches: {message['args']['pending_batches']}\n" \
-                                f"Last Height Checked: {message['args']['last_height']}"
+                                f"Pending Batches: `{message['args']['pending_batches']}`\n" \
+                                f"Last Height Checked: `{message['args']['last_height']}`"
                         elif message['type'] == "nonce_mismatch":
                             msg = f"*{message['args']['moniker']}'s nonce is lagging behind!*\n" \
-                                f"Last Observed Nonce: {message['args']['last_observed_nonce']}\n" \
-                                f"Last Claimed Ethereum Event Nonce: {message['args']['last_claim_eth_event_nonce']}\n" \
-                                f"Last Height Checked: {message['args']['last_height']}"
+                                f"Last Observed Nonce: `{message['args']['last_observed_nonce']}`\n" \
+                                f"Last Claimed Ethereum Event Nonce: `{message['args']['last_claim_eth_event_nonce']}`\n" \
+                                f"Last Height Checked: `{message['args']['last_height']}`"
                         slack_client.reply(
                                 msg,
                                 slack_client.channels["peggo"]["webhook_url"],
@@ -245,25 +245,25 @@ class Peggo:
                     subscriptions = telegram_client.subscriptions
                     msg = None
                     for sub in subscriptions:
-                        if sub["validator"] == message["args"]["validator"]:
+                        if "validator" in sub and sub["validator"] == message["args"]["validator"]:
                             if message['type'] == "pending_valsets":
                                 msg = f"*{message['args']['moniker']} has pending valsets!*\n" \
-                                    f"Pending Valsets: {message['args']['pending_valsets']}\n" \
-                                    f"Last Height Checked: {message['args']['last_height']}"
+                                    f"Pending Valsets: `{message['args']['pending_valsets']}`\n" \
+                                    f"Last Height Checked: `{message['args']['last_height']}`"
                             elif message['type'] == "pending_batches":
                                 msg = f"*{message['args']['moniker']} has pending batches!*\n" \
-                                    f"Pending Batches: {message['args']['pending_batches']}\n" \
-                                    f"Last Height Checked: {message['args']['last_height']}"
+                                    f"Pending Batches: `{message['args']['pending_batches']}`\n" \
+                                    f"Last Height Checked: `{message['args']['last_height']}`"
                             elif message['type'] == "nonce_mismatch":
                                 msg = f"*{message['args']['moniker']}'s nonce is lagging behind!*\n" \
-                                    f"Last Observed Nonce: {message['args']['last_observed_nonce']}\n" \
-                                    f"Last Claimed Ethereum Event Nonce: {message['args']['last_claim_eth_event_nonce']}\n" \
-                                    f"Last Height Checked: {message['args']['last_height']}"
+                                    f"Last Observed Nonce: `{message['args']['last_observed_nonce']}`\n" \
+                                    f"Last Claimed Ethereum Event Nonce: `{message['args']['last_claim_eth_event_nonce']}`\n" \
+                                    f"Last Height Checked: `{message['args']['last_height']}`"
                             
                             future = asyncio.run_coroutine_threadsafe(
                                 telegram_client.reply(
                                     msg,
-                                    telegram_client.channels[0]["id"],
+                                    sub["user"],
                                 ),
                                 telegram_client.loop
                             )

@@ -1,5 +1,7 @@
 # Platforms setup
 
+This is the setup instructions for self-employed bots. Telegram users can use the bot directly via DM with username: [`t.me/cosmos_aio_bot`](https://t.me/cosmos_aio_bot)
+
 ## Discord
 This guide will walk you through the steps to set up a Discord bot using Python.
 
@@ -47,11 +49,21 @@ This guide will walk you through the steps to set up a Slack bot and enable a sl
 2. Click "Create New Command".
 3. Fill in the required fields:
     - Command: The supported commands are: `/help`, `/sub`, `/unsub`.
-    - Request URL: `http://<server-ip>:<slack-port>/slack/events` same for all commands.
+    - Request URL: `http://<server-ip>:<slack-port>/slack/events` same for all commands. `<slack-port>` can be configured in the configutation file.
     - Short Description: A brief description of what your command does.
     - Usage Hint: Instructions on how to use your command.
 4. Click "Save".
-5. After the slash commands are setup, you can install the bot to your Slack workspace
+5. After the slash commands are setup, you can install the bot to your Slack workspace.
+
+### Step 5: Add Webhook.
+To enable event notifications from different channels, you need to create an Incoming Webhook for each channel and add the webhook URLs to your Slack configuration file.
+
+1. In your Slack app settings, go to the **Incoming Webhooks** section.
+2. Click **Activate Incoming Webhooks** if not already enabled.
+3. Click **Add New Webhook to Workspace**.
+4. Select the channel you want the bot to post to and click **Allow**. It is recommended to have different channels for different features, but you can also use a single webhook for all the messages.
+5. Copy the generated Webhook URL.
+6. In `config.json` file, add these generated webhooks to the defined channels in `channels` section.
 
 ## Telegram
 This guide will walk you through the steps to set up a Telegram bot using Python.
@@ -62,3 +74,7 @@ This guide will walk you through the steps to set up a Telegram bot using Python
 3. Use the command `/newbot` to create a new bot.
 4. Follow the instructions to set a name and username for your bot.
 5. After completing the setup, BotFather will provide you with a token. **Keep this token secure!**
+
+### Step 2: Set up Telegram bot
+1. Add bot token to Telegram section in configuration file.
+2. **IMPORTANT**: This bot works in `single` mode only. Don't modify `mode` parameter in configuration file.
