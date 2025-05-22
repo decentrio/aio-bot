@@ -36,20 +36,8 @@ This guide will walk you through the steps to set up a Slack bot and enable a sl
 2. Scroll down to the "Scopes" section.
 3. Under "Bot Token Scopes", click "Add an OAuth Scope" and add the necessary scopes for your bot:
 ```
-app_mentions:read
-chat:write
 incoming-webhook
-channels:join
-im:write
 commands
-channels:history
-groups:history
-reactions:read
-channels:read
-im:history
-im:read
-dnd:read
-users:read
 ```
 4. Navigate to the "App Home" tab and scroll down to the "Show Tabs" section.
 5. Enable the "Messages Tab" to allow your bot to post messages.

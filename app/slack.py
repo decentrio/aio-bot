@@ -61,11 +61,11 @@ class SlackServer(Flask):
 
     def handle_help(self):
         help_message = """
-        *AIO Bot for Injective!*\n
-        - `/sub val <valoper-address>`: Valoper address subscription will notify you of validator uptime, peggo performance and low balance on your validator operator and peggo orchestrator addresses\n
-        - `/sub list`: List all your subscriptions\n
-        - `/unsub <valoper-address>`: Unsubscribe from a subscription\n
-        - `/help`: Show this help menu
+*AIO Bot for Injective!*\n
+- `/sub val <valoper-address>`: Valoper address subscription will notify you of validator uptime, peggo performance and low balance on your validator operator and peggo orchestrator addresses\n
+- `/sub list`: List all your subscriptions\n
+- `/unsub <valoper-address>`: Unsubscribe from a subscription\n
+- `/help`: Show this help menu
         """
         return help_message
 

@@ -395,6 +395,7 @@ class IBC:
                                     f"Sequence: {message['args']['sequence']}\n" \
                                     f"Pending Blocks: {message['args']['pending_blocks']}\n" if "pending_blocks" in message['args'] else ""
                                 
+                            self.logger.debug(f"Sending message to Telegram: {msg}")
                             future = asyncio.run_coroutine_threadsafe(
                                 telegram_client.reply(
                                     msg,
