@@ -378,21 +378,21 @@ class IBC:
                                 f"Last Updated: {message['args']['last_updated']}\n" + \
                                 f"Time Left: {message['args']['time_left']}"
                             elif message["type"] == "packets":
-                                msg = f"*Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}*\n" \
-                                    f"{message['args']['url']}\n" \
-                                    f"From: {message['args']['chain-1']}\n" \
-                                    f"To: {message['args']['chain-2']}\n" \
-                                    f"Port: {message['args']['port']}\n" \
-                                    f"Channel: {message['args']['channel']}\n" \
+                                msg = f"*Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}*\n"  + \
+                                    f"{message['args']['url']}\n"  + \
+                                    f"From: {message['args']['chain-1']}\n"  + \
+                                    f"To: {message['args']['chain-2']}\n"  + \
+                                    f"Port: {message['args']['port']}\n"  + \
+                                    f"Channel: {message['args']['channel']}\n" +  \
                                     f"Missed: {message['args']['quantity']}\n"
                             elif message["type"] == "packet":
-                                msg = f"*Pending packet `{message['args']['sequence']}` from {message['args']['chain-1']} to {message['args']['chain-2']}*\n" \
-                                    f"{message['args']['url']}\n" \
-                                    f"From: {message['args']['chain-1']}\n" \
-                                    f"To: {message['args']['chain-2']}\n" \
-                                    f"Port: {message['args']['port']}\n" \
-                                    f"Channel: {message['args']['channel']}\n" \
-                                    f"Sequence: {message['args']['sequence']}\n" \
+                                msg = f"*Pending packet `{message['args']['sequence']}` from {message['args']['chain-1']} to {message['args']['chain-2']}*\n"  +\
+                                    f"{message['args']['url']}\n"  +\
+                                    f"From: {message['args']['chain-1']}\n"  +\
+                                    f"To: {message['args']['chain-2']}\n" + \
+                                    f"Port: {message['args']['port']}\n"  +\
+                                    f"Channel: {message['args']['channel']}\n"  +\
+                                    f"Sequence: {message['args']['sequence']}\n" + \
                                     f"Pending Blocks: {message['args']['pending_blocks']}\n" if "pending_blocks" in message['args'] else ""
                                 
                             self.logger.debug(f"Sending message to Telegram: {msg}")

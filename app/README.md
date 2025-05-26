@@ -42,7 +42,8 @@ commands
 4. Navigate to the "App Home" tab and scroll down to the "Show Tabs" section.
 5. Enable the "Messages Tab" to allow your bot to post messages.
 
-### Step 3: Install Your App to Your Workspace
+### Step 3: Install Your App to Your Workspace (OPTIONAL)
+> Note: This step is not needed now as we use incoming-webhook to send messages
 1. In your app's settings, navigate to the "OAuth & Permissions" tab.
 2. Click "Install App to Workspace".
 3. Review the permissions and click "Allow".
@@ -57,7 +58,6 @@ commands
     - Short Description: A brief description of what your command does.
     - Usage Hint: Instructions on how to use your command.
 4. Click "Save".
-5. After the slash commands are setup, you can install the bot to your Slack workspace.
 
 ### Step 5: Add Webhook.
 To enable event notifications from different channels, you need to create an Incoming Webhook for each channel and add the webhook URLs to your Slack configuration file.
