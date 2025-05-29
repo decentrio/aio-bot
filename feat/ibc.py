@@ -333,30 +333,34 @@ class IBC:
             if self.app["slack"] is not None:
                 slack_client = self.app["slack"]
                 if message["type"] == "client":
-                    msg = f"*Client {message['args']['client']} is about to expire!* \n" if message['args']['time_left'] > 0 else f"**Client {message['args']['client']} was expired!**" + \
-                    f"""
-                    From: {message['args']['chain-1']}\n
-                    To: {message['args']['chain-2']}\n
-                    Last Updated: {message['args']['last_updated']}\n
-                    Time Left: {message['args']['time_left']}\n"
-                    """
+                    msg = f"""
+{f"**Client {message['args']['client']} is about to expire!**" if message['args']['time_left'] > 0 else f"**Client {message['args']['client']} was expired!**"}
+From: `{message['args']['chain-1']}`
+To: `{message['args']['chain-2']}`
+Last Updated: `{message['args']['last_updated']}`
+Time Left: `{message['args']['time_left']}`
+                                """
                 elif message["type"] == "packets":
-                    msg = f"*Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}*\n" \
-                        f"{message['args']['url']}\n" \
-                        f"From: {message['args']['chain-1']}\n" \
-                        f"To: {message['args']['chain-2']}\n" \
-                        f"Port: {message['args']['port']}\n" \
-                        f"Channel: {message['args']['channel']}\n" \
-                        f"Missed: {message['args']['quantity']}\n"
+                    msg = f"""
+*Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}*
+{message['args']['url']}
+From: `{message['args']['chain-1']}`
+To: `{message['args']['chain-2']}`
+Port: `{message['args']['port']}`
+Channel: `{message['args']['channel']}`
+Missed: `{message['args']['quantity']}`
+                                """
                 elif message["type"] == "packet":
-                    msg = f"*Pending packet `{message['args']['sequence']}` from {message['args']['chain-1']} to {message['args']['chain-2']}*\n" \
-                            f"{message['args']['url']}\n" \
-                            f"From: {message['args']['chain-1']}\n" \
-                            f"To: {message['args']['chain-2']}\n" \
-                            f"Port: {message['args']['port']}\n" \
-                            f"Channel: {message['args']['channel']}\n" \
-                            f"Sequence: {message['args']['sequence']}\n" \
-                            f"Pending Blocks: {message['args']['pending_blocks']}\n" if "pending_blocks" in message['args'] else ""
+                    msg = f"""
+*Pending packet `{message['args']['sequence']}` from {message['args']['chain-1']} to {message['args']['chain-2']}*
+{message['args']['url']}
+From: `{message['args']['chain-1']}`
+To: `{message['args']['chain-2']}`
+Port: `{message['args']['port']}`
+Channel: `{message['args']['channel']}`
+Sequence: `{message['args']['sequence']}`
+{f"Pending Blocks: `{message['args']['pending_blocks']}`" if "pending_blocks" in message['args'] else ""}
+"""
                 slack_client.reply(
                     msg,
                     slack_client.channels["ibc"]["webhook_url"],
@@ -372,30 +376,31 @@ class IBC:
                     for sub in subscriptions:
                         if "sub" in sub and sub["sub"] == "ibc":
                             if message["type"] == "client":
-                                msg = f"**Client {message['args']['client']} is about to expire!** \n" if message['args']['time_left'] > 0 else f"**Client {message['args']['client']} was expired!** \n" + \
-                                f"From: {message['args']['chain-1']}\n" + \
-                                f"To: {message['args']['chain-2']}\n" + \
-                                f"Last Updated: {message['args']['last_updated']}\n" + \
-                                f"Time Left: {message['args']['time_left']}"
+                                msg = f"""
+{f"Client {message['args']['client']} is about to expire!" if message['args']['time_left'] > 0 else f"Client {message['args']['client']} was expired!"}
+From: `{message['args']['chain-1']}`
+To: `{message['args']['chain-2']}`
+Last Updated: `{message['args']['last_updated']}`
+Time Left: `{message['args']['time_left']}`
+                                """
                             elif message["type"] == "packets":
-                                msg = f"*Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}*\n"  + \
-                                    f"{message['args']['url']}\n"  + \
-                                    f"From: {message['args']['chain-1']}\n"  + \
-                                    f"To: {message['args']['chain-2']}\n"  + \
-                                    f"Port: {message['args']['port']}\n"  + \
-                                    f"Channel: {message['args']['channel']}\n" +  \
-                                    f"Missed: {message['args']['quantity']}\n"
+                                msg = f"Uncommitted packets from {message['args']['chain-1']} to {message['args']['chain-2']}\n" + \
+                                      f"`{message['args']['url']}`\n" + \
+                                      f"From: `{message['args']['chain-1']}`\n" + \
+                                      f"To: `{message['args']['chain-2']}`\n" + \
+                                      f"Port: `{message['args']['port']}`\n" + \
+                                      f"Channel: `{message['args']['channel']}`\n" + \
+                                      f"Missed: `{message['args']['quantity']}`\n"
                             elif message["type"] == "packet":
-                                msg = f"*Pending packet `{message['args']['sequence']}` from {message['args']['chain-1']} to {message['args']['chain-2']}*\n"  +\
-                                    f"{message['args']['url']}\n"  +\
-                                    f"From: {message['args']['chain-1']}\n"  +\
-                                    f"To: {message['args']['chain-2']}\n" + \
-                                    f"Port: {message['args']['port']}\n"  +\
-                                    f"Channel: {message['args']['channel']}\n"  +\
-                                    f"Sequence: {message['args']['sequence']}\n" + \
-                                    f"Pending Blocks: {message['args']['pending_blocks']}\n" if "pending_blocks" in message['args'] else ""
+                                msg = f"Pending packet `{message['args']['sequence']}` from {message['args']['chain-1']} to {message['args']['chain-2']}\n" + \
+                                f"`{message['args']['url']}`\n" + \
+                                f"From: `{message['args']['chain-1']}`\n" + \
+                                f"To: `{message['args']['chain-2']}`\n" + \
+                                f"Port: `{message['args']['port']}`\n" + \
+                                f"Channel: `{message['args']['channel']}`\n" + \
+                                f"Sequence: `{message['args']['sequence']}`\n" + \
+                                (f"Pending Blocks: `{message['args']['pending_blocks']}`" if "pending_blocks" in message['args'] else "")
                                 
-                            self.logger.debug(f"Sending message to Telegram: {msg}")
                             future = asyncio.run_coroutine_threadsafe(
                                 telegram_client.reply(
                                     msg,

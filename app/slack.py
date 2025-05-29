@@ -37,7 +37,6 @@ class SlackServer(Flask):
                 return f"Your subscriptions:\n{sub_list}"
             else:
                 return f"Invalid command: {args[0]}"
-        return "You have successfully subscribed!"
 
     def handle_unsub(self, args, user_id):
         value_to_remove = args

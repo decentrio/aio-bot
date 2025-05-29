@@ -238,7 +238,7 @@ class Validators:
                     msg = None
                     user = ""
                     for sub in subscriptions:
-                        if "validator" in sub.keys() and sub["validator"] == message['args']['validator']:
+                        if sub.get("validator") == message['args']['validator']:
                             user += f" <@{sub['user']}>"
 
                     if message['type'] == "miss_block":
@@ -360,40 +360,43 @@ class Validators:
             else:
                 self.logger.error("Discord client is not initialized.")
 
-            # Slack client, single mode only
-            if self.app["slack"] is not None and len(self.app["slack"].subscriptions):
+            # Slack client, single + chain mode
+            if self.app["slack"] is not None:
                 slack_client = self.app["slack"]
                 subscriptions = slack_client.subscriptions
+                user = ""
                 msg = None
                 for sub in subscriptions:
-                    if sub["validator"] == message['args']['validator']:
-                        if message['type'] == "miss_block":
-                            msg = f"""
-                                *[{message['args']['warning_level']}] {message['args']['moniker']} has missed more than {message['args']['missed_percentage'] * 100:.2f}% of the allowed missed blocks!*\n
-                                Blocks to JAILED: `{int(self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]) - message['args']['window_missed'])}`\n
-                                Window Signing Percentage: `{(self.params['signed_blocks_window'] - message['args']['window_missed'])} / {self.params['signed_blocks_window']} ({((self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100):.2f}%)`\n
-                                Signing window: `{self.params['signed_blocks_window']}`\n
-                                Min signed per window: `{self.params['min_signed_per_window'] * 100}%`
-                            """
-                        elif message['type'] == "recovering":
-                            msg = f"""
-                                *[RECOVERING] {message['args']['moniker']} is recovering!*\n
-                                Window Signing Percentage: `{(1 - message['args']['missed_percentage']) * 100}%`
-                            """
-                        elif message['type'] == "active":
-                            msg = f"*{message['args']['moniker']} is active again!*"
-                        elif message['type'] == "inactive":
-                            msg = f"*{message['args']['moniker']} is inactive!**"
-                        elif message['type'] == "jailed":
-                            msg = f"*{message['args']['moniker']} is JAILED!*\n" \
-                                f"Last Signed Block: `{message['args']['last_height']}`\n" \
-                                f"Jailed Until: `{message['args']['jailed_until']}`\n" \
-                                f"Jailed Duration: `{message['args']['jailed_duration']}`"
-                            
-                        slack_client.reply(
-                            msg,
-                            slack_client.channels["validator"]["webhook_url"],
-                        )
+                    if sub.get("validator") == message['args']['validator']:
+                        user += f" <@{sub['user']}>"
+
+                if message['type'] == "miss_block":
+                    msg = f"""
+{user} *[{message['args']['warning_level']}] {message['args']['moniker']} has missed more than {message['args']['missed_percentage'] * 100:.2f}% of the allowed missed blocks!*\n
+Blocks to JAILED: `{int(self.params["signed_blocks_window"] * (1 - self.params["min_signed_per_window"]) - message['args']['window_missed'])}`\n
+Window Signing Percentage: `{(self.params['signed_blocks_window'] - message['args']['window_missed'])} / {self.params['signed_blocks_window']} ({((self.params['signed_blocks_window'] - message['args']['window_missed']) / self.params['signed_blocks_window'] * 100):.2f}%)`\n
+Signing window: `{self.params['signed_blocks_window']}`\n
+Min signed per window: `{self.params['min_signed_per_window'] * 100}%`
+                    """
+                elif message['type'] == "recovering":
+                    msg = f"""
+{user} *[RECOVERING] {message['args']['moniker']} is recovering!*\n
+Window Signing Percentage: `{(1 - message['args']['missed_percentage']) * 100}%`
+                    """
+                elif message['type'] == "active":
+                    msg = f"{user} *{message['args']['moniker']} is active again!*"
+                elif message['type'] == "inactive":
+                    msg = f"{user} *{message['args']['moniker']} is inactive!**"
+                elif message['type'] == "jailed":
+                    msg = f"{user} *{message['args']['moniker']} is JAILED!*\n" \
+                        f"Last Signed Block: `{message['args']['last_height']}`\n" \
+                        f"Jailed Until: `{message['args']['jailed_until']}`\n" \
+                        f"Jailed Duration: `{message['args']['jailed_duration']}`"
+                    
+                slack_client.reply(
+                    msg,
+                    slack_client.channels["validator"]["webhook_url"],
+                )
             else:
                 self.logger.error("Slack client is not initialized.")
 
@@ -429,7 +432,7 @@ Last Signed Block: `{message['args']['last_height']}`
 Jailed Until: `{message['args']['jailed_until']}`
 Jailed Duration: `{message['args']['jailed_duration']}`
                                 """
-
+                                
                             future = asyncio.run_coroutine_threadsafe(
                                 telegram_client.reply(
                                     msg,
