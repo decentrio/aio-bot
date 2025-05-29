@@ -21,6 +21,10 @@ This guide will walk you through the steps to set up a Discord bot using Python.
 1. Under the "Bot" tab, you will see a "Token" section.
 2. Click "Copy" to copy your bot token. **Keep this token secure!**
 
+### Step 3: Add the bot to the channels
+If the channels are privated, you need to add the bot manually. Go to the channel, click `Add members or roles` and choose the bot you want to grant access.
+
+
 ## Slack
 This guide will walk you through the steps to set up a Slack bot and enable a slash command.
 
