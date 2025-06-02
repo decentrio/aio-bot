@@ -133,14 +133,14 @@ class Validators:
                 elif missed_percentage < self.params["threshold"][0]["value"]: # ACTIVE
                     if validator["missed_percentage"] > self.params["threshold"][1]["value"]: # ATTENTION
                         self.logger.debug(f"Validator {validator['moniker']} is active after misses blocks!")
-                        self.notify({
-                            "type": "active",
-                            "args": {
-                                "validator": validator["operator_address"],
-                                "moniker": validator["moniker"],
-                            },
-                            "auto_delete": None
-                        })
+                        # self.notify({
+                        #     "type": "active",
+                        #     "args": {
+                        #         "validator": validator["operator_address"],
+                        #         "moniker": validator["moniker"],
+                        #     },
+                        #     "auto_delete": None
+                        # })
                     validator["missed"] = int(val["missed_blocks_counter"])
                     validator["missed_percentage"] = missed_percentage
                     validator["warning_level"] = 0
