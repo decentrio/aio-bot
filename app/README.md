@@ -11,9 +11,9 @@ This guide will walk you through the steps to set up a Discord bot using Python.
 3. Give your application a name and click "Create".
 4. Navigate to the "Bot" tab on the left sidebar.
 5. Turn on all intents.
-![alt text](imgs/image.png)
+![turn on all intents](../doc/intents.png)
 6. Go to "Installation" tab on the left sidebar, and add permissions for the bot.
-![alt text](imgs/image-1.png)
+![set permissions](../doc/discord-permission.png)
 5. Copy the generated link and add the bot to your server.
 
 ### Step 2: Get Your Bot Token

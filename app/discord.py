@@ -21,7 +21,7 @@ class DiscordClient(commands.Bot):
         super().__init__(command_prefix='/', intents=intents)
 
         self.logger = logging.getLogger("DiscordClient")
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.INFO)
 
         self.loop = None
 
@@ -66,7 +66,7 @@ class DiscordClient(commands.Bot):
     async def on_message(self, message):
         if message.author == self.user:
             return
-        self.logger.info(
+        self.logger.debug(
             f"{message.channel.name} | {message.author} | {message.content}")
         if message.content.startswith('/'):
             await self.handle_command(message)
