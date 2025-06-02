@@ -18,7 +18,7 @@ class DiscordClient(commands.Bot):
         intents.messages = True
         intents.message_content = True
 
-        super().__init__(command_prefix='/', intents=intents)
+        super().__init__(command_prefix='>', intents=intents)
 
         self.logger = logging.getLogger("DiscordClient")
         self.logger.setLevel(logging.INFO)
@@ -68,7 +68,7 @@ class DiscordClient(commands.Bot):
             return
         self.logger.debug(
             f"{message.channel.name} | {message.author} | {message.content}")
-        if message.content.startswith('/'):
+        if message.content.startswith('>'):
             await self.handle_command(message)
 
     async def handle_command(self, message):
@@ -78,15 +78,17 @@ class DiscordClient(commands.Bot):
                 msg = self.compose_embed(
                     title="**AIO Bot for Injective!**",
                     description="""
-                        Available commands: \n
-                        - `/sub val <valoper-address>`: Valoper address subscription will notify you of validator uptime, peggo performance and low balance on your validator operator and peggo orchestrator addresses \n
-                        - `/sub list`: List all your subscriptions \n
-                        - `/unsub <valoper-address>`: Unsubscribe from a subscription \n
-                        - `/consensus`: Show current block's consensus state (useful in upgrade events) \n
-                        - `/help`: Show this help menu
-                    """
+                        Available commands:
+                        - `>sub val <valoper-address>`: Valoper address subscription will notify you of validator uptime, peggo performance and low balance on your validator operator and peggo orchestrator addresses \n
+                        - `>sub list`: List all your subscriptions \n
+                        - `>unsub <valoper-address>`: Unsubscribe from a subscription \n
+                        - `>consensus`: Show current block's consensus state (useful in upgrade events)\n
+                        - `>help`: Show this help menu
+                    """,
+                    footer=f"This message will be automatically deleted in 60s"
+
                 )
-                await self.reply(message.channel.id, msg)
+                await self.reply(message.channel.id, msg, auto_delete=60)
             case "sub":
                 commands = message.content[1:].split(' ')
                 print(commands)
@@ -101,8 +103,9 @@ class DiscordClient(commands.Bot):
 
                     msg = self.compose_embed(
                         description=f"Subscribed `{value}` for <@{message.author.id}>",
+                        footer=f"This message will be automatically deleted in 10s"
                     )
-                    await self.reply(message.channel.id, msg)
+                    await self.reply(message.channel.id, msg, auto_delete=10)
                     with open("config.json", "r") as config_file:
                         config = json.load(config_file)
                     config["app"]["discord"]["subscriptions"] = self.subscriptions
@@ -116,15 +119,17 @@ class DiscordClient(commands.Bot):
                             f"- {sub}" for sub in user_subs) if user_subs else "No subscriptions found."
                         msg = self.compose_embed(
                             title=f"**Your subscriptions:**",
-                            description=sub_list
+                            description=sub_list,
+                            footer=f"This message will be automatically deleted in 60s"
                         )
-                        await self.reply(message.channel.id, msg)
+                        await self.reply(message.channel.id, msg, auto_delete=60)
                     else:
                         msg = self.compose_embed(
                             title=f"**Invalid command!**",
                             description=f"Invalid command: `{commands}`",
+                            footer=f"This message will be automatically deleted in 10s"
                         )
-                        await self.reply(message.channel.id, msg)
+                        await self.reply(message.channel.id, msg, auto_delete=10)
             case "unsub":
                 value_to_remove = message.content[1:].split(' ')[1]
                 self.subscriptions = [
@@ -138,8 +143,9 @@ class DiscordClient(commands.Bot):
                 ]
                 msg = self.compose_embed(
                     description=f"Unsubscribed `{value_to_remove}` for <@{message.author.id}>",
+                    footer=f"This message will be automatically deleted in 10s"
                 )
-                await self.reply(message.channel.id, msg)
+                await self.reply(message.channel.id, msg, auto_delete=10)
                 with open("config.json", "r") as config_file:
                     config = json.load(config_file)
                 config["app"]["discord"]["subscriptions"] = self.subscriptions
@@ -213,7 +219,7 @@ class DiscordClient(commands.Bot):
                 self.logger.error(f"Invalid command: {command}")
                 msg = self.compose_embed(
                     title=f"**Invalid command!**",
-                    description=f"Invalid command: `{commands}`",
+                    description=f"Invalid command: `{command}`",
                 )
                 await self.reply(message.channel.id, msg)
 

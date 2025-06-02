@@ -249,7 +249,7 @@ class IBC:
                                 }
                             ],
                             footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
-                            color=0x75ffd1
+                            color=0xff941a
                         )
                     elif message["type"] == "packets":
                         msg = discord_client.compose_embed(
@@ -283,7 +283,7 @@ class IBC:
                                 }
                             ],
                             footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
-                            color=0x75ffd1
+                            color=0xfff942
                         )
                     elif message["type"] == "packet":
                         msg = discord_client.compose_embed(
@@ -312,7 +312,7 @@ class IBC:
                                 } if "pending_blocks" in message['args'] else {}
                             ],
                             footer=f"This message will be automatically deleted in {message['auto_delete']}s" if message['auto_delete'] != None else "",
-                            color=0x75ffd1
+                            color=0xfff942
                         )
                     future = asyncio.run_coroutine_threadsafe(
                         discord_client.reply(

@@ -21,7 +21,10 @@ class Balances:
         try:
             data = query.query(
                 self.jsonrpcs, 
-                method="GET", 
+                method="POST", 
+                header={
+                    "Content-Type": "application/json"
+                },
                 body={
                     "jsonrpc": "2.0",
                     "method": "eth_getBalance",
@@ -48,63 +51,55 @@ class Balances:
             self.logger.error(f"Error fetching inj balance: {e}")
             return None
 
-    def check(self, platform, validator, address):
+    def check(self, validator, moniker, address):
         if address.startswith("inj1"):
             balance = self.get_inj_balance(address)
             if balance != None and balance <= self.params["threshold"]["inj"]:
-                val_info = query.query(self.apis, path=f"/cosmos/staking/v1beta1/validators/{validator}")
-                if self.app[platform] is not None:
-                    self.logger.info(f"Validator: {validator} has low INJ balance: {balance}")
-                    self.notify(
-                        platform,
-                        {
-                            "type": "low_balance",
-                            "args": {
-                                "validator": validator,
-                                "address": address,
-                                "moniker": val_info["validator"]["description"]["moniker"],
-                                "balance": f"{balance:,.2f} INJ",
-                            },
-                            "auto_delete": None
-                        }
-                    )
+                self.logger.info(f"Validator: {validator} has low INJ balance: {balance}")
+                self.notify(
+                    {
+                        "type": "low_balance",
+                        "args": {
+                            "validator": validator,
+                            "address": address,
+                            "moniker": moniker,
+                            "balance": f"{balance:,.2f} INJ",
+                        },
+                        "auto_delete": None
+                    }
+                )
         elif address.startswith("0x"):
             balance = self.get_eth_balance(address)
             if balance != None and balance <= self.params["threshold"]["eth"]:
-                val_info = query.query(self.apis, path=f"/cosmos/staking/v1beta1/validators/{validator}")
-                if self.app[platform] is not None:
-                    self.logger.info(f"Validator: {validator} has low ETH balance: {balance}")
-                    self.notify(
-                        platform,
-                        {
-                            "type": "low_balance",
-                            "args": {
-                                "validator": validator,
-                                "address": address,
-                                "moniker": val_info["validator"]["description"]["moniker"],
-                                "balance": f"{balance:,.2f} ETH",
-                            },
-                            "auto_delete": None
-                        }
-                    )
-        else:
-            self.logger.error(f"Invalid address: {address}")
-            if self.app[platform] is not None:
+                self.logger.info(f"Validator: {validator} has low ETH balance: {balance}")
                 self.notify(
-                    platform,
                     {
-                        "type": "invalid_address",
+                        "type": "low_balance",
                         "args": {
                             "validator": validator,
-                            "address": address
+                            "address": address,
+                            "moniker": moniker,
+                            "balance": f"{balance:,.6f} ETH",
+                        },
+                        "auto_delete": None
+                    }
+                )
+        else:
+            self.logger.error(f"Invalid address: {address}")
+            self.notify(
+                {
+                    "type": "invalid_address",
+                    "args": {
+                        "validator": validator,
+                        "address": address
                         },
                         "auto_delete": None
                     }
                 )
             return
         
-    def notify(self, platform, message):
-        if platform == "discord" and self.app["discord"] is not None:
+    def notify(self, message):
+        if self.app["discord"] is not None:
             discord_client = self.app["discord"]
             if discord_client.loop:
                 subscriptions = discord_client.subscriptions
@@ -113,6 +108,7 @@ class Balances:
                 for sub in subscriptions:
                     if sub["validator"] == message['args']['validator']:
                         user += f" <@{sub['user']}>"
+
                 if message['type'] == "low_balance":
                     msg = discord_client.compose_embed(
                         title = f"{message['args']['moniker']} has low balance!",
@@ -135,24 +131,38 @@ class Balances:
                         color = 0xffd100
                     )
 
-                future = asyncio.run_coroutine_threadsafe(
-                    discord_client.reply(
-                        discord_client.channels["wallet"]["id"],
-                        msg,
-                        user,
-                        message['auto_delete']
-                    ),
-                    discord_client.loop
-                )
-                # Optionally, wait for the coroutine to finish and handle exceptions
-                future.result()
+                if discord_client.mode == "chain":
+                    future = asyncio.run_coroutine_threadsafe(
+                        discord_client.reply(
+                            discord_client.channels["wallet"]["id"],
+                            msg,
+                            user,
+                            message['auto_delete']
+                        ),
+                        discord_client.loop
+                    )
+                    # Optionally, wait for the coroutine to finish and handle exceptions
+                    future.result()
+                elif discord_client.mode == "single":
+                    for sub in subscriptions:
+                        if sub["validator"] == message["args"]["validator"]:
+                            future = asyncio.run_coroutine_threadsafe(
+                                discord_client.reply(
+                                    discord_client.channels["wallet"]["id"],
+                                    msg,
+                                    auto_delete=message['auto_delete']
+                                ),
+                                discord_client.loop
+                            )
+                            # Optionally, wait for the coroutine to finish and handle exceptions
+                            future.result()
             else:
                 self.logger.error("Discord client loop not ready.")
         else:
             self.logger.error("Discord client is not initialized.")
 
         # Slack 
-        if platform == "slack" and self.app["slack"] is not None and len(self.app["slack"].subscriptions):
+        if self.app["slack"] is not None and len(self.app["slack"].subscriptions):
             slack_client = self.app["slack"]
             subscriptions = slack_client.subscriptions
             msg = None
@@ -175,7 +185,7 @@ Address: `{message['args']['address']}`
             self.logger.error("Slack client is not initialized")
 
         # Telegram
-        if platform =="telegram" and self.app["telegram"] is not None and len(self.app["telegram"].subscriptions):
+        if self.app["telegram"] is not None and len(self.app["telegram"].subscriptions):
             telegram_client = self.app["telegram"]
             if telegram_client.loop:
                 subscriptions = telegram_client.subscriptions
@@ -208,30 +218,42 @@ Address: `{message['args']['address']}`
         while True:
             time.sleep(30)
             self.logger.info("Fetching addresses balance status ...")
-            for platform in ["discord", "slack", "telegram"]:
-                if self.app[platform] is not None:
-                    client = self.app[platform]
-                    subscriptions = client.subscriptions
-                    for sub in subscriptions:
-                        if "validator" in sub:
-                            self.logger.debug(f"Checking balance: {sub['validator']}")
-                            if sub['validator'] and sub['validator'].startswith("inj"):
-                                address = query.query(self.apis, path=f"/peggy/v1/query_delegate_keys_by_validator?validator_address={sub['validator']}")
-                                self.check(platform, sub["validator"], address["eth_address"])
-                                self.check(platform, sub["validator"], address["orchestrator_address"])
-                            else:
-                                self.notify(
-                                    platform,
-                                    {
-                                    "type": "invalid_address",
-                                    "args": {
-                                        "validator": sub["validator"],
-                                        "address": sub["validator"]
-                                    },
-                                    "auto_delete": None
-                                })
-
+            with open("validators.json", "r") as f:
+                validators = json.load(f)
+                for val in validators:
+                    self.logger.debug(f"Checking balance: {val['moniker']}")
+                    address = query.query(self.apis, path=f"/peggy/v1/query_delegate_keys_by_validator?validator_address={val['operator_address']}")
+                    self.check(val['operator_address'], val['moniker'], address["eth_address"])
+                    time.sleep(5)
+                    self.check(val['operator_address'], val['moniker'], address["orchestrator_address"])
+                    time.sleep(5)
+                    
             time.sleep(self.params["interval"] - 30)
+            
+            # for platform in ["discord", "slack", "telegram"]:
+            #     if self.app[platform] is not None:
+            #         client = self.app[platform]
+            #         subscriptions = client.subscriptions
+            #         for sub in subscriptions:
+            #             if "validator" in sub:
+            #                 self.logger.debug(f"Checking balance: {sub['validator']}")
+            #                 if sub['validator'] and sub['validator'].startswith("inj"):
+            #                     address = query.query(self.apis, path=f"/peggy/v1/query_delegate_keys_by_validator?validator_address={sub['validator']}")
+            #                     self.check(platform, sub["validator"], address["eth_address"])
+            #                     self.check(platform, sub["validator"], address["orchestrator_address"])
+            #                 else:
+            #                     self.notify(
+            #                         platform,
+            #                         {
+            #                         "type": "invalid_address",
+            #                         "args": {
+            #                             "validator": sub["validator"],
+            #                             "address": sub["validator"]
+            #                         },
+            #                         "auto_delete": None
+            #                     })
+            # 
+            # time.sleep(self.params["interval"] - 30)
 
     def run(self):
         loop = asyncio.new_event_loop()

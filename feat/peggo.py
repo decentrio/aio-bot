@@ -231,6 +231,7 @@ class Peggo:
                                 f"Last Observed Nonce: `{message['args']['last_observed_nonce']}`\n" \
                                 f"Last Claimed Ethereum Event Nonce: `{message['args']['last_claim_eth_event_nonce']}`\n" \
                                 f"Last Height Checked: `{message['args']['last_height']}`"
+                            
                         slack_client.reply(
                                 msg,
                                 slack_client.channels["peggo"]["webhook_url"],
