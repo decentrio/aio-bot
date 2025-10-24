@@ -162,25 +162,31 @@ class Balances:
             self.logger.error("Discord client is not initialized.")
 
         # Slack 
-        if self.app["slack"] is not None and len(self.app["slack"].subscriptions):
+        #if self.app["slack"] is not None and len(self.app["slack"].subscriptions):
+        if self.app["slack"] is not None:
             slack_client = self.app["slack"]
             subscriptions = slack_client.subscriptions
+            user = ""
             msg = None
             for sub in subscriptions:
-                if sub["validator"] == message['args']['validator']:
-                    if message['type'] == "low_balance":
-                        msg = f"""
+                    if sub.get("validator") == message['args']['validator']:
+                        user += f" <@{sub['user']}>"
+            
+            # for sub in subscriptions:
+            #     if sub["validator"] == message['args']['validator']:
+            if message['type'] == "low_balance":
+                msg = f"""
 {message['args']['moniker']} has low balance!
 Balance: `{message['args']['balance']}`
 Address: `{message['args']['address']}`
-                        """
-                    elif message['type'] == "invalid_address":
-                        msg = f"Invalid address: `{message['args']['address']}`!"
+                """
+            elif message['type'] == "invalid_address":
+                msg = f"Invalid address: `{message['args']['address']}`!"
 
-                    slack_client.reply(
-                        msg,
-                        slack_client.channels["wallet"]["webhook_url"],
-                    )
+            slack_client.reply(
+                msg,
+                slack_client.channels["wallet"]["webhook_url"],
+            )
         else:
             self.logger.error("Slack client is not initialized")
 
