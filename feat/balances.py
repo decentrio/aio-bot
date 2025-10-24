@@ -176,7 +176,7 @@ class Balances:
             #     if sub["validator"] == message['args']['validator']:
             if message['type'] == "low_balance":
                 msg = f"""
-{message['args']['moniker']} has low balance!
+{user} {message['args']['moniker']} has low balance!
 Balance: `{message['args']['balance']}`
 Address: `{message['args']['address']}`
                 """

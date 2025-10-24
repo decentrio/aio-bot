@@ -215,27 +215,32 @@ class Peggo:
             if self.app["slack"] is not None:
                 slack_client = self.app["slack"]
                 subscriptions = slack_client.subscriptions
+                user = ""
                 msg = None
                 for sub in subscriptions:
-                    if sub["validator"] == message["args"]["validator"]:
-                        if message['type'] == "pending_valsets":
-                            msg = f"*{message['args']['moniker']} has pending valsets!*\n" \
-                                f"Pending Valsets: `{message['args']['pending_valsets']}`\n" \
-                                f"Last Height Checked: `{message['args']['last_height']}`"
-                        elif message['type'] == "pending_batches":
-                            msg = f"*{message['args']['moniker']} has pending batches!*\n" \
-                                f"Pending Batches: `{message['args']['pending_batches']}`\n" \
-                                f"Last Height Checked: `{message['args']['last_height']}`"
-                        elif message['type'] == "nonce_mismatch":
-                            msg = f"*{message['args']['moniker']}'s nonce is lagging behind!*\n" \
-                                f"Last Observed Nonce: `{message['args']['last_observed_nonce']}`\n" \
-                                f"Last Claimed Ethereum Event Nonce: `{message['args']['last_claim_eth_event_nonce']}`\n" \
-                                f"Last Height Checked: `{message['args']['last_height']}`"
-                            
-                        slack_client.reply(
-                                msg,
-                                slack_client.channels["peggo"]["webhook_url"],
-                        )
+                    if sub.get("validator") == message['args']['validator']:
+                        user += f" <@{sub['user']}>"
+                
+                # for sub in subscriptions:
+                #     if sub["validator"] == message["args"]["validator"]:
+                if message['type'] == "pending_valsets":
+                    msg = f"{user} *{message['args']['moniker']} has pending valsets!*\n" \
+                        f"Pending Valsets: `{message['args']['pending_valsets']}`\n" \
+                        f"Last Height Checked: `{message['args']['last_height']}`"
+                elif message['type'] == "pending_batches":
+                    msg = f"{user} *{message['args']['moniker']} has pending batches!*\n" \
+                        f"Pending Batches: `{message['args']['pending_batches']}`\n" \
+                        f"Last Height Checked: `{message['args']['last_height']}`"
+                elif message['type'] == "nonce_mismatch":
+                    msg = f"{user} *{message['args']['moniker']}'s nonce is lagging behind!*\n" \
+                        f"Last Observed Nonce: `{message['args']['last_observed_nonce']}`\n" \
+                        f"Last Claimed Ethereum Event Nonce: `{message['args']['last_claim_eth_event_nonce']}`\n" \
+                        f"Last Height Checked: `{message['args']['last_height']}`"
+                    
+                slack_client.reply(
+                        msg,
+                        slack_client.channels["peggo"]["webhook_url"],
+                )
             else:
                 self.logger.error("Slack client is not initialized.")
 
