@@ -1,9 +1,13 @@
 import logging
-import json
-import utils.query as query
 import asyncio
-from datetime import datetime
+import json
 import time
+from datetime import datetime
+
+import requests
+from requests.exceptions import RequestException
+
+import utils.query as query
 
 class IBC:
     def __init__(self, app, params):
@@ -13,7 +17,9 @@ class IBC:
         self.params = params
         self.client_update_threshold = params["client_update_threshold"]
         self.stuck_packets_threshold = params["stuck_packets_threshold"]
+        self.alert_confirmation_seconds = params.get("alert_confirmation_seconds", 180)
         self.ibcs = []
+        self.alert_candidates = {}
 
     def getIgnorePackets(self) -> list:
         try:
@@ -28,6 +34,72 @@ class IBC:
             self.logger.error(f"Error decoding JSON from ibc_ignore.json: {e}")
             return []
 
+    def _make_alert_key(self, alert_type, source_id, dest_id, channel, port, sequence=None):
+        key = (
+            alert_type,
+            str(source_id),
+            str(dest_id),
+            str(channel),
+            str(port),
+        )
+        if sequence is not None:
+            return key + (str(sequence),)
+        return key
+
+    def _track_alert_candidate(self, key, payload):
+        if self.alert_confirmation_seconds <= 0:
+            return payload
+
+        now = time.time()
+        candidate = self.alert_candidates.get(key)
+        if candidate:
+            candidate["last_seen"] = now
+            candidate["payload"] = payload
+            if now - candidate["first_seen"] >= self.alert_confirmation_seconds:
+                self.alert_candidates.pop(key, None)
+                return payload
+        else:
+            self.alert_candidates[key] = {
+                "first_seen": now,
+                "last_seen": now,
+                "payload": payload
+            }
+        return None
+
+    def _clear_inactive_alerts(self, source_id, dest_id, channel, port, active_keys):
+        for key in list(self.alert_candidates.keys()):
+            if (
+                len(key) >= 5
+                and key[1] == str(source_id)
+                and key[2] == str(dest_id)
+                and key[3] == str(channel)
+                and key[4] == str(port)
+                and key not in active_keys
+            ):
+                self.alert_candidates.pop(key, None)
+
+    def _is_api_active(self, api, chain_name):
+        health_url = f"{api.rstrip('/')}/cosmos/base/tendermint/v1beta1/blocks/latest"
+        try:
+            response = requests.get(health_url, timeout=5)
+            if response.status_code == 200:
+                return True
+            self.logger.warning(f"Health-check for {api} on {chain_name} returned {response.status_code}.")
+        except RequestException as exc:
+            self.logger.warning(f"Skipping inactive API {api} for {chain_name}: {exc}")
+        except Exception as exc:
+            self.logger.warning(f"Unexpected error probing {api} for {chain_name}: {exc}")
+        return False
+
+    def _filter_active_apis(self, apis, chain_name):
+        active = []
+        for api in apis:
+            if self._is_api_active(api, chain_name):
+                active.append(api)
+        if not active:
+            self.logger.error(f"No responsive REST endpoints found for {chain_name}.")
+        return active
+
     def getIBCList(self) -> list:
         ibcs = []
 
@@ -39,6 +111,10 @@ class IBC:
             else "https://" + api["address"]
             for api in apis
         ]
+
+        chain_1_apis = self._filter_active_apis(chain_1_apis, "injective")
+        if not chain_1_apis:
+            return []
 
         # chain_1_apis = ["https://rest.cosmos.directory/injective"]
 
@@ -74,6 +150,9 @@ class IBC:
                     for api in apis
                 ]
 
+                chain_2_apis = self._filter_active_apis(chain_2_apis, chain_2_name)
+                if not chain_2_apis:
+                    continue
                 # chain_2_apis = ["https://rest.cosmos.directory/" + chain_2_name]
 
                 chain_1_client = query.query(chain_1_apis, path=f"/ibc/core/channel/v1/channels/{chain_1_channel}/ports/{chain_1_port}/client_state")
@@ -141,37 +220,45 @@ class IBC:
                     if ibc["client-1"] != "":
                         self.checkClient(ibc["client-1"], ibc["api-1"], ibc["api-2"], ibc["chain-1"], ibc["chain-2"])
                     data = query.query(ibc["api-1"], path=f"/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments")
-                    packet_1 = data["commitments"]
-                    ibc["packet-1"] = len(packet_1)
+                    commitments_1 = data["commitments"]
+                    ibc["packet-1"] = len(commitments_1)
                     ignore_packets = self.ibc_ignores[ibc["id-1"]][ibc["channel-1"]] if ibc["id-1"] in self.ibc_ignores and ibc["channel-1"] in self.ibc_ignores[ibc["id-1"]] else []
-                    if len(packet_1) >= self.stuck_packets_threshold:
-                        if len(packet_1) == 1 and data["commitments"][0]["sequence"] not in ignore_packets:
-                            sequence = data["commitments"][0]["sequence"]
-                            tx_detail = query.query([f"https://rpc.cosmos.directory/{ibc['chain-1']}"], path=f"/tx_search?query=%22send_packet.packet_sequence%3D{sequence}%22")
-                            tx_block = int(tx_detail["result"]["txs"][0]["height"]) if tx_detail["result"] else None
-                            current_block = int(query.query(ibc["api-1"], path="/cosmos/base/tendermint/v1beta1/blocks/latest")["block"]["header"]["height"])
-                            pending_blocks = current_block - tx_block if tx_block else None
-                            if pending_blocks is None or (pending_blocks is not None and pending_blocks <= 50000):
-                                self.notify({
-                                    "type": "packet",
-                                    "args": {
-                                        "chain-1": ibc["chain-1"],
-                                        "chain-2": ibc["chain-2"],
-                                        "port": ibc["port-1"],
-                                        "channel": ibc["channel-1"],
-                                        "sequence": sequence,
-                                        "pending_blocks": pending_blocks,
-                                        "url": f"https://rest.cosmos.directory/{ibc['chain-1']}/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments/{sequence}"
-                                    },
-                                    "auto_delete": None
-                                })
+                    active_keys = set()
+
+                    if len(commitments_1) >= self.stuck_packets_threshold:
+                        if len(commitments_1) == 1:
+                            sequence = commitments_1[0]["sequence"]
+                            if sequence not in ignore_packets:
+                                tx_detail = query.query([f"https://rpc.cosmos.directory/{ibc['chain-1']}"], path=f"/tx_search?query=%22send_packet.packet_sequence%3D{sequence}%22")
+                                tx_block = int(tx_detail["result"]["txs"][0]["height"]) if tx_detail["result"] else None
+                                current_block = int(query.query(ibc["api-1"], path="/cosmos/base/tendermint/v1beta1/blocks/latest")["block"]["header"]["height"])
+                                pending_blocks = current_block - tx_block if tx_block else None
+                                if pending_blocks is None or (pending_blocks is not None and pending_blocks <= 50000):
+                                    payload = {
+                                        "type": "packet",
+                                        "args": {
+                                            "chain-1": ibc["chain-1"],
+                                            "chain-2": ibc["chain-2"],
+                                            "port": ibc["port-1"],
+                                            "channel": ibc["channel-1"],
+                                            "sequence": sequence,
+                                            "pending_blocks": pending_blocks,
+                                            "url": f"https://rest.cosmos.directory/{ibc['chain-1']}/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments/{sequence}"
+                                        },
+                                        "auto_delete": None
+                                    }
+                                    key = self._make_alert_key("packet", ibc["id-1"], ibc["id-2"], ibc["channel-1"], ibc["port-1"], sequence)
+                                    active_keys.add(key)
+                                    message = self._track_alert_candidate(key, payload)
+                                    if message:
+                                        self.notify(message)
                         else:
-                            packet_1 = [p for p in packet_1 if p["sequence"] not in ignore_packets]
-                            if len(packet_1) > 0:
-                                self.notify({
+                            filtered_packets_1 = [p for p in commitments_1 if p["sequence"] not in ignore_packets]
+                            if len(filtered_packets_1) > 0:
+                                payload = {
                                     "type": "packets",
                                     "args": {
-                                        "quantity": len(packet_1),
+                                        "quantity": len(filtered_packets_1),
                                         "chain-1": ibc["chain-1"],
                                         "chain-2": ibc["chain-2"],
                                         "port": ibc["port-1"],
@@ -179,7 +266,14 @@ class IBC:
                                         "url": f"https://rest.cosmos.directory/{ibc['chain-1']}/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments"
                                     },
                                     "auto_delete": None
-                                })
+                                }
+                                key = self._make_alert_key("packets", ibc["id-1"], ibc["id-2"], ibc["channel-1"], ibc["port-1"])
+                                active_keys.add(key)
+                                message = self._track_alert_candidate(key, payload)
+                                if message:
+                                    self.notify(message)
+
+                    self._clear_inactive_alerts(ibc["id-1"], ibc["id-2"], ibc["channel-1"], ibc["port-1"], active_keys)
 
                     self.logger.debug(f"{ibc['chain-1']}-{ibc['chain-2']} queried.")
                 except Exception as e:
@@ -189,37 +283,45 @@ class IBC:
                     if ibc["client-2"] != "":
                         self.checkClient(ibc["client-2"], ibc["api-2"], ibc["api-1"], ibc["chain-2"], ibc["chain-1"])
                     data = query.query(ibc["api-2"], path=f"/ibc/core/channel/v1/channels/{ibc['channel-2']}/ports/{ibc['port-2']}/packet_commitments")
-                    packet_2 = data["commitments"]
-                    ibc["packet-2"] = len(packet_2)
+                    commitments_2 = data["commitments"]
+                    ibc["packet-2"] = len(commitments_2)
                     ignore_packets = self.ibc_ignores[ibc["id-2"]][ibc["channel-2"]] if ibc["id-2"] in self.ibc_ignores and ibc["channel-2"] in self.ibc_ignores[ibc["id-2"]] else []
-                    if len(packet_2) >= self.stuck_packets_threshold:
-                        if len(packet_2) == 1 and data["commitments"][0]["sequence"] not in ignore_packets:
-                            sequence = data["commitments"][0]["sequence"]
-                            tx_detail = query.query([f"https://rpc.cosmos.directory/{ibc['chain-2']}"], path=f"/tx_search?query=%22send_packet.packet_sequence%3D{sequence}%22")
-                            tx_block = int(tx_detail["result"]["txs"][0]["height"]) if tx_detail["result"] else None
-                            current_block = int(query.query(ibc["api-2"], path="/cosmos/base/tendermint/v1beta1/blocks/latest")["block"]["header"]["height"])
-                            pending_blocks = current_block - tx_block if tx_block else None
-                            if pending_blocks is None or (pending_blocks is not None and pending_blocks <= 50000):
-                                self.notify({
-                                    "type": "packet",
-                                    "args": {
-                                        "chain-1": ibc["chain-2"],
-                                        "chain-2": ibc["chain-1"],
-                                        "port": ibc["port-2"],
-                                        "channel": ibc["channel-2"],
-                                        "sequence": sequence,
-                                        "pending_blocks": pending_blocks,
-                                        "url": f"https://rest.cosmos.directory/{ibc['chain-2']}/ibc/core/channel/v1/channels/{ibc['channel-2']}/ports/{ibc['port-2']}/packet_commitments/{sequence}"
-                                    },
-                                    "auto_delete": None
-                                })
+                    active_keys = set()
+
+                    if len(commitments_2) >= self.stuck_packets_threshold:
+                        if len(commitments_2) == 1:
+                            sequence = commitments_2[0]["sequence"]
+                            if sequence not in ignore_packets:
+                                tx_detail = query.query([f"https://rpc.cosmos.directory/{ibc['chain-2']}"], path=f"/tx_search?query=%22send_packet.packet_sequence%3D{sequence}%22")
+                                tx_block = int(tx_detail["result"]["txs"][0]["height"]) if tx_detail["result"] else None
+                                current_block = int(query.query(ibc["api-2"], path="/cosmos/base/tendermint/v1beta1/blocks/latest")["block"]["header"]["height"])
+                                pending_blocks = current_block - tx_block if tx_block else None
+                                if pending_blocks is None or (pending_blocks is not None and pending_blocks <= 50000):
+                                    payload = {
+                                        "type": "packet",
+                                        "args": {
+                                            "chain-1": ibc["chain-2"],
+                                            "chain-2": ibc["chain-1"],
+                                            "port": ibc["port-2"],
+                                            "channel": ibc["channel-2"],
+                                            "sequence": sequence,
+                                            "pending_blocks": pending_blocks,
+                                            "url": f"https://rest.cosmos.directory/{ibc['chain-2']}/ibc/core/channel/v1/channels/{ibc['channel-2']}/ports/{ibc['port-2']}/packet_commitments/{sequence}"
+                                        },
+                                        "auto_delete": None
+                                    }
+                                    key = self._make_alert_key("packet", ibc["id-2"], ibc["id-1"], ibc["channel-2"], ibc["port-2"], sequence)
+                                    active_keys.add(key)
+                                    message = self._track_alert_candidate(key, payload)
+                                    if message:
+                                        self.notify(message)
                         else:
-                            packet_2 = [p for p in packet_2 if p["sequence"] not in ignore_packets]
-                            if len(packet_2) > 0:
-                                self.notify({
+                            filtered_packets_2 = [p for p in commitments_2 if p["sequence"] not in ignore_packets]
+                            if len(filtered_packets_2) > 0:
+                                payload = {
                                     "type": "packets",
                                     "args": {
-                                        "quantity": len(packet_2),
+                                        "quantity": len(filtered_packets_2),
                                         "chain-1": ibc["chain-2"],
                                         "chain-2": ibc["chain-1"],
                                         "port": ibc["port-2"],
@@ -227,7 +329,14 @@ class IBC:
                                         "url": f"https://rest.cosmos.directory/{ibc['chain-2']}/ibc/core/channel/v1/channels/{ibc['channel-2']}/ports/{ibc['port-2']}/packet_commitments"
                                     },
                                     "auto_delete": None
-                                })
+                                }
+                                key = self._make_alert_key("packets", ibc["id-2"], ibc["id-1"], ibc["channel-2"], ibc["port-2"])
+                                active_keys.add(key)
+                                message = self._track_alert_candidate(key, payload)
+                                if message:
+                                    self.notify(message)
+
+                    self._clear_inactive_alerts(ibc["id-2"], ibc["id-1"], ibc["channel-2"], ibc["port-2"], active_keys)
 
                     self.logger.debug(f"{ibc['chain-2']}-{ibc['chain-1']} queried.")
                 except Exception as e:
