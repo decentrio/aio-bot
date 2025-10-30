@@ -100,6 +100,32 @@ class IBC:
             self.logger.error(f"No responsive REST endpoints found for {chain_name}.")
         return active
 
+    def _fetch_reference_packets(self, chain, channel, port):
+        reference_base = f"https://rest.cosmos.directory/{chain}"
+        try:
+            data = query.query(
+                [reference_base],
+                path=f"/ibc/core/channel/v1/channels/{channel}/ports/{port}/packet_commitments"
+            )
+            return data.get("commitments", [])
+        except Exception as exc:
+            self.logger.debug(
+                f"Skip reference packet check for {chain} {channel}/{port}: {exc}"
+            )
+            return None
+
+    def _validate_packets(self, primary_packets, reference_packets, chain, channel, port):
+        if reference_packets is None:
+            return
+        primary_sequences = sorted(p["sequence"] for p in primary_packets)
+        reference_sequences = sorted(p["sequence"] for p in reference_packets)
+        if primary_sequences != reference_sequences:
+            self.logger.warning(
+                "Packet commitments mismatch between primary APIs and reference endpoint "
+                f"for {chain} {channel}/{port}. primary={primary_sequences}, "
+                f"reference={reference_sequences}"
+            )
+
     def getIBCList(self) -> list:
         ibcs = []
 
@@ -221,6 +247,8 @@ class IBC:
                         self.checkClient(ibc["client-1"], ibc["api-1"], ibc["api-2"], ibc["chain-1"], ibc["chain-2"])
                     data = query.query(ibc["api-1"], path=f"/ibc/core/channel/v1/channels/{ibc['channel-1']}/ports/{ibc['port-1']}/packet_commitments")
                     commitments_1 = data["commitments"]
+                    reference_packets = self._fetch_reference_packets(ibc["chain-1"], ibc["channel-1"], ibc["port-1"])
+                    self._validate_packets(commitments_1, reference_packets, ibc["chain-1"], ibc["channel-1"], ibc["port-1"])
                     ibc["packet-1"] = len(commitments_1)
                     ignore_packets = self.ibc_ignores[ibc["id-1"]][ibc["channel-1"]] if ibc["id-1"] in self.ibc_ignores and ibc["channel-1"] in self.ibc_ignores[ibc["id-1"]] else []
                     active_keys = set()
@@ -284,6 +312,8 @@ class IBC:
                         self.checkClient(ibc["client-2"], ibc["api-2"], ibc["api-1"], ibc["chain-2"], ibc["chain-1"])
                     data = query.query(ibc["api-2"], path=f"/ibc/core/channel/v1/channels/{ibc['channel-2']}/ports/{ibc['port-2']}/packet_commitments")
                     commitments_2 = data["commitments"]
+                    reference_packets = self._fetch_reference_packets(ibc["chain-2"], ibc["channel-2"], ibc["port-2"])
+                    self._validate_packets(commitments_2, reference_packets, ibc["chain-2"], ibc["channel-2"], ibc["port-2"])
                     ibc["packet-2"] = len(commitments_2)
                     ignore_packets = self.ibc_ignores[ibc["id-2"]][ibc["channel-2"]] if ibc["id-2"] in self.ibc_ignores and ibc["channel-2"] in self.ibc_ignores[ibc["id-2"]] else []
                     active_keys = set()
