@@ -68,6 +68,22 @@ class Balances:
                         "auto_delete": None
                     }
                 )
+        elif address.startswith("0x"):
+            balance = self.get_eth_balance(address)
+            if balance != None and balance <= self.params["threshold"]["eth"]:
+                self.logger.info(f"Validator: {validator} has low ETH balance: {balance}")
+                self.notify(
+                    {
+                        "type": "low_balance",
+                        "args": {
+                            "validator": validator,
+                            "address": address,
+                            "moniker": moniker,
+                            "balance": f"{balance:,.6f} ETH",
+                        },
+                        "auto_delete": None
+                    }
+                )
         else:
             self.logger.error(f"Invalid address: {address}")
             self.notify(
