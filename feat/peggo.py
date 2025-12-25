@@ -57,13 +57,15 @@ class Peggo:
             progress_state = {
                 "last_claim": operator["last_claim_eth_event_nonce"],
                 "last_progress_at": now,
+                "regressed": False,
             }
         else:
             current_claim = operator["last_claim_eth_event_nonce"]
             if current_claim > progress_state["last_claim"]:
                 progress_state["last_progress_at"] = now
+                progress_state["regressed"] = False
             elif current_claim < progress_state["last_claim"]:
-                progress_state["last_progress_at"] = now
+                progress_state["regressed"] = True
             progress_state["last_claim"] = current_claim
         self.nonce_progress[operator["valoper_address"]] = progress_state
 
@@ -87,7 +89,7 @@ class Peggo:
 
         if len(operator["batch_confirms"]) != 0:
             check = False
-            for op in operator["valset_confirms"]:
+            for op in operator["batch_confirms"]:
                 if op["orchestrator"] == operator["orchestrator_address"]:
                     check = True
                     break
@@ -105,7 +107,8 @@ class Peggo:
 
         lag = abs(operator["last_observed_nonce"] - operator["last_claim_eth_event_nonce"])
         has_recent_progress = (now - progress_state["last_progress_at"]) < progress_grace if progress_grace > 0 else False
-        if lag >= self.params["threshold"] and not has_recent_progress:
+        should_suppress = has_recent_progress and not progress_state["regressed"]
+        if lag >= self.params["threshold"] and not should_suppress:
             self.notify({
             "type": "nonce_mismatch",
             "args": {
