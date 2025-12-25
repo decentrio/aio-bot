@@ -145,6 +145,7 @@
             "enable": true,
             "params": {
                 "threshold": 10,
+                "nonce_progress_grace_seconds": 1200,
                 "interval": 1200
             }
         },

@@ -10,6 +10,7 @@ class Peggo:
         self.app: dict = app
         self.apis: str = apis
         self.params: dict = params
+        self.nonce_progress: dict = {}
         self.logger = logging.getLogger("Peggo")
         self.logger.setLevel(logging.INFO)
     
@@ -49,6 +50,23 @@ class Peggo:
             return None
         
     def check(self, operator: dict):
+        now = time.time()
+        progress_grace = self.params.get("nonce_progress_grace_seconds", 0)
+        progress_state = self.nonce_progress.get(operator["valoper_address"])
+        if progress_state is None:
+            progress_state = {
+                "last_claim": operator["last_claim_eth_event_nonce"],
+                "last_progress_at": now,
+            }
+        else:
+            current_claim = operator["last_claim_eth_event_nonce"]
+            if current_claim > progress_state["last_claim"]:
+                progress_state["last_progress_at"] = now
+            elif current_claim < progress_state["last_claim"]:
+                progress_state["last_progress_at"] = now
+            progress_state["last_claim"] = current_claim
+        self.nonce_progress[operator["valoper_address"]] = progress_state
+
         if len(operator["valset_confirms"]) != 0:
             check = False
             for op in operator["valset_confirms"]:
@@ -85,7 +103,9 @@ class Peggo:
                     "auto_delete": None
                 })
 
-        if abs(operator["last_observed_nonce"] - operator["last_claim_eth_event_nonce"]) >= self.params["threshold"]:
+        lag = abs(operator["last_observed_nonce"] - operator["last_claim_eth_event_nonce"])
+        has_recent_progress = (now - progress_state["last_progress_at"]) < progress_grace if progress_grace > 0 else False
+        if lag >= self.params["threshold"] and not has_recent_progress:
             self.notify({
             "type": "nonce_mismatch",
             "args": {
