@@ -59,7 +59,7 @@
     },
     "osmosis-1": {
         "channel-122": {
-            "all": true,
+            "all": false,
             "sequences": ["690940"]
         }
     },
@@ -71,7 +71,7 @@
     },
     "core-1": {
         "channel-41": {
-            "all": true,
+            "all": false,
             "sequences": []
         }
     },
