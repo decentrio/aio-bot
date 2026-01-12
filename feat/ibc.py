@@ -34,6 +34,16 @@ class IBC:
             self.logger.error(f"Error decoding JSON from ibc_ignore.json: {e}")
             return []
 
+    def _get_ignore_entry(self, chain_id, channel):
+        entry = self.ibc_ignores.get(chain_id, {}).get(channel, [])
+        if isinstance(entry, dict):
+            ignore_all = bool(entry.get("all"))
+            sequences = entry.get("sequences", [])
+        else:
+            ignore_all = False
+            sequences = entry
+        return ignore_all, {str(seq) for seq in sequences}
+
     def _make_alert_key(self, alert_type, source_id, dest_id, channel, port, sequence=None):
         key = (
             alert_type,
@@ -250,13 +260,13 @@ class IBC:
                     reference_packets = self._fetch_reference_packets(ibc["chain-1"], ibc["channel-1"], ibc["port-1"])
                     self._validate_packets(commitments_1, reference_packets, ibc["chain-1"], ibc["channel-1"], ibc["port-1"])
                     ibc["packet-1"] = len(commitments_1)
-                    ignore_packets = self.ibc_ignores[ibc["id-1"]][ibc["channel-1"]] if ibc["id-1"] in self.ibc_ignores and ibc["channel-1"] in self.ibc_ignores[ibc["id-1"]] else []
+                    ignore_all, ignore_packets = self._get_ignore_entry(ibc["id-1"], ibc["channel-1"])
                     active_keys = set()
 
                     if len(commitments_1) >= self.stuck_packets_threshold:
                         if len(commitments_1) == 1:
                             sequence = commitments_1[0]["sequence"]
-                            if sequence not in ignore_packets:
+                            if not ignore_all and str(sequence) not in ignore_packets:
                                 tx_detail = query.query([f"https://rpc.cosmos.directory/{ibc['chain-1']}"], path=f"/tx_search?query=%22send_packet.packet_sequence%3D{sequence}%22")
                                 tx_block = int(tx_detail["result"]["txs"][0]["height"]) if tx_detail["result"] else None
                                 current_block = int(query.query(ibc["api-1"], path="/cosmos/base/tendermint/v1beta1/blocks/latest")["block"]["header"]["height"])
@@ -281,7 +291,10 @@ class IBC:
                                     if message:
                                         self.notify(message)
                         else:
-                            filtered_packets_1 = [p for p in commitments_1 if p["sequence"] not in ignore_packets]
+                            if not ignore_all:
+                                filtered_packets_1 = [p for p in commitments_1 if str(p["sequence"]) not in ignore_packets]
+                            else:
+                                filtered_packets_1 = []
                             if len(filtered_packets_1) > 0:
                                 payload = {
                                     "type": "packets",
@@ -315,13 +328,13 @@ class IBC:
                     reference_packets = self._fetch_reference_packets(ibc["chain-2"], ibc["channel-2"], ibc["port-2"])
                     self._validate_packets(commitments_2, reference_packets, ibc["chain-2"], ibc["channel-2"], ibc["port-2"])
                     ibc["packet-2"] = len(commitments_2)
-                    ignore_packets = self.ibc_ignores[ibc["id-2"]][ibc["channel-2"]] if ibc["id-2"] in self.ibc_ignores and ibc["channel-2"] in self.ibc_ignores[ibc["id-2"]] else []
+                    ignore_all, ignore_packets = self._get_ignore_entry(ibc["id-2"], ibc["channel-2"])
                     active_keys = set()
 
                     if len(commitments_2) >= self.stuck_packets_threshold:
                         if len(commitments_2) == 1:
                             sequence = commitments_2[0]["sequence"]
-                            if sequence not in ignore_packets:
+                            if not ignore_all and str(sequence) not in ignore_packets:
                                 tx_detail = query.query([f"https://rpc.cosmos.directory/{ibc['chain-2']}"], path=f"/tx_search?query=%22send_packet.packet_sequence%3D{sequence}%22")
                                 tx_block = int(tx_detail["result"]["txs"][0]["height"]) if tx_detail["result"] else None
                                 current_block = int(query.query(ibc["api-2"], path="/cosmos/base/tendermint/v1beta1/blocks/latest")["block"]["header"]["height"])
@@ -346,7 +359,10 @@ class IBC:
                                     if message:
                                         self.notify(message)
                         else:
-                            filtered_packets_2 = [p for p in commitments_2 if p["sequence"] not in ignore_packets]
+                            if not ignore_all:
+                                filtered_packets_2 = [p for p in commitments_2 if str(p["sequence"]) not in ignore_packets]
+                            else:
+                                filtered_packets_2 = []
                             if len(filtered_packets_2) > 0:
                                 payload = {
                                     "type": "packets",
