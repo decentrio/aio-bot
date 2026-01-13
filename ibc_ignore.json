@@ -85,7 +85,7 @@
     "core-1": {
         "channel-41": {
             "all": false,
-            "sequences": []
+            "sequences": ["387"]
         }
     },
     "sommelier-3": {
