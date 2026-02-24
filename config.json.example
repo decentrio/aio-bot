@@ -154,7 +154,9 @@
             "params": {
                 "interval": 7200,
                 "stuck_packets_threshold": 100,
-                "client_update_threshold": 14400,
+                "client_update_threshold": 86400,
+                "client_warning_repeat_seconds": 43200,
+                "client_expired_repeat_seconds": 0,
                 "registry_api": [
                     "https://raw.githubusercontent.com/cosmos/chain-registry/master"
                 ],
