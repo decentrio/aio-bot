@@ -16,10 +16,13 @@ class IBC:
         self.app = app
         self.params = params
         self.client_update_threshold = params["client_update_threshold"]
+        self.client_warning_repeat_seconds = params.get("client_warning_repeat_seconds")
+        self.client_expired_repeat_seconds = params.get("client_expired_repeat_seconds")
         self.stuck_packets_threshold = params["stuck_packets_threshold"]
         self.alert_confirmation_seconds = params.get("alert_confirmation_seconds", 180)
         self.ibcs = []
         self.alert_candidates = {}
+        self.client_alert_state = {}
 
     def getIgnorePackets(self) -> list:
         try:
@@ -87,6 +90,28 @@ class IBC:
                 and key not in active_keys
             ):
                 self.alert_candidates.pop(key, None)
+
+    def _client_alert_key(self, client, chain_1, chain_2):
+        return (str(client), str(chain_1), str(chain_2))
+
+    def _reset_client_alert(self, key):
+        self.client_alert_state.pop(key, None)
+
+    def _should_send_client_alert(self, key, state, repeat_seconds):
+        now = time.time()
+        entry = self.client_alert_state.get(key)
+        if entry is None or entry["state"] != state:
+            self.client_alert_state[key] = {"state": state, "last_sent": now}
+            return True
+        if repeat_seconds is None:
+            entry["last_sent"] = now
+            return True
+        if repeat_seconds <= 0:
+            return False
+        if now - entry["last_sent"] >= repeat_seconds:
+            entry["last_sent"] = now
+            return True
+        return False
 
     def _is_api_active(self, api, chain_name):
         health_url = f"{api.rstrip('/')}/cosmos/base/tendermint/v1beta1/blocks/latest"
@@ -231,18 +256,33 @@ class IBC:
             block_time = block_detail["block"]["header"]["time"]
             block_time = block_time.split(".")[0] + "Z"
             time_since_last_updated = (datetime.now() - datetime.strptime(block_time, "%Y-%m-%dT%H:%M:%SZ")).total_seconds()
-            if trusting_period - time_since_last_updated <= self.client_update_threshold:
-                self.notify({
-                    "type": "client",
-                    "args": {
-                        "client": client,
-                        "last_updated": block_time,
-                        "chain-1": chain_1,
-                        "chain-2": chain_2,
-                        "time_left": trusting_period - time_since_last_updated if trusting_period >= time_since_last_updated else 0
-                    },
-                    "auto_delete": None
-                })
+            time_left = trusting_period - time_since_last_updated
+            client_key = self._client_alert_key(client, chain_1, chain_2)
+
+            if time_left > self.client_update_threshold:
+                self._reset_client_alert(client_key)
+                return
+
+            state = "expired" if time_left <= 0 else "expiring"
+            repeat_seconds = (
+                self.client_expired_repeat_seconds
+                if state == "expired"
+                else self.client_warning_repeat_seconds
+            )
+            if not self._should_send_client_alert(client_key, state, repeat_seconds):
+                return
+
+            self.notify({
+                "type": "client",
+                "args": {
+                    "client": client,
+                    "last_updated": block_time,
+                    "chain-1": chain_1,
+                    "chain-2": chain_2,
+                    "time_left": time_left if time_left > 0 else 0
+                },
+                "auto_delete": None
+            })
         except Exception as e:
             self.logger.error(f"Error checking client {client} on {dest_apis}: {e}")
 
