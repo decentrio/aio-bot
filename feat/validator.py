@@ -23,14 +23,31 @@ class Validators:
         self.chain = chain
         self.params = self.getSlashingParams()
         self.params.update(params)
+        self.ignored_validators = self.getIgnoredValidators()
         self.validators = self.getValidators(params["prefix"] + "valcons")
 
+
+    def getIgnoredValidators(self) -> list:
+        try:
+            with open("validator_ignore.json", "r") as f:
+                ignored = json.load(f)
+                self.logger.info(f"Loaded {len(ignored)} ignored validators.")
+                return ignored
+        except FileNotFoundError:
+            self.logger.warning("validator_ignore.json not found, returning empty list.")
+            return []
+        except json.JSONDecodeError as e:
+            self.logger.error(f"Error decoding JSON from validator_ignore.json: {e}")
+            return []
 
     def getValidators(self, prefix) -> list:
         validators = []
         try:
             data = query.query(self.apis, path=f"/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true")
             for val in data["validators"]:
+                if val["operator_address"] in self.ignored_validators:
+                    self.logger.info(f"Ignoring validator: {val['description']['moniker']}")
+                    continue
                 hex_address, valcons_address = pubkey.convert(
                     val["consensus_pubkey"]["key"], prefix)
                 validators.append({
@@ -203,7 +220,7 @@ class Validators:
                 self.validators.remove(validator)
             elif not validator and int(val["voting_power"]) > 0:
                 new_validator = self.findValbyPubkey(val["pub_key"]["value"])
-                if new_validator is not None:
+                if new_validator is not None and new_validator["operator_address"] not in self.ignored_validators:
                     self.validators.append(new_validator)
                     self.logger.debug(f"Validator {new_validator['moniker']} is new to active set!")
                     self.notify({
