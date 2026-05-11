@@ -14,29 +14,6 @@ class Balances:
         self.logger = logging.getLogger("Balances")
         self.logger.setLevel(logging.INFO)
 
-    def get_eth_balance(self, address):
-        """
-        Fetching the eth balance
-        """
-        try:
-            data = query.query(
-                self.jsonrpcs, 
-                method="POST", 
-                header={
-                    "Content-Type": "application/json"
-                },
-                body={
-                    "jsonrpc": "2.0",
-                    "method": "eth_getBalance",
-                    "params": [address, "latest"],
-                    "id": 1
-                }
-            )
-            return int(data["result"], 16) / 10**18
-        except Exception as e:
-            self.logger.error(f"Error fetching eth balance: {e}")
-            return None
-
     def get_inj_balance(self, address):
         """
         Fetching the inj balance
@@ -68,23 +45,7 @@ class Balances:
                         "auto_delete": None
                     }
                 )
-        elif address.startswith("0x"):
-            balance = self.get_eth_balance(address)
-            if balance != None and balance <= self.params["threshold"]["eth"]:
-                self.logger.info(f"Validator: {validator} has low ETH balance: {balance}")
-                self.notify(
-                    {
-                        "type": "low_balance",
-                        "args": {
-                            "validator": validator,
-                            "address": address,
-                            "moniker": moniker,
-                            "balance": f"{balance:,.6f} ETH",
-                        },
-                        "auto_delete": None
-                    }
-                )
-        else:
+        elif not address.startswith("0x"):
             self.logger.error(f"Invalid address: {address}")
             self.notify(
                 {
@@ -237,8 +198,6 @@ Address: `{message['args']['address']}`
                         self.logger.error(f"Error fetching validator status for {val['moniker']}: {e}")
                         continue
                     address = query.query(self.apis, path=f"/peggy/v1/query_delegate_keys_by_validator?validator_address={val['operator_address']}")
-                    self.check(val['operator_address'], val['moniker'], address["eth_address"])
-                    time.sleep(5)
                     self.check(val['operator_address'], val['moniker'], address["orchestrator_address"])
                     time.sleep(5)
                     
