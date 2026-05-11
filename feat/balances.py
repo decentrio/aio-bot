@@ -228,6 +228,14 @@ Address: `{message['args']['address']}`
                 validators = json.load(f)
                 for val in validators:
                     self.logger.debug(f"Checking balance: {val['moniker']}")
+                    try:
+                        val_info = query.query(self.apis, path=f"/cosmos/staking/v1beta1/validators/{val['operator_address']}")
+                        if val_info["validator"]["status"] != "BOND_STATUS_BONDED":
+                            self.logger.debug(f"Skipping balance check for inactive validator: {val['moniker']}")
+                            continue
+                    except Exception as e:
+                        self.logger.error(f"Error fetching validator status for {val['moniker']}: {e}")
+                        continue
                     address = query.query(self.apis, path=f"/peggy/v1/query_delegate_keys_by_validator?validator_address={val['operator_address']}")
                     self.check(val['operator_address'], val['moniker'], address["eth_address"])
                     time.sleep(5)
