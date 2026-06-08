@@ -48,19 +48,25 @@ class Peggo:
         except Exception as e:
             self.logger.error(f"Error fetching last claim event: {e}")
             return None
+
+    def nonce_progress_grace_seconds(self) -> int:
+        if "nonce_progress_grace_seconds" in self.params:
+            return self.params["nonce_progress_grace_seconds"]
+        return self.params.get("interval", 0) + 60
         
     def check(self, operator: dict):
         now = time.time()
-        progress_grace = self.params.get("nonce_progress_grace_seconds", 0)
+        current_claim = operator["last_claim_eth_event_nonce"]
+        current_observed = operator["last_observed_nonce"]
+        progress_grace = self.nonce_progress_grace_seconds()
         progress_state = self.nonce_progress.get(operator["valoper_address"])
         if progress_state is None:
             progress_state = {
-                "last_claim": operator["last_claim_eth_event_nonce"],
+                "last_claim": current_claim,
                 "last_progress_at": now,
                 "regressed": False,
             }
         else:
-            current_claim = operator["last_claim_eth_event_nonce"]
             if current_claim > progress_state["last_claim"]:
                 progress_state["last_progress_at"] = now
                 progress_state["regressed"] = False
@@ -82,7 +88,7 @@ class Peggo:
                         "validator": operator["valoper_address"],
                         "orchestrator": operator["orchestrator_address"],
                         "moniker": operator["moniker"],
-                        "last_height": f"{operator["last_height"]:,}"
+                        "last_height": f"{operator['last_height']:,}"
                     },
                     "auto_delete": None
                 })
@@ -100,13 +106,13 @@ class Peggo:
                         "validator": operator["valoper_address"],
                         "orchestrator": operator["orchestrator_address"],
                         "moniker": operator["moniker"],
-                        "last_height": f"{operator["last_height"]:,}"
+                        "last_height": f"{operator['last_height']:,}"
                     },
                     "auto_delete": None
                 })
 
-        lag = abs(operator["last_observed_nonce"] - operator["last_claim_eth_event_nonce"])
-        has_recent_progress = (now - progress_state["last_progress_at"]) < progress_grace if progress_grace > 0 else False
+        lag = current_observed - current_claim
+        has_recent_progress = (now - progress_state["last_progress_at"]) <= progress_grace if progress_grace > 0 else False
         should_suppress = has_recent_progress and not progress_state["regressed"]
         if lag >= self.params["threshold"] and not should_suppress:
             self.notify({
@@ -115,9 +121,9 @@ class Peggo:
                 "validator": operator["valoper_address"],
                 "orchestrator": operator["orchestrator_address"],
                 "moniker": operator["moniker"],
-                "last_observed_nonce": f"{operator["last_observed_nonce"]:,}",
-                "last_claim_eth_event_nonce": f"{operator["last_claim_eth_event_nonce"]:,}",
-                "last_height": f"{operator["last_height"]:,}"
+                "last_observed_nonce": f"{current_observed:,}",
+                "last_claim_eth_event_nonce": f"{current_claim:,}",
+                "last_height": f"{operator['last_height']:,}"
             },
             "auto_delete": None
             })
