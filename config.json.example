@@ -146,6 +146,7 @@
             "params": {
                 "threshold": 10,
                 "nonce_progress_grace_seconds": 1200,
+                "nonce_alert_repeat_seconds": 14400,
                 "interval": 1200
             }
         },

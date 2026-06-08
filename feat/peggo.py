@@ -53,6 +53,9 @@ class Peggo:
         if "nonce_progress_grace_seconds" in self.params:
             return self.params["nonce_progress_grace_seconds"]
         return self.params.get("interval", 0) + 60
+
+    def nonce_alert_repeat_seconds(self) -> int:
+        return self.params.get("nonce_alert_repeat_seconds", 14400)
         
     def check(self, operator: dict):
         now = time.time()
@@ -65,6 +68,7 @@ class Peggo:
                 "last_claim": current_claim,
                 "last_progress_at": now,
                 "regressed": False,
+                "last_alert_at": None,
             }
         else:
             if current_claim > progress_state["last_claim"]:
@@ -114,7 +118,18 @@ class Peggo:
         lag = current_observed - current_claim
         has_recent_progress = (now - progress_state["last_progress_at"]) <= progress_grace if progress_grace > 0 else False
         should_suppress = has_recent_progress and not progress_state["regressed"]
-        if lag >= self.params["threshold"] and not should_suppress:
+        should_alert = lag >= self.params["threshold"] and not should_suppress
+        if not should_alert:
+            progress_state["last_alert_at"] = None
+            return
+
+        last_alert_at = progress_state.get("last_alert_at")
+        can_repeat_alert = (
+            last_alert_at is None
+            or now - last_alert_at >= self.nonce_alert_repeat_seconds()
+        )
+        if can_repeat_alert:
+            progress_state["last_alert_at"] = now
             self.notify({
             "type": "nonce_mismatch",
             "args": {

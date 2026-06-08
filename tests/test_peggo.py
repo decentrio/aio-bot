@@ -68,6 +68,35 @@ class PeggoNonceAlertTest(unittest.TestCase):
         self.assertEqual(1, len(peggo.messages))
         self.assertEqual("nonce_mismatch", peggo.messages[0]["type"])
 
+    def test_stale_claim_nonce_repeats_after_four_hours(self):
+        peggo = RecordingPeggo({
+            "threshold": 10,
+            "interval": 1200,
+            "nonce_progress_grace_seconds": 0,
+        })
+
+        with patch("feat.peggo.time.time", side_effect=[1000, 15399, 15400]):
+            peggo.check(operator(94328, 94171))
+            peggo.check(operator(94328, 94171))
+            peggo.check(operator(94329, 94171))
+
+        self.assertEqual(2, len(peggo.messages))
+
+    def test_custom_stale_claim_nonce_repeat_interval(self):
+        peggo = RecordingPeggo({
+            "threshold": 10,
+            "interval": 1200,
+            "nonce_progress_grace_seconds": 0,
+            "nonce_alert_repeat_seconds": 60,
+        })
+
+        with patch("feat.peggo.time.time", side_effect=[1000, 1059, 1060]):
+            peggo.check(operator(94328, 94171))
+            peggo.check(operator(94328, 94171))
+            peggo.check(operator(94329, 94171))
+
+        self.assertEqual(2, len(peggo.messages))
+
     def test_claim_nonce_ahead_of_observed_nonce_does_not_alert(self):
         peggo = RecordingPeggo({
             "threshold": 10,
